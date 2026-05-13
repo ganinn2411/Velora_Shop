@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ürün Detay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+  <div class="logo">
+    <a href="index.html">VELORA</a>
+  </div>
+
+  <!-- Hamburger (mobilde görünür) -->
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="nav" id="navMenu">
+    <div class="nav-item">
+      <a href="#" class="nav-link">KADIN</a>
+      <div class="mega-menu">
+        <div class="mega-col">
+          <h4>Kategoriler</h4>
+          <a href="category.html?category=kadin&type=pantalon">Pantolon</a>
+          <a href="category.html?category=kadin&type=tisort">Tişört</a>
+          <a href="category.html?category=kadin&type=sapka">Şapka</a>
+          <a href="category.html?category=kadin&type=ceket">Ceket</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="#" class="nav-link">ERKEK</a>
+      <div class="mega-menu">
+        <div class="mega-col">
+          <h4>Kategoriler</h4>
+          <a href="category.html?category=erkek&type=pantalon">Pantolon</a>
+          <a href="category.html?category=erkek&type=tisort">Tişört</a>
+          <a href="category.html?category=erkek&type=sapka">Şapka</a>
+          <a href="category.html?category=erkek&type=ceket">Ceket</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="#" class="nav-link">ÇOCUK</a>
+      <div class="mega-menu">
+        <div class="mega-col">
+          <h4>Kategoriler</h4>
+          <a href="category.html?category=cocuk&type=pantalon">Pantolon</a>
+          <a href="category.html?category=cocuk&type=tisort">Tişört</a>
+          <a href="category.html?category=cocuk&type=sapka">Şapka</a>
+          <a href="category.html?category=cocuk&type=ceket">Ceket</a>
+        </div>
+      </div>
+    </div>
+
+    <a href="wishlist.html" class="fav-link">FAVORİLER</a>
+  </nav>
+
+  <!-- Sağ ikonlar -->
+  <div class="header-actions">
+    <a href="profile.html" class="profile-icon" id="profile-icon" title="Hesabım">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </a>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
+    <a href="cart.html" class="cart">
+      🛒 <span class="cart-badge" id="cart-count">0</span>
+    </a>
+    <a href="javascript:history.back()" class="back-btn" title="Geri Dön">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+           stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </a>
+  </div>
+</header>
+
+<section class="product-page" id="productDetail"></section>
+
+<footer class="footer">
+  <div class="footer-col">
+    <h4>MAĞAZA</h4>
+    <a href="category.html?category=kadin&type=tisort">Kadın</a>
+    <a href="category.html?category=erkek&type=tisort">Erkek</a>
+    <a href="category.html?category=cocuk&type=tisort">Çocuk</a>
+  </div>
+  <div class="footer-col">
+    <h4>YARDIM</h4>
+    <a href="https://wa.me/905550066123" target="_blank">İletişim</a>
+    <a href="#">Kargo</a>
+    <a href="#">İade</a>
+  </div>
+  <div class="footer-col">
+    <h4>KURUMSAL</h4>
+    <a href="#">Hakkımızda</a>
+    <a href="#">Kariyer</a>
+  </div>
+  <div class="footer-bottom">© 2026 VELORA – Tüm Hakları Saklıdır</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

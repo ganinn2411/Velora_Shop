@@ -1,0 +1,1769 @@
+/* =====================
+   DARK MODE CSS DEĞİŞKENLERİ
+   ===================== */
+:root {
+  --bg:           #f5ede0;
+  --bg-secondary: #ede0cf;
+  --bg-card:      #faf4ec;
+  --text:         #1a1008;
+  --text-muted:   #6b5744;
+  --text-light:   #a08c78;
+  --border:       #e0cdb8;
+  --border-input: #d4bfa8;
+  --header-bg:    #f5ede0;
+  --footer-bg:    #1a1008;
+  --mega-bg:      #faf4ec;
+  --btn-bg:       #1a1008;
+  --btn-color:    #f5ede0;
+  --input-bg:     #faf4ec;
+  --shadow:       rgba(100,70,40,0.10);
+}
+
+body.dark {
+  --bg:           #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-card:      #1a1a1a;
+  --text:         #f0f0f0;
+  --text-muted:   #aaaaaa;
+  --text-light:   #777777;
+  --border:       #2a2a2a;
+  --border-input: #333333;
+  --header-bg:    #0f0f0f;
+  --footer-bg:    #0f0f0f;
+  --mega-bg:      #1a1a1a;
+  --btn-bg:       #f0f0f0;
+  --btn-color:    #111111;
+  --input-bg:     #1a1a1a;
+  --shadow:       rgba(0,0,0,0.4);
+}
+
+/* =====================
+   DARK MODE TOGGLE BUTONU
+   ===================== */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1.5px solid var(--border-input);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  transition: border-color 0.25s, background 0.25s, transform 0.3s;
+  flex-shrink: 0;
+  line-height: 1;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+.theme-toggle:hover {
+  border-color: var(--text);
+  background: var(--bg-secondary);
+  transform: rotate(20deg);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  padding-top: 74px;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* =====================
+   HEADER
+   ===================== */
+.header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  background: var(--header-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 40px;
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  gap: 16px;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-decoration: none;
+  color: var(--text);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.logo a { text-decoration: none; color: var(--text); }
+
+/* =====================
+   HEADER ACTIONS (sağ ikonlar grubu)
+   ===================== */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* =====================
+   NAV
+   ===================== */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.nav a:hover { opacity: 0.5; }
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.nav-link:hover { opacity: 0.6; }
+
+.fav-link {
+  text-decoration: none;
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.fav-link:hover { opacity: 0.6; }
+
+/* =====================
+   MEGA MENU
+   ===================== */
+.nav-item { position: relative; }
+
+.mega-menu {
+  position: absolute;
+  top: 100%; left: 0;
+  background: var(--mega-bg);
+  border: 1px solid var(--border);
+  padding: 20px;
+  width: 200px;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.25s ease;
+  pointer-events: none;
+}
+
+.nav-item:hover .mega-menu,
+.nav-item.active .mega-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.mega-col { display: flex; flex-direction: column; gap: 8px; }
+.mega-col h4 { font-size: 13px; margin-bottom: 10px; letter-spacing: 1px; color: var(--text); }
+.mega-col a { display: block; text-decoration: none; color: var(--text); padding: 4px 0; font-size: 13px; }
+.mega-col a:hover { opacity: 0.6; }
+
+/* =====================
+   SEARCH BOX
+   ===================== */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.search-box input,
+.search-box select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-input);
+  font-size: 12px;
+  outline: none;
+  background: var(--input-bg);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+.search-box input { width: 160px; }
+
+/* =====================
+   CART ICON
+   ===================== */
+.cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.cart-badge {
+  position: absolute;
+  top: -8px; right: -10px;
+  background: red;
+  color: white;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+/* Hamburger masaüstünde gizli */
+.hamburger { display: none; }
+
+/* =====================
+   HERO
+   ===================== */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.hero-img {
+  width: 100%;
+  height: 700px;
+  object-fit: cover;
+  display: block;
+}
+.hero-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}
+.hero-text img {
+  max-width: 200px;
+  margin-bottom: 20px;
+  filter: brightness(0) invert(1);
+}
+
+/* =====================
+   SLIDER
+   ===================== */
+.slider-wrapper {
+  position: relative;
+  overflow: hidden;
+  margin: 40px 0;
+  padding: 0;
+}
+
+.product-slider {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 50px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.product-slider::-webkit-scrollbar { display: none; }
+
+/* =====================
+   ÜRÜN KARTI (Slider & Favoriler)
+   ===================== */
+.product-card {
+  flex: 0 0 220px;
+  width: 220px;
+  cursor: pointer;
+  position: relative;
+  background: var(--bg-card);
+  transition: transform 0.3s, background 0.3s;
+}
+.product-card:hover { transform: translateY(-4px); }
+
+.product-card__img-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.product-card__img-wrap img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.product-card:hover .product-card__img-wrap img {
+  transform: scale(1.05);
+}
+
+/* FAVORİ YILDIZ */
+.product-card__fav {
+  position: absolute;
+  top: 10px; right: 10px;
+  font-size: 20px;
+  color: #f5c518;
+  background: rgba(255,255,255,0.75);
+  padding: 2px 5px;
+  border-radius: 4px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s;
+  z-index: 2;
+}
+.product-card__fav:hover { transform: scale(1.25); }
+
+.product-card__info {
+  padding: 10px 4px 4px;
+}
+.product-card__info h3 {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+.product-card__info p {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 4px;
+}
+.product-card__info button {
+  margin-top: 8px;
+  width: 100%;
+  padding: 9px;
+  border: none;
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  font-family: 'Montserrat', sans-serif;
+}
+.product-card__info button:hover { opacity: 0.75; }
+
+/* SLIDER OKLAR */
+.arrow {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: none;
+  font-size: 26px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.arrow:hover { background: rgba(0,0,0,0.85); }
+.arrow.left  { left: 4px; }
+.arrow.right { right: 4px; }
+
+/* =====================
+   KATEGORİ SAYFASI GRID
+   ===================== */
+.category-page #products {
+  padding: 20px 40px 60px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  overflow-x: visible;
+  scroll-behavior: auto;
+}
+.category-page #products .product-card {
+  flex: none;
+  width: 100%;
+}
+
+/* =====================
+   CATEGORY TITLE
+   ===================== */
+#category-title {
+  padding: 40px 40px 0;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+
+/* =====================
+   REMOVE BTN (Favoriler)
+   ===================== */
+.remove-btn {
+  position: absolute;
+  top: 10px; left: 10px;
+  width: 25px; height: 25px;
+  z-index: 10;
+  background-color: #111;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+.remove-btn:hover { transform: scale(1.2); }
+
+/* =====================
+   ÜRÜN DETAY SAYFASI
+   ===================== */
+.product-page {
+  display: flex;
+  gap: 60px;
+  padding: 80px 120px;
+}
+.product-image { flex: 1; }
+.product-image img {
+  width: 100%;
+  max-width: 450px;
+  transition: 0.4s;
+  cursor: zoom-in;
+}
+.product-image img:hover { transform: scale(1.03); }
+
+.product-info { flex: 1; }
+.product-info h1 {
+  font-size: 28px;
+  font-weight: 300;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+.price { font-size: 20px; margin: 10px 0 20px; font-weight: 700; }
+.desc  { font-size: 14px; color: gray; margin-bottom: 20px; line-height: 1.7; }
+
+label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+
+.sizes { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.sizes button {
+  padding: 8px 14px;
+  border: 1px solid var(--text);
+  background: var(--bg);
+  color: var(--text);
+  width: auto;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: 'Montserrat', sans-serif;
+}
+.sizes button:hover,
+.sizes button.active { background: var(--text); color: var(--bg); }
+
+.colors { display: flex; gap: 12px; margin-bottom: 25px; }
+.color {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  transition: 0.2s;
+}
+.color.active {
+  outline: 2px solid #555;
+  outline-offset: 3px;
+  transform: scale(1.1);
+}
+.black { background: black; }
+.white { background: white; border: 1px solid #aaa; }
+.blue  { background: #0057b7; }
+.beige { background: #d4b896; border: 1px solid #c4a882; }
+
+/* =====================
+   SEPETE EKLE BUTONU (Detay Sayfası)
+   ===================== */
+.btn-add-to-cart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 380px;
+  padding: 16px 32px;
+  margin-top: 10px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #111;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.35s ease, background 0.35s ease, border-color 0.35s ease;
+}
+
+.btn-add-to-cart::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform: translateX(-101%);
+  transition: transform 0.35s ease;
+  z-index: 0;
+}
+.btn-add-to-cart:hover::before {
+  transform: translateX(0);
+}
+.btn-add-to-cart:hover {
+  color: #111;
+  border-color: #111;
+}
+.btn-add-to-cart span {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-add-to-cart .btn-icon {
+  font-size: 16px;
+  transition: transform 0.3s;
+}
+.btn-add-to-cart:hover .btn-icon {
+  transform: translateX(4px);
+}
+.btn-add-to-cart:active {
+  transform: scale(0.97);
+}
+
+.back-btn { display: flex; align-items: center; justify-content: center; text-decoration: none; color: var(--text); }
+.back-btn svg { cursor: pointer; transition: 0.3s; }
+.back-btn:hover svg { transform: translateX(-3px); opacity: 0.6; }
+
+/* =====================
+   SEPET SAYFASI
+   ===================== */
+.cart-page { padding: 60px 120px; }
+.cart-page h1 { font-weight: 300; letter-spacing: 3px; margin-bottom: 40px; }
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding: 20px 0;
+  gap: 20px;
+}
+.cart-item h4 { font-weight: 400; font-size: 14px; color: var(--text); }
+.product-link { text-decoration: none; color: var(--text); font-weight: 400; }
+.product-link:hover { opacity: 0.6; }
+.product-img {
+  width: 80px; height: 100px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: 0.3s;
+  flex-shrink: 0;
+}
+.product-img:hover { opacity: 0.8; }
+.cart-price { font-size: 14px; font-weight: 700; color: var(--text); min-width: 80px; text-align: center; }
+
+.quantity { display: flex; align-items: center; gap: 10px; }
+.quantity button {
+  background: var(--btn-bg); color: var(--btn-color); border: none;
+  width: 28px; height: 28px;
+  cursor: pointer; font-size: 16px;
+  padding: 0; margin: 0; line-height: 1;
+  font-family: 'Montserrat', sans-serif;
+  transition: background 0.3s, color 0.3s;
+  flex-shrink: 0;
+}
+.quantity span { font-size: 14px; min-width: 20px; text-align: center; }
+.remove { color: #cc0000; cursor: pointer; font-size: 18px; flex-shrink: 0; }
+
+.cart-footer { margin-top: 40px; text-align: right; }
+.cart-footer h2 { font-weight: 400; font-size: 18px; letter-spacing: 1px; }
+.checkout {
+  margin-top: 15px;
+  padding: 15px 40px;
+  background: var(--btn-bg); color: var(--btn-color);
+  border: none; cursor: pointer;
+  letter-spacing: 2px; font-size: 13px;
+  width: auto; transition: 0.3s;
+  font-family: 'Montserrat', sans-serif;
+}
+.checkout:hover { opacity: 0.75; }
+
+/* =====================
+   FAVORİLER SAYFASI
+   ===================== */
+.favorites-container { padding: 60px 40px; }
+.favorites-container h2 { font-weight: 300; letter-spacing: 3px; margin-bottom: 40px; }
+
+#favorites-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+#favorites-list .product-card {
+  flex: none;
+  width: 100%;
+}
+#favorites-list .product-card__img-wrap img {
+  height: 340px;
+}
+
+/* =====================
+   HAKKIMIZDA
+   ===================== */
+.about-section {
+  padding: 80px 100px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  margin-top: 80px;
+}
+.about-section h2 { font-size: 18px; margin-bottom: 20px; letter-spacing: 3px; font-weight: 400; color: var(--text); }
+.about-section p { max-width: 700px; margin: 0 auto 15px; color: var(--text-muted); font-size: 14px; line-height: 1.8; }
+
+/* =====================
+   FOOTER
+   ===================== */
+.footer {
+  margin-top: 100px;
+  padding: 60px 40px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--footer-bg);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  transition: background 0.3s;
+}
+.footer-col h4 { font-size: 12px; margin-bottom: 15px; letter-spacing: 2px; color: #f5ede0; }
+.footer-col a { display: block; text-decoration: none; color: #c4a882; font-size: 12px; margin-bottom: 8px; }
+.footer-col a:hover { color: #f5ede0; }
+.footer-bottom {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+/* =====================
+   RESPONSIVE — TABLET (max 1024px)
+   ===================== */
+@media (max-width: 1024px) {
+  .header { padding: 16px 24px; }
+  .search-box input { width: 130px; }
+  .category-page #products { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .product-page { padding: 60px 60px; }
+  .about-section { padding: 60px 60px; }
+}
+
+/* =====================
+   RESPONSIVE — TABLET (max 900px)
+   ===================== */
+@media (max-width: 900px) {
+  .category-page #products { grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 20px; }
+  #favorites-list { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .product-page { flex-direction: column; padding: 40px 20px; gap: 30px; }
+  .product-image img { max-width: 100%; }
+  .cart-page { padding: 40px 20px; }
+  .hero-img { height: 400px; }
+}
+
+/* =====================
+   RESPONSIVE — MOBİL (max 768px)
+   ===================== */
+@media (max-width: 768px) {
+
+  body { padding-top: 64px; }
+
+  /* Header — tamamen yeniden düzenlendi */
+  .header {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 0;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Logo — soldaki ilk sütun */
+  .logo {
+    font-size: 18px;
+    letter-spacing: 2px;
+    order: 1;
+    flex: 1;
+  }
+
+  /* Hamburger — ortada */
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 6px;
+    order: 2;
+    flex-shrink: 0;
+  }
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+    transition: 0.3s;
+    border-radius: 1px;
+  }
+
+  /* Header actions — sağda (tema + sepet + profil) */
+  .header-actions {
+    order: 3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .profile-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+
+  .theme-toggle {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  /* Nav — hamburger açılınca görünür, tam genişlik */
+  .nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    order: 5;
+    border-top: 1px solid var(--border);
+    padding-top: 6px;
+    gap: 0;
+    padding-bottom: 6px;
+  }
+  .nav.open { display: flex; }
+  .nav .nav-item,
+  .nav > a {
+    width: 100%;
+  }
+  .nav a,
+  .nav-link,
+  .fav-link {
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    display: block;
+  }
+
+  /* Search box — hamburger altında açılır */
+  .search-box {
+    display: none;
+    width: 100%;
+    order: 6;
+    padding: 10px 0 6px;
+    flex-direction: row;
+    gap: 8px;
+  }
+  .nav.open ~ .search-box,
+  .search-box.open { display: flex; }
+  .search-box input { flex: 1; width: auto; min-width: 0; }
+  .search-box select { width: 110px; flex-shrink: 0; }
+
+  /* Mega menu */
+  .mega-menu {
+    position: static;
+    width: 100%;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    display: none;
+    pointer-events: auto;
+    border: none;
+    padding: 4px 0 4px 16px;
+    background: transparent;
+    box-shadow: none;
+  }
+  .nav-item.active .mega-menu { display: block; }
+  .mega-col a { font-size: 12px; padding: 5px 0; }
+
+  /* Hero */
+  .hero { height: auto; }
+  .hero-img { height: 220px; object-fit: cover; }
+
+  /* Slider */
+  .product-card { flex: 0 0 160px; width: 160px; }
+  .product-card__img-wrap img { height: 210px; }
+  .product-card__info h3 { font-size: 11px; }
+  .product-card__info p { font-size: 12px; }
+  .product-card__info button { font-size: 10px; padding: 7px; }
+
+  .slider-wrapper { margin: 24px 0; }
+  .product-slider { padding: 6px 40px; gap: 14px; }
+
+  /* Slider okları — mobilde daha küçük */
+  .arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 20px;
+  }
+
+  /* Kategori grid */
+  .category-page #products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 16px;
+  }
+  #category-title { padding: 20px 16px 0; font-size: 16px; }
+
+  /* Ürün detay */
+  .product-page { padding: 20px 16px; gap: 20px; }
+  .product-info h1 { font-size: 20px; }
+  .btn-add-to-cart { max-width: 100%; }
+
+  /* Sepet */
+  .cart-page { padding: 20px 16px; }
+  .cart-item { flex-wrap: wrap; gap: 10px; }
+  .cart-item img { width: 70px; height: 90px; }
+
+  /* Favoriler */
+  #favorites-list { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .favorites-container { padding: 20px 16px; }
+  #favorites-list .product-card__img-wrap img { height: 220px; }
+
+  /* Footer */
+  .footer {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 40px 20px 20px;
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+  /* Hakkımızda */
+  .about-section { padding: 40px 20px; }
+
+  /* Profil sayfası */
+  .auth-box { padding: 32px 20px; }
+
+  /* Cart & favori header padding */
+  .cart-header,
+  .fav-header,
+  .profile-header { padding: 14px 16px; }
+}
+
+/* =====================
+   RESPONSIVE — KÜÇÜK MOBİL (max 480px)
+   ===================== */
+@media (max-width: 480px) {
+  body { padding-top: 60px; }
+  .logo { font-size: 16px; letter-spacing: 1.5px; }
+  .hero-img { height: 180px; }
+  .product-card { flex: 0 0 140px; width: 140px; }
+  .product-card__img-wrap img { height: 180px; }
+  .product-card__fav { font-size: 16px; }
+  #favorites-list { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  #favorites-list .product-card__img-wrap img { height: 180px; }
+  .category-page #products { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .cart-page h1 { font-size: 18px; }
+  .product-info h1 { font-size: 18px; }
+  .sizes button { padding: 6px 10px; }
+  .arrow { width: 28px; height: 28px; font-size: 18px; }
+  .product-slider { padding: 6px 32px; gap: 10px; }
+  .cart-item { gap: 8px; }
+  .cart-price { min-width: 60px; font-size: 13px; }
+}
+
+/* =====================
+   PROFIL SAYFASI HEADER
+   ===================== */
+.profile-header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  background: var(--header-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 40px;
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  transition: background 0.3s;
+}
+.profile-header .logo {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.back-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 9px 20px;
+  border: 1px solid var(--text);
+  transition: background 0.25s, color 0.25s;
+  white-space: nowrap;
+}
+.back-home:hover { background: var(--text); color: var(--bg); }
+.back-home svg { transition: transform 0.25s; }
+.back-home:hover svg { transform: translateX(-3px); }
+
+/* =====================
+   AUTH KUTUSU
+   ===================== */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px 60px;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 48px 44px;
+  transition: background 0.3s;
+}
+
+.auth-box h2 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.auth-subtitle {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+  margin-bottom: 36px;
+}
+
+.auth-divider {
+  width: 40px;
+  height: 1px;
+  background: var(--text);
+  margin: 0 auto 32px;
+}
+
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.form-group input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--border-input);
+  font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  outline: none;
+  transition: border-color 0.2s, background 0.3s, color 0.3s;
+  color: var(--text);
+  background: var(--bg-secondary);
+}
+.form-group input:focus {
+  border-color: var(--text);
+  background: var(--bg);
+}
+.form-group input.error { border-color: #cc0000; }
+.form-group .error-msg {
+  font-size: 11px;
+  color: #cc0000;
+  margin-top: 5px;
+  display: none;
+}
+.form-group.has-error .error-msg { display: block; }
+.form-group.has-error input { border-color: #cc0000; }
+
+.auth-btn {
+  width: 100%;
+  padding: 15px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #111;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.25s, color 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.auth-btn:hover { background: #333; }
+.auth-btn:active { transform: scale(0.98); }
+.auth-btn:disabled { background: #999; border-color: #999; cursor: not-allowed; }
+
+.switch-text {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 12px;
+  color: #999;
+  letter-spacing: 0.3px;
+}
+.switch-text span {
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.switch-text span:hover { opacity: 0.6; }
+
+.code-input-wrap {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 16px 0 24px;
+}
+.code-digit {
+  width: 52px;
+  height: 60px;
+  border: 1px solid var(--border-input);
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  outline: none;
+  transition: border-color 0.2s, background 0.3s;
+  background: var(--bg-secondary);
+  color: var(--text);
+}
+.code-digit:focus { border-color: var(--text); background: var(--bg); }
+.code-digit.filled { border-color: var(--text); }
+
+.verify-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+.verify-hint strong { color: var(--text); font-weight: 600; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  padding: 12px 28px;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.error { background: #cc0000; color: #fff; }
+.toast.success { background: #2a7a2a; color: #fff; }
+
+/* Profil kartı */
+.profile-card { text-align: center; }
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background: var(--btn-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 32px;
+  color: var(--btn-color);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.profile-name {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.profile-email {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 36px;
+}
+
+.profile-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.profile-info-row:first-of-type { border-top: 1px solid var(--border); }
+.profile-info-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-light);
+  min-width: 80px;
+  padding-top: 2px;
+}
+.profile-info-value {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: #cc0000;
+  border: 1px solid #cc0000;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 32px;
+  transition: background 0.2s, color 0.2s;
+}
+.logout-btn:hover { background: #cc0000; color: #fff; }
+
+.hidden { display: none !important; }
+
+/* Geri sayım */
+.resend-row {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 16px;
+}
+#resend-btn {
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+#resend-btn:disabled, #resend-btn.counting {
+  color: var(--text-light);
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* Profil ikonu */
+.profile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-input);
+  transition: border-color 0.2s, background 0.2s;
+  font-family: 'Montserrat', sans-serif;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.profile-icon:hover { border-color: var(--text); }
+.profile-icon.logged-in {
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  border-color: var(--btn-bg);
+  font-size: 12px;
+}
+.profile-icon svg { width: 18px; height: 18px; }
+/* =====================
+   ANİMASYONLAR
+   ===================== */
+
+/* Genel fade-in + slide-up */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* Header giriş animasyonu */
+.header, .cart-header, .fav-header, .profile-header {
+  animation: slideInLeft 0.5s ease both;
+}
+
+/* Logo */
+.logo {
+  animation: fadeIn 0.6s ease 0.1s both;
+}
+
+/* Nav linkleri sırayla */
+.nav-item:nth-child(1) { animation: fadeInUp 0.4s ease 0.15s both; }
+.nav-item:nth-child(2) { animation: fadeInUp 0.4s ease 0.25s both; }
+.nav-item:nth-child(3) { animation: fadeInUp 0.4s ease 0.35s both; }
+.fav-link             { animation: fadeInUp 0.4s ease 0.45s both; }
+.header-actions       { animation: fadeIn  0.5s ease 0.4s  both; }
+
+/* Hero */
+.hero { animation: fadeIn 0.8s ease both; }
+.hero-img {
+  transition: transform 0.6s ease;
+}
+.hero:hover .hero-img { transform: scale(1.02); }
+
+/* Ürün kartları */
+.product-card {
+  animation: scaleIn 0.45s ease both;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s;
+}
+.product-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 32px var(--shadow);
+}
+
+/* Slider ürünleri gecikmeyle */
+.product-slider .product-card:nth-child(1)  { animation-delay: 0.05s; }
+.product-slider .product-card:nth-child(2)  { animation-delay: 0.10s; }
+.product-slider .product-card:nth-child(3)  { animation-delay: 0.15s; }
+.product-slider .product-card:nth-child(4)  { animation-delay: 0.20s; }
+.product-slider .product-card:nth-child(5)  { animation-delay: 0.25s; }
+.product-slider .product-card:nth-child(6)  { animation-delay: 0.30s; }
+
+/* Grid ürünleri */
+#products .product-card:nth-child(odd)  { animation: slideInLeft  0.45s ease both; }
+#products .product-card:nth-child(even) { animation: slideInRight 0.45s ease both; }
+#products .product-card:nth-child(1)  { animation-delay: 0.05s; }
+#products .product-card:nth-child(2)  { animation-delay: 0.10s; }
+#products .product-card:nth-child(3)  { animation-delay: 0.15s; }
+#products .product-card:nth-child(4)  { animation-delay: 0.20s; }
+#products .product-card:nth-child(5)  { animation-delay: 0.25s; }
+#products .product-card:nth-child(6)  { animation-delay: 0.30s; }
+#products .product-card:nth-child(7)  { animation-delay: 0.35s; }
+#products .product-card:nth-child(8)  { animation-delay: 0.40s; }
+
+/* Ürün resmi hover zoom */
+.product-card__img-wrap img {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.product-card:hover .product-card__img-wrap img {
+  transform: scale(1.08);
+}
+
+/* Favori yıldız */
+.product-card__fav {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.product-card__fav:hover {
+  transform: scale(1.4) rotate(15deg);
+}
+
+/* Slider ok butonları */
+.arrow {
+  transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+}
+.arrow:hover {
+  transform: scale(1.15);
+}
+
+/* About section */
+.about-section {
+  animation: fadeInUp 0.6s ease both;
+}
+.about-section h2 { }
+.about-section p  { }
+
+/* Footer */
+.footer {
+  animation: fadeIn 0.6s ease both;
+}
+.footer-col {
+  animation: fadeInUp 0.5s ease both;
+}
+.footer-col:nth-child(1) { animation-delay: 0.1s; }
+.footer-col:nth-child(2) { animation-delay: 0.2s; }
+.footer-col:nth-child(3) { animation-delay: 0.3s; }
+.footer-col a {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: block;
+}
+.footer-col a:hover {
+  opacity: 0.6;
+  transform: translateX(4px);
+}
+
+/* Auth kutusu */
+.auth-box {
+  animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.auth-box h2      { animation: fadeInUp 0.4s ease 0.15s both; }
+.auth-subtitle    { animation: fadeInUp 0.4s ease 0.25s both; }
+.form-group       { animation: fadeInUp 0.4s ease 0.3s  both; }
+.auth-btn         { animation: fadeInUp 0.4s ease 0.4s  both; }
+.switch-text      { animation: fadeInUp 0.4s ease 0.5s  both; }
+
+/* Auth btn hover efekti */
+.auth-btn {
+  transition: background 0.25s, color 0.25s, transform 0.15s, box-shadow 0.25s !important;
+}
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--shadow);
+}
+.auth-btn:active { transform: scale(0.97) !important; }
+
+/* Profil kartı */
+.profile-card {
+  animation: fadeInUp 0.5s ease both;
+}
+.profile-avatar {
+  transition: transform 0.3s ease;
+}
+.profile-avatar:hover { transform: scale(1.08); }
+
+/* Sepet sayfası */
+.cart-page h1    { animation: fadeInUp 0.5s ease 0.1s both; }
+.cart-item       { animation: slideInLeft 0.4s ease both; }
+.cart-item:nth-child(1) { animation-delay: 0.05s; }
+.cart-item:nth-child(2) { animation-delay: 0.10s; }
+.cart-item:nth-child(3) { animation-delay: 0.15s; }
+.cart-item:nth-child(4) { animation-delay: 0.20s; }
+.cart-footer     { animation: fadeInUp 0.5s ease 0.3s both; }
+
+/* Checkout butonu */
+.checkout {
+  transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+}
+.checkout:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+/* Ürün detay sayfası */
+.product-image { animation: slideInLeft  0.55s ease both; }
+.product-info  { animation: slideInRight 0.55s ease 0.1s both; }
+
+.btn-add-to-cart {
+  transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+}
+.btn-add-to-cart:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+/* Size butonları */
+.sizes button {
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+.sizes button:hover  { transform: scale(1.1); }
+.sizes button.active { transform: scale(1.1); }
+
+/* Renk daireleri */
+.color {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.color:hover { transform: scale(1.2); }
+.color.active { transform: scale(1.2); }
+
+/* Favori sayfası */
+.favorites-container h2 { animation: fadeInUp 0.5s ease 0.1s both; }
+#favorites-list .product-card { animation: scaleIn 0.4s ease both; }
+
+/* Mega menu */
+.mega-menu {
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease !important;
+}
+
+/* Input focus animasyonu */
+.form-group input, .search-box input, .search-box select {
+  transition: border-color 0.2s ease, background 0.3s ease, box-shadow 0.2s ease, color 0.3s ease;
+}
+.form-group input:focus {
+  box-shadow: 0 0 0 3px rgba(128,128,128,0.15);
+}
+
+/* Back home & back btn */
+.back-home, .back-btn {
+  transition: background 0.25s, color 0.25s, transform 0.2s;
+}
+.back-home:hover { transform: translateX(-3px); }
+
+/* Dark mode geçişi smooth */
+body, body * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+/* Sayfa yüklenirken scroll reveal için genel kural */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =====================
+   MOBİL — FAV / CART / PROFİL HEADER DÜZELTMESİ
+   ===================== */
+@media (max-width: 768px) {
+
+  /* Ortak header düzeni: logo solda, sağ grup sağda */
+  .fav-header,
+  .cart-header,
+  .profile-header {
+    padding: 14px 16px;
+    justify-content: space-between;
+  }
+
+  /* Sağ grup: dark mode + geri butonu yan yana */
+  .fav-header-right,
+  .cart-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Profil header sağ grup (inline style yerine class'la kontrol) */
+  .profile-header > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* "Ana Sayfa" / "Alışverişe Dön" yazısını mobilde gizle, sadece ikon kalsın */
+  .back-home span,
+  .back-home-text {
+    display: none;
+  }
+
+  /* Back-home buton boyutunu küçült, sadece ok ikonu göster */
+  .back-home {
+    padding: 8px 10px;
+    font-size: 0;           /* metin gizle */
+    border: 1px solid var(--border-input);
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  /* Back-home içindeki svg görünsün */
+  .back-home svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  /* Logo büyüklüğü */
+  .fav-header .logo,
+  .cart-header .logo,
+  .profile-header .logo {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  /* Fav count ve cart count etiketini gizle (yer açmak için) */
+  .fav-count,
+  .cart-item-count {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .fav-header,
+  .cart-header,
+  .profile-header {
+    padding: 12px 14px;
+  }
+
+  .fav-header .logo,
+  .cart-header .logo,
+  .profile-header .logo {
+    font-size: 16px;
+    letter-spacing: 1.5px;
+  }
+}
+
+/* =====================
+   MOBİL HEADER BOŞLUK DÜZELTMESİ
+   ===================== */
+@media (max-width: 768px) {
+
+  /* Logo flex ile ortalanmış olsun, sağa itilmesin */
+  .fav-header .logo,
+  .cart-header .logo,
+  .profile-header .logo {
+    flex: 1;                  /* kalan alanı doldur → sağ grup sağa itilir */
+    text-align: left;
+  }
+
+  /* Sağ grup sabit genişlikte, logo ile araya boşluk */
+  .fav-header-right,
+  .cart-header-right {
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .profile-header > div {
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  /* Geri ok butonu — daha belirgin, yeterli tıklama alanı */
+  .back-home {
+    min-width: 38px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  /* Dark mode butonu da aynı boyutta */
+  .theme-toggle {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+  }
+
+  /* Header yüksekliği tutarlı olsun */
+  .fav-header,
+  .cart-header,
+  .profile-header {
+    min-height: 60px;
+    gap: 0;
+  }
+}
+
+/* =====================
+   CART / FAV / PROFİL HEADER — TAŞINAN STİLLER
+   ===================== */
+.cart-header,
+.fav-header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  background: var(--header-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 40px;
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  transition: background 0.3s;
+}
+
+.cart-header .logo,
+.fav-header .logo {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.cart-header-right,
+.fav-header-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.cart-item-count,
+.fav-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Profil header sağ grup */
+.profile-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* =====================
+   MOBİL — CART / FAV / PROFİL HEADER
+   ===================== */
+@media (max-width: 768px) {
+  .cart-header,
+  .fav-header,
+  .profile-header {
+    padding: 0 16px;
+    height: 60px;
+    gap: 0;
+  }
+
+  /* Logo solda, flex:1 ile orta alanı kaplar */
+  .cart-header .logo,
+  .fav-header .logo,
+  .profile-header .logo {
+    flex: 0;
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  /* Sağ gruplar: butonlar arası boşluk */
+  .cart-header-right,
+  .fav-header-right,
+  .profile-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  /* Sayı etiketleri gizle */
+  .cart-item-count,
+  .fav-count {
+    display: none;
+  }
+
+  /* Geri ok — yuvarlak ikon buton */
+  .back-home {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--border-input);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0; /* metni gizle */
+  }
+  .back-home svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    font-size: initial;
+  }
+  .back-home-text { display: none; }
+
+  /* Dark mode butonu eşit boyut */
+  .theme-toggle {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-header .logo,
+  .fav-header .logo,
+  .profile-header .logo {
+    font-size: 16px;
+    letter-spacing: 1.5px;
+  }
+}
+/* =====================
+   BENZER ÜRÜNLER
+   ===================== */
+.similar-products { padding: 40px 24px; max-width: 900px; margin: 0 auto; }
+.similar-title { font-size: 18px; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
+.similar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.similar-grid .product-card { flex: none; width: 100%; }
+.similar-grid .product-card__img-wrap img { height: 260px; width: 100%; object-fit: cover; }
+@media (max-width: 480px) {
+  .similar-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .similar-grid .product-card__img-wrap img { height: 180px; }
+}
+
+/* =====================
+   SCROLL REVEAL
+   ===================== */
+.about-reveal-left,
+.about-reveal-right {
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.about-reveal-left  { transform: translateX(-80px); }
+.about-reveal-right { transform: translateX( 80px); }
+
+.about-reveal-left.revealed,
+.about-reveal-right.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
