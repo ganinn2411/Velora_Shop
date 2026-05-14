@@ -11,10 +11,8 @@
 <style>
 /* =====================================================
    VELORA CART – PREMIUM TASARIM EKLERİ
-   (style.css'e dokunmadan, bu dosyada override edilir)
    ===================================================== */
 
-/* Tasarım token'ları — hem light hem dark çalışır */
 :root {
   --vc-bg:      #F5F0E8;
   --vc-surface: #FBF8F3;
@@ -34,14 +32,12 @@ body.dark {
 
 body { background: var(--vc-bg); }
 
-/* ── SAYFA SARMALAYICI ── */
 .vc-wrap {
   max-width: 1100px;
   margin: 0 auto;
   padding: 2.5rem 2rem 5rem;
 }
 
-/* ── BAŞLIK ── */
 .vc-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: 3rem;
@@ -61,7 +57,6 @@ body { background: var(--vc-bg); }
   animation: fadeInUp 0.5s ease 0.1s both;
 }
 
-/* ── İKİ SÜTUN ── */
 .vc-layout {
   display: grid;
   grid-template-columns: 1fr 360px;
@@ -69,9 +64,6 @@ body { background: var(--vc-bg); }
   align-items: start;
 }
 
-/* ─────────────────────────────
-   ÜRÜN SATIRLARI
-   ───────────────────────────── */
 .vc-list { display: flex; flex-direction: column; }
 
 .vc-row {
@@ -90,7 +82,6 @@ body { background: var(--vc-bg); }
 .vc-row:nth-child(3){ animation-delay: 0.19s; }
 .vc-row:nth-child(4){ animation-delay: 0.26s; }
 
-/* Küçük resim */
 .vc-thumb {
   width: 96px; height: 120px;
   overflow: hidden; border-radius: 2px; flex-shrink: 0;
@@ -109,7 +100,6 @@ body { background: var(--vc-bg); }
 }
 body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16); }
 
-/* Ürün bilgisi */
 .vc-info   { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .vc-brand  { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--vc-muted); }
 .vc-name   {
@@ -120,7 +110,6 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
 }
 .vc-detail { font-size: 12px; color: var(--vc-muted); letter-spacing: 0.03em; }
 
-/* Miktar kontrol */
 .vc-qty-wrap { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
 .vc-btn {
   width: 28px; height: 28px;
@@ -134,7 +123,6 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
 .vc-btn:hover { border-color: var(--vc-gold); color: var(--vc-gold); }
 .vc-qty-num { font-size: 13px; min-width: 20px; text-align: center; color: var(--vc-dark); }
 
-/* Fiyat + kaldır */
 .vc-right  { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
 .vc-price  {
   font-family: 'Cormorant Garamond', serif;
@@ -151,7 +139,6 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
 }
 .vc-remove:hover { color: var(--vc-muted); }
 
-/* Boş sepet */
 .vc-empty {
   text-align: center; padding: 5rem 0 3rem;
 }
@@ -161,9 +148,6 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
   color: var(--vc-muted); margin-bottom: 2rem;
 }
 
-/* ─────────────────────────────
-   SİPARİŞ ÖZETİ PANELİ
-   ───────────────────────────── */
 .vc-panel {
   background: var(--vc-surface);
   border: 0.5px solid var(--vc-line);
@@ -178,7 +162,6 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
   margin-bottom: 1.5rem;
 }
 
-/* Satırlar */
 .vc-line-row {
   display: flex; justify-content: space-between; align-items: center;
   padding: 0.7rem 0; border-bottom: 0.5px solid var(--vc-line);
@@ -236,14 +219,33 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
 .vc-coupon-apply:hover    { background: var(--vc-dark); color: var(--vc-bg); }
 .vc-coupon-apply:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* Kupon mesaj satırı — ok ve err sınıfları */
 .vc-coupon-msg {
   font-size: 11px; margin-top: 8px; min-height: 14px;
   letter-spacing: 0.05em;
+  display: flex; align-items: center; gap: 0;
 }
 .vc-coupon-msg.ok  { color: var(--vc-gold); }
 .vc-coupon-msg.err { color: #C0392B; }
 
-/* Ödemeye geç */
+/* KALDIR butonu — mesajın içinde */
+.vc-remove-coupon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #C0392B;
+  margin-left: 10px;
+  padding: 0;
+  text-decoration: underline;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.vc-remove-coupon:hover { opacity: 0.7; }
+
 .vc-checkout {
   width: 100%; padding: 16px;
   background: var(--vc-dark); color: var(--vc-bg);
@@ -263,7 +265,6 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
   color: var(--vc-muted);
 }
 
-/* ── Responsive ── */
 @media (max-width: 800px) {
   .vc-layout { grid-template-columns: 1fr; }
   .vc-panel  { position: static; }
@@ -279,7 +280,7 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
 </head>
 <body>
 
-<!-- ── HEADER (orijinal yapı korundu) ── -->
+<!-- ── HEADER ── -->
 <header class="cart-header">
   <a href="index.html" class="logo">VELORA</a>
   <div class="cart-header-right">
@@ -302,7 +303,7 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
 
   <div class="vc-layout">
 
-    <!-- Sol: ürün listesi (JS ile doldurulur) -->
+    <!-- Sol: ürün listesi -->
     <div class="vc-list" id="vc-list"></div>
 
     <!-- Sağ: sipariş özeti -->
@@ -337,6 +338,7 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
             placeholder="Kod girin" maxlength="20">
           <button class="vc-coupon-apply" id="vc-coupon-btn" onclick="vcApplyCoupon()">Uygula</button>
         </div>
+        <!-- Mesaj satırı: başarıda içine KALDIR butonu da ekleniyor -->
         <p class="vc-coupon-msg" id="vc-coupon-msg"></p>
       </div>
 
@@ -355,27 +357,23 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
   </div>
 </div>
 
-<!-- Mevcut script.js: toggleTheme(), sendWhatsApp(), vb. -->
 <script src="script.js"></script>
 
 <script>
 /* ═══════════════════════════════════════════════
    VELORA CART – JS
-   (script.js'teki mevcut fonksiyonlarla çakışmaz)
    ═══════════════════════════════════════════════ */
 
-/* Kupon tanımları — istediğiniz kodları buradan düzenleyin */
 const VC_COUPONS = {
   'VELORA10': 10,
   'VELORA20': 20,
+  'HOSGELDIN': 15,
   'YAZ25'   : 25
 };
 let vcDiscountPct = 0;
 
-/* ── Formatlama ── */
 const vcFmt = n => n.toLocaleString('tr-TR') + ' TL';
 
-/* ── Toplamları güncelle ── */
 function vcUpdateTotals(cart) {
   const sub     = cart.reduce((s, i) => s + (parseFloat(i.price) || 0) * (i.quantity || 1), 0);
   const discAmt = Math.round(sub * vcDiscountPct / 100);
@@ -385,12 +383,10 @@ function vcUpdateTotals(cart) {
   document.getElementById('vc-discount').textContent = discAmt > 0 ? `−${vcFmt(discAmt)}` : '—';
   document.getElementById('vc-total').textContent    = vcFmt(total);
 
-  /* script.js'deki sendWhatsApp() #total'ı okuyabilir */
   const legacyTotal = document.getElementById('total');
   if (legacyTotal) legacyTotal.textContent = total.toLocaleString('tr-TR');
 }
 
-/* ── Sepeti render et ── */
 function vcRender() {
   const cart  = JSON.parse(localStorage.getItem('cart')) || [];
   const list  = document.getElementById('vc-list');
@@ -459,7 +455,6 @@ function vcRender() {
   vcUpdateTotals(cart);
 }
 
-/* ── Miktar değiştir ── */
 function vcQty(idx, delta) {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
   if (!cart[idx]) return;
@@ -469,7 +464,6 @@ function vcQty(idx, delta) {
   vcHeaderCount();
 }
 
-/* ── Ürün kaldır ── */
 function vcDel(idx) {
   const row = document.querySelector(`.vc-row[data-idx="${idx}"]`);
   if (row) {
@@ -492,31 +486,51 @@ function vcApplyCoupon() {
   const code  = (input.value || '').trim().toUpperCase();
 
   msg.className   = 'vc-coupon-msg';
-  msg.textContent = '';
+  msg.innerHTML   = '';
 
   if (!code) {
-    msg.textContent = 'Lütfen bir kupon kodu girin.';
+    msg.innerHTML = 'Lütfen bir kupon kodu girin.';
     msg.classList.add('err');
     return;
   }
+
   if (VC_COUPONS[code] !== undefined) {
-    vcDiscountPct   = VC_COUPONS[code];
-    msg.textContent = `%${vcDiscountPct} indirim uygulandı ✓`;
+    vcDiscountPct  = VC_COUPONS[code];
+    input.disabled = true;
+    btn.disabled   = true;
     msg.classList.add('ok');
-    input.disabled  = true;
-    btn.disabled    = true;
+    // Başarı mesajı + KALDIR butonu yan yana
+    msg.innerHTML = `
+      <span>%${vcDiscountPct} indirim uygulandı ✓</span>
+      <button class="vc-remove-coupon" onclick="vcRemoveCoupon()">Kaldır</button>
+    `;
   } else {
-    vcDiscountPct   = 0;
-    msg.textContent = 'Geçersiz kupon kodu.';
+    vcDiscountPct  = 0;
+    msg.innerHTML  = 'Geçersiz kupon kodu.';
     msg.classList.add('err');
   }
+
+  vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
+}
+
+/* ── Kuponu kaldır ── */
+function vcRemoveCoupon() {
+  vcDiscountPct = 0;
+
+  const input = document.getElementById('vc-coupon-input');
+  const btn   = document.getElementById('vc-coupon-btn');
+  const msg   = document.getElementById('vc-coupon-msg');
+
+  if (input) { input.value = ''; input.disabled = false; }
+  if (btn)   { btn.disabled = false; }
+  if (msg)   { msg.innerHTML = ''; msg.className = 'vc-coupon-msg'; }
+
   vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
 }
 
 document.getElementById('vc-coupon-input')
   .addEventListener('keydown', e => { if (e.key === 'Enter') vcApplyCoupon(); });
 
-/* ── Header ürün sayısı ── */
 function vcHeaderCount() {
   const cart  = JSON.parse(localStorage.getItem('cart')) || [];
   const total = cart.reduce((s, i) => s + (i.quantity || 1), 0);
@@ -524,7 +538,6 @@ function vcHeaderCount() {
   if (el) el.textContent = total > 0 ? `${total} ürün` : '';
 }
 
-/* ── İlk yükleme ── */
 vcRender();
 vcHeaderCount();
 </script>
