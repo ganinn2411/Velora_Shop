@@ -347,45 +347,61 @@ let aktifKupon = null;
 function applyCoupon() {
   const input = document.getElementById("couponInput");
   const msg   = document.getElementById("couponMsg");
-  const kod   = input.value.trim().toUpperCase();
+  const kod   = input ? input.value.trim().toUpperCase() : "";
 
-  msg.className = "coupon-msg";
-  msg.textContent = "";
+  if (msg) {
+    msg.className = "coupon-msg";
+    msg.textContent = "";
+  }
 
   if (!kod) {
-    msg.textContent = "Lütfen bir kupon kodu girin.";
-    msg.className = "coupon-msg error";
+    if (msg) { msg.textContent = "Lütfen bir kupon kodu girin."; msg.className = "coupon-msg error"; }
     return;
   }
   if (aktifKupon) {
-    msg.textContent = "Zaten bir kupon uygulandı. Önce kaldırın.";
-    msg.className = "coupon-msg error";
+    if (msg) { msg.textContent = "Zaten bir kupon uygulandı. Önce kaldırın."; msg.className = "coupon-msg error"; }
     return;
   }
   if (!KUPONLAR[kod]) {
-    msg.textContent = "Geçersiz kupon kodu.";
-    msg.className = "coupon-msg error";
+    if (msg) { msg.textContent = "Geçersiz kupon kodu."; msg.className = "coupon-msg error"; }
     return;
   }
 
   aktifKupon = { kod: kod, yuzde: KUPONLAR[kod] };
-  input.disabled = true;
+  if (input) input.disabled = true;
 
-  document.getElementById("appliedCodeText").textContent = `${kod} (%${KUPONLAR[kod]} indirim)`;
-  document.getElementById("couponApplied").style.display = "flex";
-  msg.className = "coupon-msg";
+  const appliedCodeText = document.getElementById("appliedCodeText");
+  const couponApplied   = document.getElementById("couponApplied");
+
+  if (appliedCodeText) appliedCodeText.textContent = `${kod} (%${KUPONLAR[kod]} indirim)`;
+  if (couponApplied)   couponApplied.style.display  = "flex";
+  if (msg)             msg.className                = "coupon-msg";
 
   renderCart();
 }
 
+// =====================
+// KUPON KALDIR — DÜZELTİLDİ
+// Tüm elementler null kontrolü ile güvenli şekilde erişiliyor
+// =====================
 function removeCoupon() {
   aktifKupon = null;
+
   const input = document.getElementById("couponInput");
-  input.value = "";
-  input.disabled = false;
-  document.getElementById("couponApplied").style.display = "none";
-  document.getElementById("discountRow").style.display = "none";
-  document.getElementById("couponMsg").className = "coupon-msg";
+  if (input) {
+    input.value    = "";
+    input.disabled = false;
+  }
+
+  const couponApplied = document.getElementById("couponApplied");
+  if (couponApplied) couponApplied.style.display = "none";
+
+  const discountRow = document.getElementById("discountRow");
+  if (discountRow) discountRow.style.display = "none";
+
+  const couponMsg = document.getElementById("couponMsg");
+  if (couponMsg) couponMsg.className = "coupon-msg";
+
   renderCart();
 }
 
@@ -411,6 +427,10 @@ function renderCart() {
     const itemTotal = item.price * item.quantity;
     araToplamTL += itemTotal;
 
+    // =====================
+    // DÜZELTİLDİ: removeItem artık id + size + color alıyor
+    // Böylece aynı üründen farklı beden/renk varyantları ayrı ayrı silinebilir
+    // =====================
     container.innerHTML += `
       <div class="cart-item">
         <a href="product.html?id=${item.id}">
@@ -423,11 +443,11 @@ function renderCart() {
         </div>
         <div class="cart-price">${item.price.toLocaleString("tr-TR")} TL</div>
         <div class="quantity">
-          <button onclick="changeQty(${item.id}, -1)">−</button>
+          <button onclick="changeQty(${item.id}, '${item.size}', '${item.color}', -1)">−</button>
           <span>${item.quantity}</span>
-          <button onclick="changeQty(${item.id}, 1)">+</button>
+          <button onclick="changeQty(${item.id}, '${item.size}', '${item.color}', 1)">+</button>
         </div>
-        <div class="remove" onclick="removeItem(${item.id})">❌</div>
+        <div class="remove" onclick="removeItem(${item.id}, '${item.size}', '${item.color}')">❌</div>
       </div>
     `;
   });
@@ -449,18 +469,27 @@ function renderCart() {
   }
 }
 
-function changeQty(id, delta) {
-  const item = cart.find(i => i.id === id);
+// =====================
+// DÜZELTİLDİ: changeQty artık size ve color parametresi alıyor
+// =====================
+function changeQty(id, size, color, delta) {
+  const item = cart.find(i => i.id === id && i.size === size && i.color === color);
   if (!item) return;
   item.quantity += delta;
-  if (item.quantity <= 0) cart = cart.filter(i => i.id !== id);
+  if (item.quantity <= 0) {
+    cart = cart.filter(i => !(i.id === id && i.size === size && i.color === color));
+  }
   localStorage.setItem("cart", JSON.stringify(cart));
   renderCart();
   updateCartCount();
 }
 
-function removeItem(id) {
-  cart = cart.filter(i => i.id !== id);
+// =====================
+// DÜZELTİLDİ: removeItem artık id + size + color kombinasyonuna göre siliyor
+// Önceki hâl sadece id'ye göre sildiği için aynı ürünün tüm varyantlarını siliyordu
+// =====================
+function removeItem(id, size, color) {
+  cart = cart.filter(i => !(i.id === id && i.size === size && i.color === color));
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
   renderCart();
