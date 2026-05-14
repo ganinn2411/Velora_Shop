@@ -4,282 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VELORA – Sepetim</title>
+
+<!-- Font: orijinal Montserrat + Cormorant Garamond (premium başlık fontu) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+
+<!-- Mevcut ana stil dosyası -->
 <link rel="stylesheet" href="style.css">
-<style>
-/* =====================================================
-   VELORA CART – PREMIUM TASARIM EKLERİ
-   (style.css'e dokunmadan, bu dosyada override edilir)
-   ===================================================== */
 
-/* Tasarım token'ları — hem light hem dark çalışır */
-:root {
-  --vc-bg:      #F5F0E8;
-  --vc-surface: #FBF8F3;
-  --vc-dark:    #1A1714;
-  --vc-muted:   #8A8178;
-  --vc-line:    #E2D9CC;
-  --vc-gold:    #B8945F;
-}
-body.dark {
-  --vc-bg:      #0f0f0f;
-  --vc-surface: #1a1a1a;
-  --vc-dark:    #f0f0f0;
-  --vc-muted:   #888888;
-  --vc-line:    #2a2a2a;
-  --vc-gold:    #C9A96E;
-}
-
-body { background: var(--vc-bg); }
-
-/* ── SAYFA SARMALAYICI ── */
-.vc-wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2.5rem 2rem 5rem;
-}
-
-/* ── BAŞLIK ── */
-.vc-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 3rem;
-  font-weight: 300;
-  font-style: italic;
-  letter-spacing: 0.04em;
-  color: var(--vc-dark);
-  margin: 2rem 0 0.35rem;
-  animation: fadeInUp 0.5s ease both;
-}
-.vc-subtitle {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--vc-muted);
-  margin-bottom: 2.5rem;
-  animation: fadeInUp 0.5s ease 0.1s both;
-}
-
-/* ── İKİ SÜTUN ── */
-.vc-layout {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 3rem;
-  align-items: start;
-}
-
-/* ─────────────────────────────
-   ÜRÜN SATIRLARI
-   ───────────────────────────── */
-.vc-list { display: flex; flex-direction: column; }
-
-.vc-row {
-  display: grid;
-  grid-template-columns: 96px 1fr auto;
-  gap: 1.5rem;
-  align-items: center;
-  padding: 1.75rem 0;
-  border-bottom: 0.5px solid var(--vc-line);
-  transition: opacity 0.35s;
-  animation: slideInLeft 0.4s ease both;
-}
-.vc-row:first-child { border-top: 0.5px solid var(--vc-line); }
-.vc-row:nth-child(1){ animation-delay: 0.05s; }
-.vc-row:nth-child(2){ animation-delay: 0.12s; }
-.vc-row:nth-child(3){ animation-delay: 0.19s; }
-.vc-row:nth-child(4){ animation-delay: 0.26s; }
-
-/* Küçük resim */
-.vc-thumb {
-  width: 96px; height: 120px;
-  overflow: hidden; border-radius: 2px; flex-shrink: 0;
-  background: var(--vc-line);
-}
-.vc-thumb img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform 0.45s ease;
-}
-.vc-row:hover .vc-thumb img { transform: scale(1.06); }
-.vc-placeholder {
-  width: 100%; height: 100%;
-  background: linear-gradient(145deg, #EDE7DC 0%, #D9CFBE 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; opacity: 0.45;
-}
-body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16); }
-
-/* Ürün bilgisi */
-.vc-info   { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.vc-brand  { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--vc-muted); }
-.vc-name   {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.2rem; font-weight: 400; line-height: 1.3;
-  color: var(--vc-dark);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.vc-detail { font-size: 12px; color: var(--vc-muted); letter-spacing: 0.03em; }
-
-/* Miktar kontrol */
-.vc-qty-wrap { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-.vc-btn {
-  width: 28px; height: 28px;
-  border: 0.5px solid var(--vc-line);
-  background: none; cursor: pointer;
-  font-size: 16px; line-height: 1; font-family: inherit;
-  color: var(--vc-dark);
-  display: flex; align-items: center; justify-content: center;
-  transition: border-color 0.2s, color 0.2s;
-}
-.vc-btn:hover { border-color: var(--vc-gold); color: var(--vc-gold); }
-.vc-qty-num { font-size: 13px; min-width: 20px; text-align: center; color: var(--vc-dark); }
-
-/* Fiyat + kaldır */
-.vc-right  { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
-.vc-price  {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.35rem; font-weight: 400;
-  color: var(--vc-dark); white-space: nowrap;
-}
-.vc-remove {
-  background: none; border: none; cursor: pointer; padding: 0;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--vc-line);
-  display: flex; align-items: center; gap: 4px;
-  transition: color 0.2s;
-}
-.vc-remove:hover { color: var(--vc-muted); }
-
-/* Boş sepet */
-.vc-empty {
-  text-align: center; padding: 5rem 0 3rem;
-}
-.vc-empty p {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.6rem; font-weight: 300; font-style: italic;
-  color: var(--vc-muted); margin-bottom: 2rem;
-}
-
-/* ─────────────────────────────
-   SİPARİŞ ÖZETİ PANELİ
-   ───────────────────────────── */
-.vc-panel {
-  background: var(--vc-surface);
-  border: 0.5px solid var(--vc-line);
-  padding: 2rem 1.75rem;
-  position: sticky; top: 5.5rem;
-  animation: fadeInUp 0.5s ease 0.2s both;
-}
-.vc-panel-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.55rem; font-weight: 300; font-style: italic;
-  letter-spacing: 0.04em; color: var(--vc-dark);
-  margin-bottom: 1.5rem;
-}
-
-/* Satırlar */
-.vc-line-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0.7rem 0; border-bottom: 0.5px solid var(--vc-line);
-  font-size: 13px;
-}
-.vc-line-row:last-of-type { border-bottom: none; }
-.vc-lbl   { color: var(--vc-muted); letter-spacing: 0.05em; }
-.vc-val   { font-weight: 500; color: var(--vc-dark); }
-.vc-free  { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--vc-gold); }
-.vc-disc  { color: var(--vc-gold); }
-
-.vc-hr { height: 0.5px; background: var(--vc-line); margin: 1rem 0; }
-
-.vc-total-row {
-  display: flex; justify-content: space-between; align-items: baseline;
-  margin-bottom: 1.75rem;
-}
-.vc-total-lbl { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--vc-muted); }
-.vc-total-amt {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2.1rem; font-weight: 400; color: var(--vc-dark);
-}
-
-/* Kupon bölümü */
-.vc-coupon { margin-bottom: 1.5rem; }
-.vc-coupon-lbl {
-  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--vc-muted); display: block; margin-bottom: 10px;
-}
-.vc-coupon-row { display: flex; gap: 8px; }
-
-.vc-coupon-input {
-  flex: 1;
-  border: 0.5px solid var(--vc-line);
-  background: var(--vc-bg);
-  padding: 11px 14px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--vc-dark); outline: none;
-  transition: border-color 0.2s, background 0.3s;
-}
-.vc-coupon-input::placeholder { text-transform: none; letter-spacing: 0; color: var(--vc-line); }
-.vc-coupon-input:focus         { border-color: var(--vc-gold); }
-.vc-coupon-input:disabled      { opacity: 0.5; cursor: not-allowed; }
-
-.vc-coupon-apply {
-  padding: 11px 16px;
-  background: none; border: 0.5px solid var(--vc-dark);
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-  cursor: pointer; color: var(--vc-dark);
-  transition: background 0.2s, color 0.2s;
-  white-space: nowrap;
-}
-.vc-coupon-apply:hover    { background: var(--vc-dark); color: var(--vc-bg); }
-.vc-coupon-apply:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.vc-coupon-msg {
-  font-size: 11px; margin-top: 8px; min-height: 14px;
-  letter-spacing: 0.05em;
-}
-.vc-coupon-msg.ok  { color: var(--vc-gold); }
-.vc-coupon-msg.err { color: #C0392B; }
-
-/* Ödemeye geç */
-.vc-checkout {
-  width: 100%; padding: 16px;
-  background: var(--vc-dark); color: var(--vc-bg);
-  border: none; cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
-  transition: opacity 0.2s, transform 0.15s;
-}
-.vc-checkout:hover  { opacity: 0.85; transform: translateY(-2px); }
-.vc-checkout:active { transform: scale(0.98); }
-
-.vc-secure {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  margin-top: 12px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--vc-muted);
-}
-
-/* ── Responsive ── */
-@media (max-width: 800px) {
-  .vc-layout { grid-template-columns: 1fr; }
-  .vc-panel  { position: static; }
-  .vc-row    { grid-template-columns: 80px 1fr auto; gap: 1rem; }
-  .vc-thumb  { width: 80px; height: 100px; }
-  .vc-title  { font-size: 2.2rem; }
-}
-@media (max-width: 480px) {
-  .vc-wrap  { padding: 1.5rem 1rem 4rem; }
-  .vc-title { font-size: 1.8rem; }
-}
-</style>
+<!-- Sepet sayfasına özel stiller -->
+<link rel="stylesheet" href="styles/cart.css">
 </head>
 <body>
 
-<!-- ── HEADER (orijinal yapı korundu) ── -->
+<!-- ── HEADER (orijinal yapı birebir korundu) ── -->
 <header class="cart-header">
   <a href="index.html" class="logo">VELORA</a>
   <div class="cart-header-right">
@@ -295,18 +34,20 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
   </div>
 </header>
 
-<!-- ── SAYFA ── -->
+<!-- ── SAYFA İÇERİĞİ ── -->
 <div class="vc-wrap">
+
   <h1 class="vc-title">Sepetim</h1>
-  <p class="vc-subtitle" id="vc-count-lbl">Yükleniyor…</p>
+  <p  class="vc-subtitle" id="vc-count-lbl">Yükleniyor…</p>
 
   <div class="vc-layout">
 
-    <!-- Sol: ürün listesi (JS ile doldurulur) -->
+    <!-- Sol sütun: ürün satırları (cart.js tarafından doldurulur) -->
     <div class="vc-list" id="vc-list"></div>
 
-    <!-- Sağ: sipariş özeti -->
+    <!-- Sağ sütun: sipariş özeti -->
     <aside class="vc-panel">
+
       <h2 class="vc-panel-title">Sipariş Özeti</h2>
 
       <div class="vc-line-row">
@@ -329,204 +70,54 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
         <span class="vc-total-amt" id="vc-total">0 TL</span>
       </div>
 
-      <!-- Kupon -->
+      <!-- Kupon kodu -->
       <div class="vc-coupon">
         <span class="vc-coupon-lbl">Kupon Kodunuz Var mı?</span>
         <div class="vc-coupon-row">
-          <input type="text" class="vc-coupon-input" id="vc-coupon-input"
-            placeholder="Kod girin" maxlength="20">
-          <button class="vc-coupon-apply" id="vc-coupon-btn" onclick="vcApplyCoupon()">Uygula</button>
+          <input  type="text"
+                  class="vc-coupon-input"
+                  id="vc-coupon-input"
+                  placeholder="Kod girin"
+                  maxlength="20">
+          <button class="vc-coupon-apply"
+                  id="vc-coupon-btn"
+                  onclick="vcApplyCoupon()">Uygula</button>
         </div>
         <p class="vc-coupon-msg" id="vc-coupon-msg"></p>
       </div>
 
       <!-- Ödeme butonu -->
-      <button class="vc-checkout" onclick="sendWhatsApp()">Ödemeye Geç &nbsp;→</button>
+      <button class="vc-checkout" onclick="sendWhatsApp()">
+        Ödemeye Geç &nbsp;→
+      </button>
 
+      <!-- Güvenli ödeme rozeti -->
       <div class="vc-secure">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
         Güvenli Ödeme
       </div>
+
     </aside>
   </div>
+
+  <!--
+    sendWhatsApp() hâlâ #total'ı okur.
+    Gizli element — script.js uyumluluğu için burada bırakılmıştır.
+  -->
+  <span id="total" style="display:none;"></span>
+
 </div>
 
-<!-- Mevcut script.js: toggleTheme(), sendWhatsApp(), vb. -->
+<!-- Mevcut ana script (toggleTheme, sendWhatsApp vb.) -->
 <script src="script.js"></script>
 
-<script>
-/* ═══════════════════════════════════════════════
-   VELORA CART – JS
-   (script.js'teki mevcut fonksiyonlarla çakışmaz)
-   ═══════════════════════════════════════════════ */
+<!-- Sepete özel script -->
+<script src="scripts/cart.js"></script>
 
-/* Kupon tanımları — istediğiniz kodları buradan düzenleyin */
-const VC_COUPONS = {
-  'VELORA10': 10,
-  'VELORA20': 20,
-  'YAZ25'   : 25
-};
-let vcDiscountPct = 0;
-
-/* ── Formatlama ── */
-const vcFmt = n => n.toLocaleString('tr-TR') + ' TL';
-
-/* ── Toplamları güncelle ── */
-function vcUpdateTotals(cart) {
-  const sub     = cart.reduce((s, i) => s + (parseFloat(i.price) || 0) * (i.quantity || 1), 0);
-  const discAmt = Math.round(sub * vcDiscountPct / 100);
-  const total   = sub - discAmt;
-
-  document.getElementById('vc-subtotal').textContent = vcFmt(sub);
-  document.getElementById('vc-discount').textContent = discAmt > 0 ? `−${vcFmt(discAmt)}` : '—';
-  document.getElementById('vc-total').textContent    = vcFmt(total);
-
-  /* script.js'deki sendWhatsApp() #total'ı okuyabilir */
-  const legacyTotal = document.getElementById('total');
-  if (legacyTotal) legacyTotal.textContent = total.toLocaleString('tr-TR');
-}
-
-/* ── Sepeti render et ── */
-function vcRender() {
-  const cart  = JSON.parse(localStorage.getItem('cart')) || [];
-  const list  = document.getElementById('vc-list');
-  const label = document.getElementById('vc-count-lbl');
-  if (!list) return;
-
-  list.innerHTML = '';
-
-  if (cart.length === 0) {
-    label.textContent = '0 Ürün';
-    list.innerHTML = `
-      <div class="vc-empty">
-        <p>Sepetiniz henüz boş.</p>
-        <a href="index.html" class="back-home" style="display:inline-flex;gap:6px;padding:12px 30px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          <span class="back-home-text">Alışverişe Başla</span>
-        </a>
-      </div>`;
-    vcUpdateTotals([]);
-    return;
-  }
-
-  const totalQty = cart.reduce((s, i) => s + (i.quantity || 1), 0);
-  label.textContent = `${totalQty} Ürün Seçildi`;
-
-  cart.forEach((item, idx) => {
-    const qty     = item.quantity || 1;
-    const price   = parseFloat(item.price) || 0;
-    const details = [
-      item.size  ? `Beden: ${item.size}`  : '',
-      item.color ? `Renk: ${item.color}`  : ''
-    ].filter(Boolean).join('  ·  ');
-
-    const row = document.createElement('div');
-    row.className   = 'vc-row';
-    row.dataset.idx = idx;
-    row.innerHTML   = `
-      <div class="vc-thumb">
-        ${item.image
-          ? `<img src="${item.image}" alt="${item.name}" loading="lazy">`
-          : `<div class="vc-placeholder">🛍</div>`}
-      </div>
-      <div class="vc-info">
-        <span class="vc-brand">${item.brand || 'Velora'}</span>
-        <p class="vc-name" title="${item.name}">${item.name}</p>
-        ${details ? `<span class="vc-detail">${details}</span>` : ''}
-        <div class="vc-qty-wrap">
-          <button class="vc-btn" onclick="vcQty(${idx},-1)">−</button>
-          <span class="vc-qty-num">${qty}</span>
-          <button class="vc-btn" onclick="vcQty(${idx}, 1)">+</button>
-        </div>
-      </div>
-      <div class="vc-right">
-        <span class="vc-price">${vcFmt(price * qty)}</span>
-        <button class="vc-remove" onclick="vcDel(${idx})">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-          Kaldır
-        </button>
-      </div>`;
-    list.appendChild(row);
-  });
-
-  vcUpdateTotals(cart);
-}
-
-/* ── Miktar değiştir ── */
-function vcQty(idx, delta) {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  if (!cart[idx]) return;
-  cart[idx].quantity = Math.max(1, Math.min(9, (cart[idx].quantity || 1) + delta));
-  localStorage.setItem('cart', JSON.stringify(cart));
-  vcRender();
-  vcHeaderCount();
-}
-
-/* ── Ürün kaldır ── */
-function vcDel(idx) {
-  const row = document.querySelector(`.vc-row[data-idx="${idx}"]`);
-  if (row) {
-    row.style.opacity = '0';
-    setTimeout(() => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart.splice(idx, 1);
-      localStorage.setItem('cart', JSON.stringify(cart));
-      vcRender();
-      vcHeaderCount();
-    }, 350);
-  }
-}
-
-/* ── Kupon uygula ── */
-function vcApplyCoupon() {
-  const input = document.getElementById('vc-coupon-input');
-  const btn   = document.getElementById('vc-coupon-btn');
-  const msg   = document.getElementById('vc-coupon-msg');
-  const code  = (input.value || '').trim().toUpperCase();
-
-  msg.className   = 'vc-coupon-msg';
-  msg.textContent = '';
-
-  if (!code) {
-    msg.textContent = 'Lütfen bir kupon kodu girin.';
-    msg.classList.add('err');
-    return;
-  }
-  if (VC_COUPONS[code] !== undefined) {
-    vcDiscountPct   = VC_COUPONS[code];
-    msg.textContent = `%${vcDiscountPct} indirim uygulandı ✓`;
-    msg.classList.add('ok');
-    input.disabled  = true;
-    btn.disabled    = true;
-  } else {
-    vcDiscountPct   = 0;
-    msg.textContent = 'Geçersiz kupon kodu.';
-    msg.classList.add('err');
-  }
-  vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
-}
-
-document.getElementById('vc-coupon-input')
-  .addEventListener('keydown', e => { if (e.key === 'Enter') vcApplyCoupon(); });
-
-/* ── Header ürün sayısı ── */
-function vcHeaderCount() {
-  const cart  = JSON.parse(localStorage.getItem('cart')) || [];
-  const total = cart.reduce((s, i) => s + (i.quantity || 1), 0);
-  const el    = document.getElementById('header-item-count');
-  if (el) el.textContent = total > 0 ? `${total} ürün` : '';
-}
-
-/* ── İlk yükleme ── */
-vcRender();
-vcHeaderCount();
-</script>
 </body>
 </html>
