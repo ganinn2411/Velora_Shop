@@ -109,7 +109,28 @@ function updateCartCount() {
   }
 }
 
+// Header'daki "X ürün" yazısını güncelle (cart.html header'ı için)
+function updateHeaderCount() {
+  const cartData = JSON.parse(localStorage.getItem("cart")) || [];
+  const total = cartData.reduce((s, i) => s + (i.quantity || 0), 0);
+  const el = document.getElementById("header-item-count");
+  if (el) el.textContent = total > 0 ? `${total} ürün` : "";
+}
+
+// Kupon kutusunu sepet durumuna göre göster / gizle
+function checkCouponVisibility() {
+  const cartData = JSON.parse(localStorage.getItem("cart")) || [];
+  const box = document.getElementById("coupon-box");
+  if (box) box.style.display = cartData.length > 0 ? "block" : "none";
+}
+
 updateCartCount();
+
+// Sayfa tamamen yüklenince çalıştır
+window.addEventListener("load", function () {
+  updateHeaderCount();
+  checkCouponVisibility();
+});
 
 // =====================
 // ÜRÜN KARTI
@@ -381,11 +402,10 @@ function renderCart() {
   container.innerHTML = "";
   let araToplamTL = 0;
 
-  // ── YENİ: Kupon kutusunu sepet durumuna göre göster / gizle ──
+  // Kupon kutusunu ve header sayısını güncelle
   const couponBox = document.getElementById("coupon-box");
-  if (couponBox) {
-    couponBox.style.display = cart.length > 0 ? "block" : "none";
-  }
+  if (couponBox) couponBox.style.display = cart.length > 0 ? "block" : "none";
+  updateHeaderCount();
 
   cart.forEach(item => {
     const itemTotal = item.price * item.quantity;
@@ -983,4 +1003,3 @@ document.addEventListener("DOMContentLoaded", function() {
   window.addEventListener("scroll", revealOnScroll);
   revealOnScroll();
 });
-
