@@ -668,6 +668,7 @@ let tempUser = {};
 function handleRegister() {
   const name  = document.getElementById("reg-name").value.trim();
   const email = document.getElementById("reg-email").value.trim();
+  const termsCheck = document.getElementById("termsCheck");
   let ok = true;
 
   if (!name) { setError("fg-name", true);  ok = false; } else { setError("fg-name", false); }
@@ -678,6 +679,13 @@ function handleRegister() {
     setError("fg-email", true);
     ok = false;
   } else { setError("fg-email", false); }
+
+  if (termsCheck && !termsCheck.checked) {
+    setError("fg-terms", true);
+    ok = false;
+  } else {
+    setError("fg-terms", false);
+  }
 
   if (!ok) return;
 
@@ -787,7 +795,17 @@ function handleLogin() {
   const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
 
   if (user) {
-    localStorage.setItem("activeUser", JSON.stringify(user));
+    // Beni Hatırla: işaretliyse kalıcı, değilse sessionStorage
+    const rememberMe = document.getElementById("rememberMe");
+    if (rememberMe && rememberMe.checked) {
+      localStorage.setItem("activeUser", JSON.stringify(user));
+      localStorage.setItem("velora_remember", "true");
+    } else {
+      localStorage.removeItem("velora_remember");
+      sessionStorage.setItem("activeUser", JSON.stringify(user));
+      // activeUser'ı da yaz ki diğer fonksiyonlar çalışsın
+      localStorage.setItem("activeUser", JSON.stringify(user));
+    }
     setError("fg-login-email", false);
     showToast("Hoş geldiniz, " + user.name + "!", "success");
     setTimeout(() => { window.location.href = "index.html"; }, 1200);
@@ -800,9 +818,27 @@ function handleLogin() {
 function handleLogout() {
   if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
     localStorage.removeItem("activeUser");
+    localStorage.removeItem("velora_remember");
+    sessionStorage.removeItem("activeUser");
     showToast("Çıkış yapıldı.", "");
     setTimeout(() => { showSection("login-section"); }, 600);
   }
+}
+
+// ── SÖZLEŞME MODALİ ──
+function openTermsModal(e) {
+  if (e) e.preventDefault();
+  document.getElementById("termsModal").classList.add("active");
+}
+function closeTermsModal(e) {
+  if (e.target === document.getElementById("termsModal")) {
+    document.getElementById("termsModal").classList.remove("active");
+  }
+}
+function acceptTerms() {
+  const cb = document.getElementById("termsCheck");
+  if (cb) { cb.checked = true; setError("fg-terms", false); }
+  document.getElementById("termsModal").classList.remove("active");
 }
 
 // ── PROFİL GÖSTER ──
@@ -859,6 +895,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const user = JSON.parse(localStorage.getItem("activeUser"));
   if (user && document.getElementById("profile-section")) {
     showProfile(user);
+  }
+  // Beni Hatırla: e-postayı prefill et
+  const remember = localStorage.getItem("velora_remember");
+  const loginEmailEl = document.getElementById("login-email");
+  if (remember === "true" && user && loginEmailEl) {
+    loginEmailEl.value = user.email;
+    const rememberCb = document.getElementById("rememberMe");
+    if (rememberCb) rememberCb.checked = true;
   }
   const regEmail   = document.getElementById("reg-email");
   const loginEmail = document.getElementById("login-email");
