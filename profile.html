@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VELORA – Hesabım</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VELORA – Hesabım</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -16,20 +15,48 @@
 <header class="profile-header">
   <a href="index.html" class="logo">VELORA</a>
   <div class="profile-header-right">
-    <!-- Dark Mode Toggle -->
     <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
     <a href="index.html" class="back-home">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-    <span class="back-home-text">Alışverişe Dön</span>
-  </a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      <span class="back-home-text">Alışverişe Dön</span>
+    </a>
   </div>
 </header>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- SÖZLEŞME MODALİ -->
+<div class="modal-overlay" id="termsModal" onclick="closeTermsModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span>Kullanım Şartları ve Gizlilik Politikası</span>
+      <button class="modal-close" onclick="document.getElementById('termsModal').classList.remove('active')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>1. Genel Hükümler</h3>
+      <p>VELORA'ya üye olarak bu platformun sunduğu hizmetlerden yararlanabilirsiniz. Siteyi kullanarak aşağıdaki şart ve koşulları kabul etmiş sayılırsınız.</p>
+      <h3>2. Kişisel Verilerin Korunması</h3>
+      <p>Ad, soyad ve e-posta adresiniz yalnızca hesap yönetimi ve sipariş süreçleri için kullanılır. Verileriniz üçüncü şahıslarla paylaşılmaz ve KVKK kapsamında korunur.</p>
+      <h3>3. Üyelik</h3>
+      <p>Üyelik işlemi e-posta doğrulaması ile tamamlanır. Hesabınızın güvenliğinden siz sorumlusunuz. Başkasına ait bilgilerle kayıt oluşturmak yasaktır.</p>
+      <h3>4. Alışveriş ve Ödeme</h3>
+      <p>Siparişler WhatsApp üzerinden iletilir. Fiyatlar TL cinsinden belirtilmiş olup değişiklik hakkı saklıdır. Ödeme detayları sipariş sırasında tarafınıza bildirilir.</p>
+      <h3>5. İade ve İptal</h3>
+      <p>Ürünler teslim tarihinden itibaren 14 gün içinde iade edilebilir. İade için iletişim bölümünden bizimle iletişime geçiniz.</p>
+      <h3>6. Çerezler</h3>
+      <p>Sitemiz, kullanıcı deneyimini geliştirmek amacıyla yerel depolama (localStorage) kullanmaktadır. Tarayıcınız üzerinden bu verileri silebilirsiniz.</p>
+      <h3>7. Değişiklikler</h3>
+      <p>VELORA, bu şartları önceden bildirmeksizin değiştirme hakkını saklı tutar. Güncel şartlar her zaman bu sayfada yayımlanır.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="auth-btn" onclick="acceptTerms()">Okudum, Kabul Ediyorum</button>
+    </div>
+  </div>
+</div>
 
 <!-- AUTH KUTUSU -->
 <div class="auth-wrapper">
@@ -46,10 +73,23 @@
         <input type="text" id="reg-name" placeholder="Adınız ve Soyadınız" autocomplete="name">
         <div class="error-msg">Ad soyad zorunludur.</div>
       </div>
+
       <div class="form-group" id="fg-email">
         <label>E-posta Adresi</label>
         <input type="email" id="reg-email" placeholder="ornek@mail.com" autocomplete="email">
         <div class="error-msg" id="email-error-msg">Geçerli bir e-posta adresi giriniz.</div>
+      </div>
+
+      <!-- SÖZLEŞME CHECKBOX -->
+      <div class="checkbox-group" id="fg-terms">
+        <label class="checkbox-label">
+          <input type="checkbox" id="termsCheck">
+          <span class="checkbox-custom"></span>
+          <span class="checkbox-text">
+            <a href="#" onclick="openTermsModal(event)">Kullanım Şartları ve Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
+          </span>
+        </label>
+        <div class="error-msg" id="terms-error-msg">Devam etmek için şartları kabul etmelisiniz.</div>
       </div>
 
       <button class="auth-btn" id="register-btn" onclick="handleRegister()">
@@ -66,22 +106,17 @@
       <p class="verify-hint">
         <strong id="verify-email-label"></strong> adresine<br>4 haneli doğrulama kodu gönderildi.
       </p>
-
-
       <div class="code-input-wrap">
         <input class="code-digit" type="text" maxlength="1" id="d1" inputmode="numeric">
         <input class="code-digit" type="text" maxlength="1" id="d2" inputmode="numeric">
         <input class="code-digit" type="text" maxlength="1" id="d3" inputmode="numeric">
         <input class="code-digit" type="text" maxlength="1" id="d4" inputmode="numeric">
       </div>
-
       <button class="auth-btn" onclick="handleVerify()">Kodu Doğrula ve Üye Ol</button>
-
       <div class="resend-row">
         <span id="resend-btn" class="counting" onclick="resendCode()">Kodu Yeniden Gönder</span>
         <span id="countdown-text"> (60s)</span>
       </div>
-
       <p class="switch-text" style="margin-top:20px;">
         <span onclick="showSection('register-section')">← Geri Dön</span>
       </p>
@@ -99,8 +134,16 @@
         <div class="error-msg">Bu e-posta ile kayıtlı kullanıcı bulunamadı.</div>
       </div>
 
-      <button class="auth-btn" onclick="handleLogin()">Giriş Yap</button>
+      <!-- BENİ HATIRLA -->
+      <div class="checkbox-group remember-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="rememberMe">
+          <span class="checkbox-custom"></span>
+          <span class="checkbox-text">Beni hatırla</span>
+        </label>
+      </div>
 
+      <button class="auth-btn" onclick="handleLogin()">Giriş Yap</button>
       <p class="switch-text">Hesabınız yok mu? <span onclick="showRegister()">Üye Ol</span></p>
     </div>
 
@@ -110,7 +153,6 @@
         <div class="profile-avatar" id="profile-avatar"></div>
         <div class="profile-name" id="profile-name"></div>
         <div class="profile-email" id="profile-email"></div>
-
         <div class="profile-info-row">
           <div class="profile-info-label">Ad Soyad</div>
           <div class="profile-info-value" id="profile-name-detail"></div>
@@ -119,7 +161,6 @@
           <div class="profile-info-label">E-posta</div>
           <div class="profile-info-value" id="profile-email-detail"></div>
         </div>
-
         <button class="logout-btn" onclick="handleLogout()">Çıkış Yap</button>
       </div>
     </div>
