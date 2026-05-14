@@ -983,10 +983,4 @@ document.addEventListener("DOMContentLoaded", function() {
   window.addEventListener("scroll", revealOnScroll);
   revealOnScroll();
 });
-function updateHeaderCount() {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const total = cart.reduce((s, i) => s + (i.quantity || 0), 0);
-      const el = document.getElementById("header-item-count");
-      if (el) el.textContent = total > 0 ? `${total} ürün` : "";
-    }
-    updateHeaderCount();
+
