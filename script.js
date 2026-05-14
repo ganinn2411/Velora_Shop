@@ -381,6 +381,12 @@ function renderCart() {
   container.innerHTML = "";
   let araToplamTL = 0;
 
+  // ── YENİ: Kupon kutusunu sepet durumuna göre göster / gizle ──
+  const couponBox = document.getElementById("coupon-box");
+  if (couponBox) {
+    couponBox.style.display = cart.length > 0 ? "block" : "none";
+  }
+
   cart.forEach(item => {
     const itemTotal = item.price * item.quantity;
     araToplamTL += itemTotal;
@@ -795,7 +801,6 @@ function handleLogin() {
   const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
 
   if (user) {
-    // Beni Hatırla: işaretliyse kalıcı, değilse sessionStorage
     const rememberMe = document.getElementById("rememberMe");
     if (rememberMe && rememberMe.checked) {
       localStorage.setItem("activeUser", JSON.stringify(user));
@@ -803,7 +808,6 @@ function handleLogin() {
     } else {
       localStorage.removeItem("velora_remember");
       sessionStorage.setItem("activeUser", JSON.stringify(user));
-      // activeUser'ı da yaz ki diğer fonksiyonlar çalışsın
       localStorage.setItem("activeUser", JSON.stringify(user));
     }
     setError("fg-login-email", false);
@@ -896,7 +900,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (user && document.getElementById("profile-section")) {
     showProfile(user);
   }
-  // Beni Hatırla: e-postayı prefill et
   const remember = localStorage.getItem("velora_remember");
   const loginEmailEl = document.getElementById("login-email");
   if (remember === "true" && user && loginEmailEl) {
@@ -980,3 +983,10 @@ document.addEventListener("DOMContentLoaded", function() {
   window.addEventListener("scroll", revealOnScroll);
   revealOnScroll();
 });
+function updateHeaderCount() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const total = cart.reduce((s, i) => s + (i.quantity || 0), 0);
+      const el = document.getElementById("header-item-count");
+      if (el) el.textContent = total > 0 ? `${total} ürün` : "";
+    }
+    updateHeaderCount();
