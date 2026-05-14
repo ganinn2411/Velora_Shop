@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VELORA – Sepetim</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VELORA – Sepetim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- HEADER -->
 <header class="cart-header">
   <a href="index.html" class="logo">VELORA</a>
-
   <div class="cart-header-right">
     <span class="cart-item-count" id="header-item-count"></span>
-    <!-- Dark Mode Toggle -->
     <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
     <a href="index.html" class="back-home">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="15 18 9 12 15 6"/>
       </svg>
       <span class="back-home-text">Ana Sayfa</span>
@@ -33,17 +30,43 @@
 <!-- SEPET İÇERİĞİ -->
 <div class="cart-page">
   <h1>Sepetim</h1>
+
   <div id="cart-items"></div>
 
+  <!-- KUPON BÖLÜMÜ -->
+  <div class="coupon-section">
+    <p class="coupon-label">🏷️ Kupon kodun var mı?</p>
+    <div class="coupon-row">
+      <input
+        type="text"
+        id="couponInput"
+        placeholder="Kupon kodunu gir"
+        maxlength="20"
+        oninput="this.value = this.value.toUpperCase()"
+      />
+      <button class="coupon-btn" onclick="applyCoupon()">Uygula</button>
+    </div>
+    <div class="coupon-msg" id="couponMsg"></div>
+    <div class="coupon-applied" id="couponApplied" style="display:none;">
+      <span>✅ <strong id="appliedCodeText"></strong> kodu uygulandı</span>
+      <button class="coupon-remove-btn" onclick="removeCoupon()">Kaldır</button>
+    </div>
+  </div>
+
   <div class="cart-footer">
-    <h2>Toplam: <span id="total">0</span> TL</h2>
+    <div class="cart-totals">
+      <div class="totals-row discount-row" id="discountRow" style="display:none;">
+        <span>İndirim</span>
+        <span id="discountDisplay"></span>
+      </div>
+      <h2>Toplam: <span id="total">0</span> TL</h2>
+    </div>
     <button class="checkout" onclick="sendWhatsApp()">ÖDEMEYE GEÇ</button>
   </div>
 </div>
 
 <script src="script.js"></script>
 <script>
-  // Header'daki ürün sayısını güncelle
   function updateHeaderCount() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const total = cart.reduce((s, i) => s + (i.quantity || 0), 0);
