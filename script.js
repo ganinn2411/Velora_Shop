@@ -58,7 +58,7 @@ const products = [
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let selectedSize = "";
 let selectedColor = "";
- 
+
 function requireLogin() {
   const user = JSON.parse(localStorage.getItem("activeUser"));
   if (!user) {
@@ -69,25 +69,19 @@ function requireLogin() {
   }
   return true;
 }
- 
+
 function addToCart(id) {
   if (!requireLogin()) return;
   const product = products.find(p => p.id === id);
   if (!product) return;
- 
-  if (!selectedSize) {
-    alert("Lütfen beden seçiniz!");
-    return;
-  }
-  if (!selectedColor) {
-    alert("Lütfen renk seçiniz!");
-    return;
-  }
- 
+
+  if (!selectedSize) { alert("Lütfen beden seçiniz!"); return; }
+  if (!selectedColor) { alert("Lütfen renk seçiniz!"); return; }
+
   const existingItem = cart.find(item =>
     item.id === id && item.size === selectedSize && item.color === selectedColor
   );
- 
+
   if (existingItem) {
     existingItem.quantity += 1;
   } else {
@@ -101,12 +95,12 @@ function addToCart(id) {
       quantity: 1
     });
   }
- 
+
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
   alert("Ürün sepete eklendi ✅");
 }
- 
+
 function updateCartCount() {
   const el = document.getElementById("cart-count");
   if (el) {
@@ -114,9 +108,9 @@ function updateCartCount() {
     el.innerText = total;
   }
 }
- 
+
 updateCartCount();
- 
+
 // =====================
 // ÜRÜN KARTI
 // =====================
@@ -135,11 +129,11 @@ function productCard(p) {
     </div>
   `;
 }
- 
+
 function goToProduct(id) {
   window.location.href = `product.html?id=${id}`;
 }
- 
+
 // =====================
 // ANA SAYFA ÜRÜNLERİ (SLIDER)
 // =====================
@@ -150,7 +144,7 @@ function renderTopProducts(list) {
   container.innerHTML = shuffled.map(productCard).join("");
   updateSaveIcons();
 }
- 
+
 function renderBottomProducts(list) {
   const container = document.getElementById("products-bottom");
   if (!container) return;
@@ -158,15 +152,15 @@ function renderBottomProducts(list) {
   container.innerHTML = shuffled.map(productCard).join("");
   updateSaveIcons();
 }
- 
+
 function getNewCollection(list) {
   return [...list].sort((a, b) => b.id - a.id).slice(0, 12);
 }
- 
+
 function getRandomCollection(list) {
   return [...list].sort(() => 0.5 - Math.random()).slice(0, 12);
 }
- 
+
 // =====================
 // KATEGORİ SAYFASI
 // =====================
@@ -176,29 +170,29 @@ function renderProducts(list) {
   container.innerHTML = list.map(productCard).join("");
   updateSaveIcons();
 }
- 
+
 function loadCategoryPage() {
   if (!document.getElementById("category-title")) return;
- 
+
   const params = new URLSearchParams(window.location.search);
   const main = params.get("category");
   const sub  = params.get("type");
   if (!main || !sub) return;
- 
+
   const filtered = products.filter(p => p.category === main && p.type === sub);
   document.getElementById("category-title").innerText =
     main.toUpperCase() + " / " + sub.toUpperCase();
   renderProducts(filtered);
 }
- 
+
 loadCategoryPage();
- 
+
 // =====================
 // ARAMA & FİLTRE
 // =====================
 const searchInput  = document.getElementById("searchInput");
 const filterSelect = document.getElementById("filterSelect");
- 
+
 function applyFilters() {
   const params = new URLSearchParams(window.location.search);
   const main = params.get("category");
@@ -226,25 +220,25 @@ function applyFilters() {
     renderTopProducts(filtered);
   }
 }
- 
+
 if (searchInput)  searchInput.addEventListener("input",  applyFilters);
 if (filterSelect) filterSelect.addEventListener("change", applyFilters);
- 
+
 // =====================
 // ÜRÜN DETAY SAYFASI
 // =====================
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("productDetail");
   if (!container) return;
- 
+
   const id      = Number(new URLSearchParams(window.location.search).get("id"));
   const product = products.find(p => p.id === id);
- 
+
   if (!product) {
     container.innerHTML = "<h2>Ürün bulunamadı</h2>";
     return;
   }
- 
+
   container.innerHTML = `
     <div class="product-image">
       <img src="${product.image}" alt="${product.name}">
@@ -275,7 +269,6 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
 
-  // Benzer ürünler
   const similar = products
     .filter(p => p.id !== product.id)
     .sort(() => 0.5 - Math.random())
@@ -312,30 +305,86 @@ function selectSize(btn) {
   btn.classList.add("active");
   selectedSize = btn.innerText;
 }
- 
+
 function selectColor(color, el) {
   selectedColor = color;
   document.querySelectorAll(".color").forEach(c => c.classList.remove("active"));
   el.classList.add("active");
 }
- 
+
+// =====================
+// KUPON SİSTEMİ
+// =====================
+const KUPONLAR = {
+  "VELORA10":  10,
+  "VELORA20":  20,
+  "HOSGELDIN": 15
+};
+
+let aktifKupon = null;
+
+function applyCoupon() {
+  const input = document.getElementById("couponInput");
+  const msg   = document.getElementById("couponMsg");
+  const kod   = input.value.trim().toUpperCase();
+
+  msg.className = "coupon-msg";
+  msg.textContent = "";
+
+  if (!kod) {
+    msg.textContent = "Lütfen bir kupon kodu girin.";
+    msg.className = "coupon-msg error";
+    return;
+  }
+  if (aktifKupon) {
+    msg.textContent = "Zaten bir kupon uygulandı. Önce kaldırın.";
+    msg.className = "coupon-msg error";
+    return;
+  }
+  if (!KUPONLAR[kod]) {
+    msg.textContent = "Geçersiz kupon kodu.";
+    msg.className = "coupon-msg error";
+    return;
+  }
+
+  aktifKupon = { kod: kod, yuzde: KUPONLAR[kod] };
+  input.disabled = true;
+
+  document.getElementById("appliedCodeText").textContent = `${kod} (%${KUPONLAR[kod]} indirim)`;
+  document.getElementById("couponApplied").style.display = "flex";
+  msg.className = "coupon-msg";
+
+  renderCart();
+}
+
+function removeCoupon() {
+  aktifKupon = null;
+  const input = document.getElementById("couponInput");
+  input.value = "";
+  input.disabled = false;
+  document.getElementById("couponApplied").style.display = "none";
+  document.getElementById("discountRow").style.display = "none";
+  document.getElementById("couponMsg").className = "coupon-msg";
+  renderCart();
+}
+
 // =====================
 // SEPET SAYFASI
 // =====================
 if (document.getElementById("cart-items")) {
   renderCart();
 }
- 
+
 function renderCart() {
   const container = document.getElementById("cart-items");
   if (!container) return;
   container.innerHTML = "";
-  let total = 0;
- 
+  let araToplamTL = 0;
+
   cart.forEach(item => {
     const itemTotal = item.price * item.quantity;
-    total += itemTotal;
- 
+    araToplamTL += itemTotal;
+
     container.innerHTML += `
       <div class="cart-item">
         <a href="product.html?id=${item.id}">
@@ -356,11 +405,24 @@ function renderCart() {
       </div>
     `;
   });
- 
-  const totalEl = document.getElementById("total");
-  if (totalEl) totalEl.innerText = total.toLocaleString("tr-TR");
+
+  // Kupon indirimi hesapla ve toplamı güncelle
+  const discountRow     = document.getElementById("discountRow");
+  const discountDisplay = document.getElementById("discountDisplay");
+  const totalEl         = document.getElementById("total");
+
+  if (aktifKupon && araToplamTL > 0) {
+    const indirimMiktar = Math.round(araToplamTL * aktifKupon.yuzde / 100);
+    const sonToplamTL   = araToplamTL - indirimMiktar;
+    if (discountDisplay) discountDisplay.textContent = `-${indirimMiktar.toLocaleString("tr-TR")} TL`;
+    if (discountRow)     discountRow.style.display   = "flex";
+    if (totalEl)         totalEl.innerText           = sonToplamTL.toLocaleString("tr-TR");
+  } else {
+    if (discountRow) discountRow.style.display = "none";
+    if (totalEl)     totalEl.innerText         = araToplamTL.toLocaleString("tr-TR");
+  }
 }
- 
+
 function changeQty(id, delta) {
   const item = cart.find(i => i.id === id);
   if (!item) return;
@@ -370,14 +432,14 @@ function changeQty(id, delta) {
   renderCart();
   updateCartCount();
 }
- 
+
 function removeItem(id) {
   cart = cart.filter(i => i.id !== id);
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
   renderCart();
 }
- 
+
 // =====================
 // FAVORİLER
 // =====================
@@ -389,20 +451,19 @@ function toggleFavorite(e, id) {
   localStorage.setItem("saved", JSON.stringify(saved));
   updateSaveIcons();
 }
- 
+
 function updateSaveIcons() {
   const saved = JSON.parse(localStorage.getItem("saved")) || [];
   document.querySelectorAll(".save-icon").forEach(icon => {
     icon.innerText = saved.includes(Number(icon.dataset.id)) ? "★" : "☆";
   });
 }
- 
+
 setTimeout(updateSaveIcons, 100);
- 
+
 // FAVORİ SAYFASI
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("favorites-list")) {
-    // Önce geçersiz ID'leri temizle
     let saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
     const valid = saved.filter(id => products.find(p => p.id === id));
     if (valid.length !== saved.length) {
@@ -411,19 +472,19 @@ document.addEventListener("DOMContentLoaded", () => {
     renderFavoritesPage();
   }
 });
- 
+
 function renderFavoritesPage() {
   const container = document.getElementById("favorites-list");
   if (!container) return;
   container.innerHTML = "";
- 
+
   const saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
- 
+
   if (saved.length === 0) {
     container.innerHTML = "<p style='color:#999;font-size:14px;letter-spacing:1px;'>Henüz favori ürün eklemediniz.</p>";
     return;
   }
- 
+
   saved.forEach(id => {
     const product = products.find(p => p.id === id);
     if (!product) return;
@@ -442,13 +503,13 @@ function renderFavoritesPage() {
     `;
   });
 }
- 
+
 function removeSaved(id) {
   let saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number).filter(i => i !== Number(id));
   localStorage.setItem("saved", JSON.stringify(saved));
   renderFavoritesPage();
 }
- 
+
 // =====================
 // SLIDER OKLAR
 // =====================
@@ -461,76 +522,53 @@ function slideLeft() {
 function scrollBottom(dir) {
   document.getElementById("products-bottom").scrollBy({ left: dir * 280, behavior: "smooth" });
 }
-// ÜST SLIDER
+
 const topSlider = document.getElementById("products");
- 
-const topLeft =
-  document.querySelectorAll(".arrow.left")[0];
- 
-const topRight =
-  document.querySelectorAll(".arrow.right")[0];
- 
+const topLeft   = document.querySelectorAll(".arrow.left")[0];
+const topRight  = document.querySelectorAll(".arrow.right")[0];
+
 function updateTopButtons() {
   if (!topSlider) return;
- 
-  // en sol
   if (topSlider.scrollLeft <= 10) {
     if (topLeft) topLeft.style.display = "none";
   } else {
     if (topLeft) topLeft.style.display = "flex";
   }
- 
-  // en sağ
-  if (
-    topSlider.scrollLeft + topSlider.clientWidth >=
-    topSlider.scrollWidth - 10
-  ) {
+  if (topSlider.scrollLeft + topSlider.clientWidth >= topSlider.scrollWidth - 10) {
     if (topRight) topRight.style.display = "none";
   } else {
     if (topRight) topRight.style.display = "flex";
   }
 }
- 
+
 if (topSlider) {
   topSlider.addEventListener("scroll", updateTopButtons);
   window.addEventListener("load", updateTopButtons);
 }
- 
-// ALT SLIDER
-const bottomSlider =
-  document.getElementById("products-bottom");
- 
-const bottomLeft =
-  document.querySelectorAll(".arrow.left")[1];
- 
-const bottomRight =
-  document.querySelectorAll(".arrow.right")[1];
- 
+
+const bottomSlider = document.getElementById("products-bottom");
+const bottomLeft   = document.querySelectorAll(".arrow.left")[1];
+const bottomRight  = document.querySelectorAll(".arrow.right")[1];
+
 function updateBottomButtons() {
   if (!bottomSlider) return;
- 
-  // en sol
   if (bottomSlider.scrollLeft <= 10) {
     if (bottomLeft) bottomLeft.style.display = "none";
   } else {
     if (bottomLeft) bottomLeft.style.display = "flex";
   }
- 
-  // en sağ
-  if (
-    bottomSlider.scrollLeft + bottomSlider.clientWidth >=
-    bottomSlider.scrollWidth - 10
-  ) {
+  if (bottomSlider.scrollLeft + bottomSlider.clientWidth >= bottomSlider.scrollWidth - 10) {
     if (bottomRight) bottomRight.style.display = "none";
   } else {
     if (bottomRight) bottomRight.style.display = "flex";
   }
 }
- 
+
 if (bottomSlider) {
   bottomSlider.addEventListener("scroll", updateBottomButtons);
   window.addEventListener("load", updateBottomButtons);
 }
+
 // =====================
 // BANNER ANİMASYON
 // =====================
@@ -543,33 +581,45 @@ function animateBanner() {
 }
 window.addEventListener("scroll", animateBanner);
 window.addEventListener("load", animateBanner);
- 
+
 // =====================
 // WHATSAPP ÖDEME
 // =====================
 function sendWhatsApp() {
   if (cart.length === 0) { alert("Sepetiniz boş!"); return; }
- 
+
   let message = "🛒 Sipariş Detayı:%0A%0A";
+  let araToplamTL = 0;
+
   cart.forEach(item => {
+    const itemTL = item.price * item.quantity;
+    araToplamTL += itemTL;
     message += `Ürün: ${item.name}%0A`;
     message += `Beden: ${item.size}%0A`;
     message += `Renk: ${item.color}%0A`;
     message += `Adet: ${item.quantity}%0A`;
-    message += `Fiyat: ${(item.price * item.quantity).toLocaleString("tr-TR")} TL%0A%0A`;
+    message += `Fiyat: ${itemTL.toLocaleString("tr-TR")} TL%0A%0A`;
   });
-  const total = cart.reduce((a, b) => a + b.price * b.quantity, 0);
-  message += `💰 TOPLAM: ${total.toLocaleString("tr-TR")} TL`;
+
+  let sonToplamTL = araToplamTL;
+  if (aktifKupon && araToplamTL > 0) {
+    const indirimMiktar = Math.round(araToplamTL * aktifKupon.yuzde / 100);
+    sonToplamTL = araToplamTL - indirimMiktar;
+    message += `🏷️ Kupon: ${aktifKupon.kod} (-%${aktifKupon.yuzde})%0A`;
+    message += `İndirim: -${indirimMiktar.toLocaleString("tr-TR")} TL%0A`;
+  }
+
+  message += `💰 TOPLAM: ${sonToplamTL.toLocaleString("tr-TR")} TL`;
   window.open(`https://wa.me/905550066123?text=${message}`, "_blank");
 }
- 
+
 // =====================
 // NAV MEGA MENU (mobil toggle)
 // =====================
 document.querySelectorAll(".nav-item").forEach(item => {
   item.addEventListener("click", () => item.classList.toggle("active"));
 });
- 
+
 // =====================
 // ANA SAYFA BAŞLAT
 // =====================
@@ -579,262 +629,256 @@ if (document.getElementById("products") && !document.getElementById("category-ti
 if (document.getElementById("products-bottom")) {
   renderBottomProducts(getRandomCollection(products));
 }
- 
- // ── Yardımcı: Toast göster ──
-  function showToast(msg, type = "") {
-    const t = document.getElementById("toast");
-    if (!t) return; // toast elementi olmayan sayfalarda sessizce çık
-    t.textContent = msg;
-    t.className = "toast show " + type;
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.className = "toast", 3000);
-  }
- 
-  // ── Bölüm geçişi ──
-  function showSection(id) {
-    ["register-section","verify-section","login-section","profile-section"].forEach(s => {
-      const el = document.getElementById(s);
-      if (el) el.classList.add("hidden");
-    });
-    const target = document.getElementById(id);
-    if (target) target.classList.remove("hidden");
-  }
- 
-  function showLogin()    { showSection("login-section"); }
-  function showRegister() { showSection("register-section"); }
- 
-  // ── Validasyon yardımcıları ──
-  function setError(fgId, show) {
-    const fg = document.getElementById(fgId);
-    if (!fg) return;
-    show ? fg.classList.add("has-error") : fg.classList.remove("has-error");
-  }
-  function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
- 
-  // ── Geçici kayıt verisi ──
-  let tempUser = {};
- 
-  // ── KAYIT ──
-  function handleRegister() {
-    const name  = document.getElementById("reg-name").value.trim();
-    const email = document.getElementById("reg-email").value.trim();
-    let ok = true;
- 
-    if (!name) { setError("fg-name", true);  ok = false; } else { setError("fg-name", false); }
- 
-    if (!email || !isValidEmail(email)) {
-      document.getElementById("email-error-msg").textContent =
-        !email ? "E-posta adresi zorunludur." : "Geçerli bir e-posta adresi giriniz.";
-      setError("fg-email", true);
-      ok = false;
-    } else { setError("fg-email", false); }
- 
-    if (!ok) return;
- 
-    // Kayıtlı kullanıcı kontrolü
-    const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
-    if (allUsers.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-      document.getElementById("email-error-msg").textContent = "Bu e-posta zaten kayıtlı. Giriş yapın.";
-      setError("fg-email", true);
-      return;
-    }
- 
-    tempUser = { name, email };
-    document.getElementById("verify-email-label").textContent = email;
- 
-    // Gerçek 4 haneli rastgele kod üret
-    const verifyCode = String(Math.floor(1000 + Math.random() * 9000));
-    tempUser.code = verifyCode;
- 
-    // EmailJS ile gönder
-    const btn = document.getElementById("register-btn");
-    btn.disabled = true;
-    btn.textContent = "Gönderiliyor...";
- 
-    emailjs.send("service_u871hgw", "template_nnfkcc3", {
-      to_email: email,
-      to_name: name,
-      code: verifyCode
-    }).then(() => {
-      showToast("Doğrulama kodu e-postanıza gönderildi!", "success");
-      startCountdown();
-      showSection("verify-section");
-      setTimeout(() => document.getElementById("d1").focus(), 100);
-    }).catch((err) => {
-      console.error("EmailJS hatası:", err);
-      showToast("Mail gönderilemedi. Lütfen tekrar deneyin.", "error");
-    }).finally(() => {
-      btn.disabled = false;
-      btn.textContent = "Üye Ol ve Doğrulama Kodu Gönder";
-    });
-  }
- 
-  // ── DOĞRULAMA ──
-  // 4 kutu → kod birleştir
-  ["d1","d2","d3","d4"].forEach((id, i, arr) => {
-    const input = document.getElementById(id);
-    if (!input) return;
-    input.addEventListener("input", (e) => {
-      const val = e.target.value.replace(/\D/g, "");
-      e.target.value = val;
-      if (val && i < arr.length - 1) {
-        document.getElementById(arr[i + 1]).focus();
-      }
-      e.target.classList.toggle("filled", !!val);
-      // 4 rakam doluysa otomatik doğrula
-      const full = arr.map(a => document.getElementById(a).value).join("");
-      if (full.length === 4) setTimeout(handleVerify, 200);
-    });
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Backspace" && !input.value && i > 0) {
-        document.getElementById(arr[i - 1]).focus();
-      }
-    });
-    // yapıştırma desteği
-    input.addEventListener("paste", (e) => {
-      e.preventDefault();
-      const text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 4);
-      arr.forEach((a, j) => {
-        const el = document.getElementById(a);
-        el.value = text[j] || "";
-        el.classList.toggle("filled", !!el.value);
-      });
-      if (text.length === 4) setTimeout(handleVerify, 200);
-    });
+
+// ── Yardımcı: Toast göster ──
+function showToast(msg, type = "") {
+  const t = document.getElementById("toast");
+  if (!t) return;
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = "toast", 3000);
+}
+
+// ── Bölüm geçişi ──
+function showSection(id) {
+  ["register-section","verify-section","login-section","profile-section"].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.add("hidden");
   });
- 
-  function getCode() {
-    return ["d1","d2","d3","d4"].map(id => document.getElementById(id).value).join("");
+  const target = document.getElementById(id);
+  if (target) target.classList.remove("hidden");
+}
+
+function showLogin()    { showSection("login-section"); }
+function showRegister() { showSection("register-section"); }
+
+// ── Validasyon yardımcıları ──
+function setError(fgId, show) {
+  const fg = document.getElementById(fgId);
+  if (!fg) return;
+  show ? fg.classList.add("has-error") : fg.classList.remove("has-error");
+}
+function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+// ── Geçici kayıt verisi ──
+let tempUser = {};
+
+// ── KAYIT ──
+function handleRegister() {
+  const name  = document.getElementById("reg-name").value.trim();
+  const email = document.getElementById("reg-email").value.trim();
+  let ok = true;
+
+  if (!name) { setError("fg-name", true);  ok = false; } else { setError("fg-name", false); }
+
+  if (!email || !isValidEmail(email)) {
+    document.getElementById("email-error-msg").textContent =
+      !email ? "E-posta adresi zorunludur." : "Geçerli bir e-posta adresi giriniz.";
+    setError("fg-email", true);
+    ok = false;
+  } else { setError("fg-email", false); }
+
+  if (!ok) return;
+
+  const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
+  if (allUsers.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+    document.getElementById("email-error-msg").textContent = "Bu e-posta zaten kayıtlı. Giriş yapın.";
+    setError("fg-email", true);
+    return;
   }
- 
-  function handleVerify() {
-    const code = getCode();
-    if (code.length < 4) { showToast("Lütfen 4 haneli kodu girin.", "error"); return; }
- 
-    if (code === tempUser.code) {
-      // Kullanıcıyı kaydet
-      const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
-      const saveUser = { name: tempUser.name, email: tempUser.email };
-      if (!allUsers.find(u => u.email.toLowerCase() === tempUser.email.toLowerCase())) {
-        allUsers.push(saveUser);
-        localStorage.setItem("velora_users", JSON.stringify(allUsers));
-      }
-      localStorage.setItem("activeUser", JSON.stringify(saveUser));
-      showToast("Üyeliğiniz tamamlandı! Hoş geldiniz 🎉", "success");
-      setTimeout(() => { window.location.href = "index.html"; }, 1200);
-    } else {
-      showToast("Hatalı kod. Lütfen tekrar deneyin.", "error");
-      ["d1","d2","d3","d4"].forEach(id => {
-        const el = document.getElementById(id);
-        el.value = "";
-        el.classList.remove("filled");
-        el.style.borderColor = "#cc0000";
-        setTimeout(() => el.style.borderColor = "", 1500);
-      });
-      document.getElementById("d1").focus();
-    }
-  }
- 
-  // ── GİRİŞ ──
-  function handleLogin() {
-    const email = document.getElementById("login-email").value.trim();
-    if (!email || !isValidEmail(email)) { setError("fg-login-email", true); return; }
- 
-    const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
-    const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
- 
-    if (user) {
-      localStorage.setItem("activeUser", JSON.stringify(user));
-      setError("fg-login-email", false);
-      showToast("Hoş geldiniz, " + user.name + "!", "success");
-      setTimeout(() => { window.location.href = "index.html"; }, 1200);
-    } else {
-      setError("fg-login-email", true);
-    }
-  }
- 
-  // ── ÇIKIŞ ──
-  function handleLogout() {
-    if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-      localStorage.removeItem("activeUser");
-      showToast("Çıkış yapıldı.", "");
-      setTimeout(() => { showSection("login-section"); }, 600);
-    }
-  }
- 
-  // ── PROFİL GÖSTER ──
-  function showProfile(user) {
-    const initials = user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
-    document.getElementById("profile-avatar").textContent = initials;
-    document.getElementById("profile-name").textContent = user.name;
-    document.getElementById("profile-email").textContent = user.email;
-    document.getElementById("profile-name-detail").textContent = user.name;
-    document.getElementById("profile-email-detail").textContent = user.email;
-    showSection("profile-section");
-  }
- 
-  // ── GERİ SAYIM ──
-  let countdownInterval;
-  function startCountdown() {
-    const btn = document.getElementById("resend-btn");
-    const txt = document.getElementById("countdown-text");
-    let sec = 60;
-    btn.classList.add("counting");
-    txt.textContent = ` (${sec}s)`;
-    clearInterval(countdownInterval);
-    countdownInterval = setInterval(() => {
-      sec--;
-      if (sec <= 0) {
-        clearInterval(countdownInterval);
-        btn.classList.remove("counting");
-        txt.textContent = "";
-      } else {
-        txt.textContent = ` (${sec}s)`;
-      }
-    }, 1000);
-  }
-  function resendCode() {
-    const btn = document.getElementById("resend-btn");
-    if (btn.classList.contains("counting")) return;
-    const newCode = String(Math.floor(1000 + Math.random() * 9000));
-    tempUser.code = newCode;
-    emailjs.send("service_u871hgw", "template_nnfkcc3", {
-      to_email: tempUser.email,
-      to_name: tempUser.name,
-      code: newCode
-    }).then(() => {
-      showToast("Yeni kod e-postanıza gönderildi!", "success");
-    }).catch(() => {
-      showToast("Mail gönderilemedi. Tekrar deneyin.", "error");
-    });
+
+  tempUser = { name, email };
+  document.getElementById("verify-email-label").textContent = email;
+
+  const verifyCode = String(Math.floor(1000 + Math.random() * 9000));
+  tempUser.code = verifyCode;
+
+  const btn = document.getElementById("register-btn");
+  btn.disabled = true;
+  btn.textContent = "Gönderiliyor...";
+
+  emailjs.send("service_u871hgw", "template_nnfkcc3", {
+    to_email: email,
+    to_name: name,
+    code: verifyCode
+  }).then(() => {
+    showToast("Doğrulama kodu e-postanıza gönderildi!", "success");
     startCountdown();
-  }
- 
-  // ── SAYFA AÇILIŞINDA KONTROL ──
-  document.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(localStorage.getItem("activeUser"));
-    if (user && document.getElementById("profile-section")) {
-      showProfile(user);
-    }
-    // Enter ile form gönder (sadece profil sayfasında mevcut)
-    const regEmail = document.getElementById("reg-email");
-    const loginEmail = document.getElementById("login-email");
-    if (regEmail) regEmail.addEventListener("keydown", e => { if (e.key==="Enter") handleRegister(); });
-    if (loginEmail) loginEmail.addEventListener("keydown", e => { if (e.key==="Enter") handleLogin(); });
+    showSection("verify-section");
+    setTimeout(() => document.getElementById("d1").focus(), 100);
+  }).catch((err) => {
+    console.error("EmailJS hatası:", err);
+    showToast("Mail gönderilemedi. Lütfen tekrar deneyin.", "error");
+  }).finally(() => {
+    btn.disabled = false;
+    btn.textContent = "Üye Ol ve Doğrulama Kodu Gönder";
   });
-  // Profil ikonunu güncelle: giriş yapılmışsa baş harfleri göster
-  (function updateProfileIcon() {
-    const user = JSON.parse(localStorage.getItem("activeUser"));
-    const icon = document.getElementById("profile-icon");
-    if (!icon) return;
-    if (user) {
-      const initials = user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
-      icon.innerHTML = initials;
-      icon.classList.add("logged-in");
-      icon.title = user.name;
+}
+
+// ── DOĞRULAMA ──
+["d1","d2","d3","d4"].forEach((id, i, arr) => {
+  const input = document.getElementById(id);
+  if (!input) return;
+  input.addEventListener("input", (e) => {
+    const val = e.target.value.replace(/\D/g, "");
+    e.target.value = val;
+    if (val && i < arr.length - 1) {
+      document.getElementById(arr[i + 1]).focus();
     }
-  })();
- 
+    e.target.classList.toggle("filled", !!val);
+    const full = arr.map(a => document.getElementById(a).value).join("");
+    if (full.length === 4) setTimeout(handleVerify, 200);
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace" && !input.value && i > 0) {
+      document.getElementById(arr[i - 1]).focus();
+    }
+  });
+  input.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 4);
+    arr.forEach((a, j) => {
+      const el = document.getElementById(a);
+      el.value = text[j] || "";
+      el.classList.toggle("filled", !!el.value);
+    });
+    if (text.length === 4) setTimeout(handleVerify, 200);
+  });
+});
+
+function getCode() {
+  return ["d1","d2","d3","d4"].map(id => document.getElementById(id).value).join("");
+}
+
+function handleVerify() {
+  const code = getCode();
+  if (code.length < 4) { showToast("Lütfen 4 haneli kodu girin.", "error"); return; }
+
+  if (code === tempUser.code) {
+    const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
+    const saveUser = { name: tempUser.name, email: tempUser.email };
+    if (!allUsers.find(u => u.email.toLowerCase() === tempUser.email.toLowerCase())) {
+      allUsers.push(saveUser);
+      localStorage.setItem("velora_users", JSON.stringify(allUsers));
+    }
+    localStorage.setItem("activeUser", JSON.stringify(saveUser));
+    showToast("Üyeliğiniz tamamlandı! Hoş geldiniz 🎉", "success");
+    setTimeout(() => { window.location.href = "index.html"; }, 1200);
+  } else {
+    showToast("Hatalı kod. Lütfen tekrar deneyin.", "error");
+    ["d1","d2","d3","d4"].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = "";
+      el.classList.remove("filled");
+      el.style.borderColor = "#cc0000";
+      setTimeout(() => el.style.borderColor = "", 1500);
+    });
+    document.getElementById("d1").focus();
+  }
+}
+
+// ── GİRİŞ ──
+function handleLogin() {
+  const email = document.getElementById("login-email").value.trim();
+  if (!email || !isValidEmail(email)) { setError("fg-login-email", true); return; }
+
+  const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
+  const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+  if (user) {
+    localStorage.setItem("activeUser", JSON.stringify(user));
+    setError("fg-login-email", false);
+    showToast("Hoş geldiniz, " + user.name + "!", "success");
+    setTimeout(() => { window.location.href = "index.html"; }, 1200);
+  } else {
+    setError("fg-login-email", true);
+  }
+}
+
+// ── ÇIKIŞ ──
+function handleLogout() {
+  if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
+    localStorage.removeItem("activeUser");
+    showToast("Çıkış yapıldı.", "");
+    setTimeout(() => { showSection("login-section"); }, 600);
+  }
+}
+
+// ── PROFİL GÖSTER ──
+function showProfile(user) {
+  const initials = user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+  document.getElementById("profile-avatar").textContent = initials;
+  document.getElementById("profile-name").textContent = user.name;
+  document.getElementById("profile-email").textContent = user.email;
+  document.getElementById("profile-name-detail").textContent = user.name;
+  document.getElementById("profile-email-detail").textContent = user.email;
+  showSection("profile-section");
+}
+
+// ── GERİ SAYIM ──
+let countdownInterval;
+function startCountdown() {
+  const btn = document.getElementById("resend-btn");
+  const txt = document.getElementById("countdown-text");
+  let sec = 60;
+  btn.classList.add("counting");
+  txt.textContent = ` (${sec}s)`;
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    sec--;
+    if (sec <= 0) {
+      clearInterval(countdownInterval);
+      btn.classList.remove("counting");
+      txt.textContent = "";
+    } else {
+      txt.textContent = ` (${sec}s)`;
+    }
+  }, 1000);
+}
+
+function resendCode() {
+  const btn = document.getElementById("resend-btn");
+  if (btn.classList.contains("counting")) return;
+  const newCode = String(Math.floor(1000 + Math.random() * 9000));
+  tempUser.code = newCode;
+  emailjs.send("service_u871hgw", "template_nnfkcc3", {
+    to_email: tempUser.email,
+    to_name: tempUser.name,
+    code: newCode
+  }).then(() => {
+    showToast("Yeni kod e-postanıza gönderildi!", "success");
+  }).catch(() => {
+    showToast("Mail gönderilemedi. Tekrar deneyin.", "error");
+  });
+  startCountdown();
+}
+
+// ── SAYFA AÇILIŞINDA KONTROL ──
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("activeUser"));
+  if (user && document.getElementById("profile-section")) {
+    showProfile(user);
+  }
+  const regEmail   = document.getElementById("reg-email");
+  const loginEmail = document.getElementById("login-email");
+  if (regEmail)   regEmail.addEventListener("keydown",   e => { if (e.key === "Enter") handleRegister(); });
+  if (loginEmail) loginEmail.addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
+});
+
+// Profil ikonunu güncelle
+(function updateProfileIcon() {
+  const user = JSON.parse(localStorage.getItem("activeUser"));
+  const icon = document.getElementById("profile-icon");
+  if (!icon) return;
+  if (user) {
+    const initials = user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+    icon.innerHTML = initials;
+    icon.classList.add("logged-in");
+    icon.title = user.name;
+  }
+})();
+
 // =====================
 // DARK MODE TOGGLE
 // =====================
@@ -844,17 +888,16 @@ if (document.getElementById("products-bottom")) {
   if (saved === "dark" || (!saved && prefersDark)) {
     document.body.classList.add("dark");
   }
-  // Buton ikonunu güncelle
   updateThemeBtn();
 })();
- 
+
 function toggleTheme() {
   document.body.classList.toggle("dark");
   const isDark = document.body.classList.contains("dark");
   localStorage.setItem("theme", isDark ? "dark" : "light");
   updateThemeBtn();
 }
- 
+
 function updateThemeBtn() {
   const isDark = document.body.classList.contains("dark");
   document.querySelectorAll(".theme-toggle").forEach(btn => {
@@ -862,24 +905,23 @@ function updateThemeBtn() {
     btn.title = isDark ? "Aydınlık Mod" : "Karanlık Mod";
   });
 }
- 
+
 // =====================
 // HAMBURGer MENÜ (MOBİL)
 // =====================
 function toggleMenu() {
-  const nav = document.getElementById("navMenu");
+  const nav    = document.getElementById("navMenu");
   const search = document.querySelector(".search-box");
   if (!nav) return;
   nav.classList.toggle("open");
   if (search) search.classList.toggle("open");
 }
- 
-// Hamburger masaüstünde gizle
+
 (function initHamburger() {
   const btn = document.getElementById("hamburgerBtn");
   if (!btn) return;
-  // CSS zaten halleder; JS ile ekstra kontrol yok
 })();
+
 // =====================
 // SCROLL REVEAL ANİMASYONU
 // =====================
