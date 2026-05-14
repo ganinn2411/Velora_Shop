@@ -1767,3 +1767,141 @@ body, body * {
   opacity: 1;
   transform: translateX(0);
 }
+/* ─── KUPON BÖLÜMÜ ──────────────────────────────────────────────────────────
+   Bu stilleri mevcut style.css dosyanızın sonuna ekleyin.
+────────────────────────────────────────────────────────────────────────────── */
+
+.coupon-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  background: var(--bg, #fff);
+}
+
+.coupon-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.coupon-row {
+  display: flex;
+  gap: 8px;
+}
+
+.coupon-row input {
+  flex: 1;
+  height: 42px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1.5px;
+  background: transparent;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+
+.coupon-row input:focus {
+  outline: none;
+  border-color: #111;
+}
+
+.coupon-row input::placeholder {
+  letter-spacing: 0;
+  color: #aaa;
+}
+
+.coupon-row input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coupon-btn {
+  height: 42px;
+  padding: 0 20px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.coupon-btn:hover  { opacity: 0.8; }
+.coupon-btn:active { transform: scale(0.97); }
+
+/* Hata / başarı mesajı */
+.coupon-msg {
+  display: none;
+  margin-top: 10px;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.coupon-msg.error {
+  display: block;
+  background: #fdecea;
+  color: #c0392b;
+}
+
+.coupon-msg.success {
+  display: block;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Uygulanan kupon satırı */
+.coupon-applied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #2e7d32;
+}
+
+.coupon-remove-btn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.coupon-remove-btn:hover { color: #c0392b; }
+
+/* Toplam + indirim satırı */
+.cart-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Dark mode uyumu */
+body.dark .coupon-section  { border-color: #333; background: #1a1a1a; }
+body.dark .coupon-row input { border-color: #444; color: #eee; }
+body.dark .coupon-row input:focus { border-color: #eee; }
+body.dark .coupon-btn       { background: #eee; color: #111; }
+body.dark .coupon-msg.error  { background: #3b1a1a; color: #ff6b6b; }
+body.dark .coupon-msg.success { background: #1a3b1a; color: #69bb69; }
+body.dark .coupon-applied   { color: #69bb69; }
+body.dark .totals-row       { color: #aaa; }
