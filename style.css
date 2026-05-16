@@ -693,7 +693,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 
   body { padding-top: 64px; }
 
-  /* Header — tamamen yeniden düzenlendi */
   .header {
     padding: 12px 16px;
     flex-wrap: wrap;
@@ -702,7 +701,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
     align-items: center;
   }
 
-  /* Logo — soldaki ilk sütun */
   .logo {
     font-size: 18px;
     letter-spacing: 2px;
@@ -710,7 +708,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
     flex: 1;
   }
 
-  /* Hamburger — ortada */
   .hamburger {
     display: flex;
     flex-direction: column;
@@ -731,7 +728,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
     border-radius: 1px;
   }
 
-  /* Header actions — sağda (tema + sepet + profil) */
   .header-actions {
     order: 3;
     display: flex;
@@ -752,7 +748,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
     font-size: 14px;
   }
 
-  /* Nav — hamburger açılınca görünür, tam genişlik */
   .nav {
     display: none;
     flex-direction: column;
@@ -777,7 +772,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
     display: block;
   }
 
-  /* Search box — hamburger altında açılır */
   .search-box {
     display: none;
     width: 100%;
@@ -791,7 +785,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   .search-box input { flex: 1; width: auto; min-width: 0; }
   .search-box select { width: 110px; flex-shrink: 0; }
 
-  /* Mega menu */
   .mega-menu {
     position: static;
     width: 100%;
@@ -808,11 +801,9 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   .nav-item.active .mega-menu { display: block; }
   .mega-col a { font-size: 12px; padding: 5px 0; }
 
-  /* Hero */
   .hero { height: auto; }
   .hero-img { height: 220px; object-fit: cover; }
 
-  /* Slider */
   .product-card { flex: 0 0 160px; width: 160px; }
   .product-card__img-wrap img { height: 210px; }
   .product-card__info h3 { font-size: 11px; }
@@ -822,14 +813,12 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   .slider-wrapper { margin: 24px 0; }
   .product-slider { padding: 6px 40px; gap: 14px; }
 
-  /* Slider okları — mobilde daha küçük */
   .arrow {
     width: 34px;
     height: 34px;
     font-size: 20px;
   }
 
-  /* Kategori grid */
   .category-page #products {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
@@ -837,22 +826,18 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   }
   #category-title { padding: 20px 16px 0; font-size: 16px; }
 
-  /* Ürün detay */
   .product-page { padding: 20px 16px; gap: 20px; }
   .product-info h1 { font-size: 20px; }
   .btn-add-to-cart { max-width: 100%; }
 
-  /* Sepet */
   .cart-page { padding: 20px 16px; }
   .cart-item { flex-wrap: wrap; gap: 10px; }
   .cart-item img { width: 70px; height: 90px; }
 
-  /* Favoriler */
   #favorites-list { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .favorites-container { padding: 20px 16px; }
   #favorites-list .product-card__img-wrap img { height: 220px; }
 
-  /* Footer */
   .footer {
     grid-template-columns: 1fr;
     text-align: center;
@@ -861,13 +846,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
     margin-top: 40px;
   }
 
-  /* Hakkımızda */
   .about-section { padding: 40px 20px; }
 
-  /* Profil sayfası */
   .auth-box { padding: 32px 20px; }
 
-  /* Cart & favori header padding */
   .cart-header,
   .fav-header,
   .profile-header { padding: 14px 16px; }
@@ -1161,6 +1143,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   font-size: 14px;
   color: var(--text);
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .logout-btn {
@@ -1229,11 +1215,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   font-size: 12px;
 }
 .profile-icon svg { width: 18px; height: 18px; }
+
 /* =====================
    ANİMASYONLAR
    ===================== */
 
-/* Genel fade-in + slide-up */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -1264,31 +1250,26 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   100% { background-position:  200% 0; }
 }
 
-/* Header giriş animasyonu */
 .header, .cart-header, .fav-header, .profile-header {
   animation: slideInLeft 0.5s ease both;
 }
 
-/* Logo */
 .logo {
   animation: fadeIn 0.6s ease 0.1s both;
 }
 
-/* Nav linkleri sırayla */
 .nav-item:nth-child(1) { animation: fadeInUp 0.4s ease 0.15s both; }
 .nav-item:nth-child(2) { animation: fadeInUp 0.4s ease 0.25s both; }
 .nav-item:nth-child(3) { animation: fadeInUp 0.4s ease 0.35s both; }
 .fav-link             { animation: fadeInUp 0.4s ease 0.45s both; }
 .header-actions       { animation: fadeIn  0.5s ease 0.4s  both; }
 
-/* Hero */
 .hero { animation: fadeIn 0.8s ease both; }
 .hero-img {
   transition: transform 0.6s ease;
 }
 .hero:hover .hero-img { transform: scale(1.02); }
 
-/* Ürün kartları */
 .product-card {
   animation: scaleIn 0.45s ease both;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s;
@@ -1298,7 +1279,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   box-shadow: 0 12px 32px var(--shadow);
 }
 
-/* Slider ürünleri gecikmeyle */
 .product-slider .product-card:nth-child(1)  { animation-delay: 0.05s; }
 .product-slider .product-card:nth-child(2)  { animation-delay: 0.10s; }
 .product-slider .product-card:nth-child(3)  { animation-delay: 0.15s; }
@@ -1306,7 +1286,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .product-slider .product-card:nth-child(5)  { animation-delay: 0.25s; }
 .product-slider .product-card:nth-child(6)  { animation-delay: 0.30s; }
 
-/* Grid ürünleri */
 #products .product-card:nth-child(odd)  { animation: slideInLeft  0.45s ease both; }
 #products .product-card:nth-child(even) { animation: slideInRight 0.45s ease both; }
 #products .product-card:nth-child(1)  { animation-delay: 0.05s; }
@@ -1318,7 +1297,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 #products .product-card:nth-child(7)  { animation-delay: 0.35s; }
 #products .product-card:nth-child(8)  { animation-delay: 0.40s; }
 
-/* Ürün resmi hover zoom */
 .product-card__img-wrap img {
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -1326,7 +1304,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   transform: scale(1.08);
 }
 
-/* Favori yıldız */
 .product-card__fav {
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
@@ -1334,7 +1311,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   transform: scale(1.4) rotate(15deg);
 }
 
-/* Slider ok butonları */
 .arrow {
   transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
 }
@@ -1342,14 +1318,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   transform: scale(1.15);
 }
 
-/* About section */
 .about-section {
   animation: fadeInUp 0.6s ease both;
 }
-.about-section h2 { }
-.about-section p  { }
 
-/* Footer */
 .footer {
   animation: fadeIn 0.6s ease both;
 }
@@ -1368,7 +1340,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   transform: translateX(4px);
 }
 
-/* Auth kutusu */
 .auth-box {
   animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
@@ -1378,7 +1349,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .auth-btn         { animation: fadeInUp 0.4s ease 0.4s  both; }
 .switch-text      { animation: fadeInUp 0.4s ease 0.5s  both; }
 
-/* Auth btn hover efekti */
 .auth-btn {
   transition: background 0.25s, color 0.25s, transform 0.15s, box-shadow 0.25s !important;
 }
@@ -1388,7 +1358,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 }
 .auth-btn:active { transform: scale(0.97) !important; }
 
-/* Profil kartı */
 .profile-card {
   animation: fadeInUp 0.5s ease both;
 }
@@ -1397,7 +1366,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 }
 .profile-avatar:hover { transform: scale(1.08); }
 
-/* Sepet sayfası */
 .cart-page h1    { animation: fadeInUp 0.5s ease 0.1s both; }
 .cart-item       { animation: slideInLeft 0.4s ease both; }
 .cart-item:nth-child(1) { animation-delay: 0.05s; }
@@ -1406,7 +1374,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .cart-item:nth-child(4) { animation-delay: 0.20s; }
 .cart-footer     { animation: fadeInUp 0.5s ease 0.3s both; }
 
-/* Checkout butonu */
 .checkout {
   transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
 }
@@ -1415,7 +1382,6 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   box-shadow: 0 8px 24px var(--shadow);
 }
 
-/* Ürün detay sayfası */
 .product-image { animation: slideInLeft  0.55s ease both; }
 .product-info  { animation: slideInRight 0.55s ease 0.1s both; }
 
@@ -1427,30 +1393,25 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   box-shadow: 0 8px 24px var(--shadow);
 }
 
-/* Size butonları */
 .sizes button {
   transition: background 0.2s, color 0.2s, transform 0.15s;
 }
 .sizes button:hover  { transform: scale(1.1); }
 .sizes button.active { transform: scale(1.1); }
 
-/* Renk daireleri */
 .color {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .color:hover { transform: scale(1.2); }
 .color.active { transform: scale(1.2); }
 
-/* Favori sayfası */
 .favorites-container h2 { animation: fadeInUp 0.5s ease 0.1s both; }
 #favorites-list .product-card { animation: scaleIn 0.4s ease both; }
 
-/* Mega menu */
 .mega-menu {
   transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease !important;
 }
 
-/* Input focus animasyonu */
 .form-group input, .search-box input, .search-box select {
   transition: border-color 0.2s ease, background 0.3s ease, box-shadow 0.2s ease, color 0.3s ease;
 }
@@ -1458,20 +1419,17 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   box-shadow: 0 0 0 3px rgba(128,128,128,0.15);
 }
 
-/* Back home & back btn */
 .back-home, .back-btn {
   transition: background 0.25s, color 0.25s, transform 0.2s;
 }
 .back-home:hover { transform: translateX(-3px); }
 
-/* Dark mode geçişi smooth */
 body, body * {
   transition-property: background-color, border-color, color;
   transition-duration: 0.3s;
   transition-timing-function: ease;
 }
 
-/* Sayfa yüklenirken scroll reveal için genel kural */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1484,7 +1442,6 @@ body, body * {
    ===================== */
 @media (max-width: 768px) {
 
-  /* Ortak header düzeni: logo solda, sağ grup sağda */
   .fav-header,
   .cart-header,
   .profile-header {
@@ -1492,7 +1449,6 @@ body, body * {
     justify-content: space-between;
   }
 
-  /* Sağ grup: dark mode + geri butonu yan yana */
   .fav-header-right,
   .cart-header-right {
     display: flex;
@@ -1500,23 +1456,20 @@ body, body * {
     gap: 10px;
   }
 
-  /* Profil header sağ grup (inline style yerine class'la kontrol) */
   .profile-header > div {
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
-  /* "Ana Sayfa" / "Alışverişe Dön" yazısını mobilde gizle, sadece ikon kalsın */
   .back-home span,
   .back-home-text {
     display: none;
   }
 
-  /* Back-home buton boyutunu küçült, sadece ok ikonu göster */
   .back-home {
     padding: 8px 10px;
-    font-size: 0;           /* metin gizle */
+    font-size: 0;
     border: 1px solid var(--border-input);
     min-width: 36px;
     height: 36px;
@@ -1526,14 +1479,12 @@ body, body * {
     border-radius: 50%;
   }
 
-  /* Back-home içindeki svg görünsün */
   .back-home svg {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
   }
 
-  /* Logo büyüklüğü */
   .fav-header .logo,
   .cart-header .logo,
   .profile-header .logo {
@@ -1541,7 +1492,6 @@ body, body * {
     letter-spacing: 2px;
   }
 
-  /* Fav count ve cart count etiketini gizle (yer açmak için) */
   .fav-count,
   .cart-item-count {
     display: none;
@@ -1563,20 +1513,15 @@ body, body * {
   }
 }
 
-/* =====================
-   MOBİL HEADER BOŞLUK DÜZELTMESİ
-   ===================== */
 @media (max-width: 768px) {
 
-  /* Logo flex ile ortalanmış olsun, sağa itilmesin */
   .fav-header .logo,
   .cart-header .logo,
   .profile-header .logo {
-    flex: 1;                  /* kalan alanı doldur → sağ grup sağa itilir */
+    flex: 1;
     text-align: left;
   }
 
-  /* Sağ grup sabit genişlikte, logo ile araya boşluk */
   .fav-header-right,
   .cart-header-right {
     gap: 12px;
@@ -1588,7 +1533,6 @@ body, body * {
     flex-shrink: 0;
   }
 
-  /* Geri ok butonu — daha belirgin, yeterli tıklama alanı */
   .back-home {
     min-width: 38px;
     width: 38px;
@@ -1598,14 +1542,12 @@ body, body * {
     flex-shrink: 0;
   }
 
-  /* Dark mode butonu da aynı boyutta */
   .theme-toggle {
     width: 38px;
     height: 38px;
     flex-shrink: 0;
   }
 
-  /* Header yüksekliği tutarlı olsun */
   .fav-header,
   .cart-header,
   .profile-header {
@@ -1656,16 +1598,12 @@ body, body * {
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Profil header sağ grup */
 .profile-header-right {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-/* =====================
-   MOBİL — CART / FAV / PROFİL HEADER
-   ===================== */
 @media (max-width: 768px) {
   .cart-header,
   .fav-header,
@@ -1675,7 +1613,6 @@ body, body * {
     gap: 0;
   }
 
-  /* Logo solda, flex:1 ile orta alanı kaplar */
   .cart-header .logo,
   .fav-header .logo,
   .profile-header .logo {
@@ -1684,7 +1621,6 @@ body, body * {
     letter-spacing: 2px;
   }
 
-  /* Sağ gruplar: butonlar arası boşluk */
   .cart-header-right,
   .fav-header-right,
   .profile-header-right {
@@ -1694,13 +1630,11 @@ body, body * {
     flex-shrink: 0;
   }
 
-  /* Sayı etiketleri gizle */
   .cart-item-count,
   .fav-count {
     display: none;
   }
 
-  /* Geri ok — yuvarlak ikon buton */
   .back-home {
     width: 38px;
     height: 38px;
@@ -1712,7 +1646,7 @@ body, body * {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 0; /* metni gizle */
+    font-size: 0;
   }
   .back-home svg {
     width: 16px;
@@ -1722,7 +1656,6 @@ body, body * {
   }
   .back-home-text { display: none; }
 
-  /* Dark mode butonu eşit boyut */
   .theme-toggle {
     width: 38px;
     height: 38px;
@@ -1738,6 +1671,7 @@ body, body * {
     letter-spacing: 1.5px;
   }
 }
+
 /* =====================
    BENZER ÜRÜNLER
    ===================== */
@@ -1767,9 +1701,8 @@ body, body * {
   opacity: 1;
   transform: translateX(0);
 }
-/* ─── KUPON BÖLÜMÜ ──────────────────────────────────────────────────────────
-   Bu stilleri mevcut style.css dosyanızın sonuna ekleyin.
-────────────────────────────────────────────────────────────────────────────── */
+
+/* ─── KUPON BÖLÜMÜ ─────────────────────────────────────────────────────────── */
 
 .coupon-section {
   border: 1px solid #e0e0e0;
@@ -1838,7 +1771,6 @@ body, body * {
 .coupon-btn:hover  { opacity: 0.8; }
 .coupon-btn:active { transform: scale(0.97); }
 
-/* Hata / başarı mesajı */
 .coupon-msg {
   display: none;
   margin-top: 10px;
@@ -1859,7 +1791,6 @@ body, body * {
   color: #2e7d32;
 }
 
-/* Uygulanan kupon satırı */
 .coupon-applied {
   display: flex;
   align-items: center;
@@ -1882,7 +1813,6 @@ body, body * {
 
 .coupon-remove-btn:hover { color: #c0392b; }
 
-/* Toplam + indirim satırı */
 .cart-totals {
   display: flex;
   flex-direction: column;
@@ -1896,7 +1826,6 @@ body, body * {
   color: #555;
 }
 
-/* Dark mode uyumu */
 body.dark .coupon-section  { border-color: #333; background: #1a1a1a; }
 body.dark .coupon-row input { border-color: #444; color: #eee; }
 body.dark .coupon-row input:focus { border-color: #eee; }
@@ -1905,7 +1834,8 @@ body.dark .coupon-msg.error  { background: #3b1a1a; color: #ff6b6b; }
 body.dark .coupon-msg.success { background: #1a3b1a; color: #69bb69; }
 body.dark .coupon-applied   { color: #69bb69; }
 body.dark .totals-row       { color: #aaa; }
-/* ─── CHECKBOX (Beni Hatırla & Sözleşme) — style.css'e ekleyin ──────────── */
+
+/* ─── CHECKBOX (Beni Hatırla & Sözleşme) ──────────────────────────────────── */
 
 .checkbox-group {
   margin: 12px 0 16px;
@@ -2062,6 +1992,20 @@ body.dark .totals-row       { color: #aaa; }
 .modal-footer .auth-btn {
   margin: 0;
 }
+
+body.dark .checkbox-custom           { border-color: #555; }
+body.dark .checkbox-label input[type="checkbox"]:checked + .checkbox-custom { background: #eee; border-color: #eee; }
+body.dark .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after { border-color: #111; }
+body.dark .checkbox-text             { color: #aaa; }
+body.dark .checkbox-text a           { color: #eee; }
+body.dark .modal-box                 { background: #1a1a1a; }
+body.dark .modal-header              { border-color: #333; color: #eee; }
+body.dark .modal-body                { color: #bbb; }
+body.dark .modal-body h3             { color: #eee; }
+body.dark .modal-footer              { border-color: #333; }
+body.dark .modal-close               { color: #666; }
+body.dark .modal-close:hover         { color: #eee; }
+
 /* =====================
    ŞİFRE ALANI — password-wrap
    ===================== */
@@ -2182,6 +2126,7 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   padding-top: 20px;
   margin-top: 4px;
   animation: fadeInUp 0.35s ease both;
+  text-align: left;
 }
 
 .pw-change-form .form-group {
@@ -2215,102 +2160,3 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   transition: border-color 0.2s, color 0.2s;
 }
 .pw-cancel-btn:hover { border-color: var(--text); color: var(--text); }
-
-
-.password-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.password-wrap input {
-  width: 100%;
-  padding-right: 44px; /* sağda göz ikonu için boşluk */
-}
-
-.toggle-pw {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition: color 0.2s;
-  line-height: 1;
-}
-
-.toggle-pw:hover { color: var(--text); }
-
-/* =====================
-   ŞİFRE GÜÇ ÇUBUĞU
-   ===================== */
-
-.pw-strength-bar {
-  width: 100%;
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  margin-top: 8px;
-  overflow: hidden;
-}
-
-.pw-strength-fill {
-  height: 100%;
-  width: 0%;
-  border-radius: 2px;
-  transition: width 0.35s ease, background 0.35s ease;
-}
-
-.pw-weak   { background: #e53935; }
-.pw-fair   { background: #fb8c00; }
-.pw-good   { background: #43a047; }
-.pw-strong { background: #00897b; }
-
-/* =====================
-   ŞİFRE KURALLARI LİSTESİ
-   ===================== */
-
-.pw-rules {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.rule {
-  font-size: 11px;
-  letter-spacing: 0.3px;
-  color: var(--text-light);
-  transition: color 0.2s;
-}
-
-.rule-ok {
-  color: #2e7d32 !important;
-}
-
-.rule-fail {
-  color: #c62828 !important;
-}
-
-body.dark .rule-ok  { color: #69bb69 !important; }
-body.dark .rule-fail { color: #ff6b6b !important; }
-/* Dark mode */
-body.dark .checkbox-custom           { border-color: #555; }
-body.dark .checkbox-label input[type="checkbox"]:checked + .checkbox-custom { background: #eee; border-color: #eee; }
-body.dark .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after { border-color: #111; }
-body.dark .checkbox-text             { color: #aaa; }
-body.dark .checkbox-text a           { color: #eee; }
-body.dark .modal-box                 { background: #1a1a1a; }
-body.dark .modal-header              { border-color: #333; color: #eee; }
-body.dark .modal-body                { color: #bbb; }
-body.dark .modal-body h3             { color: #eee; }
-body.dark .modal-footer              { border-color: #333; }
-body.dark .modal-close               { color: #666; }
-body.dark .modal-close:hover         { color: #eee; }
-
