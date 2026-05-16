@@ -52,33 +52,31 @@ let products = [
   { id: 48, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/phat-tr-ng-UbJ2Q_HInuU-unsplash_sbwzvv.jpg`, category: "cocuk", type: "ceket" },
 ];
 
-// Merge with localStorage additions
 const storedProducts = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
 storedProducts.forEach(sp => { if (!products.find(p => p.id === sp.id)) products.push(sp); });
 
 let coupons = JSON.parse(localStorage.getItem('velora_coupons') || 'null') || [
-  { code: "VELORA10",  discount: 10, status: "active",   uses: 0 },
-  { code: "VELORA20",  discount: 20, status: "active",   uses: 0 },
-  { code: "HOSGELDIN", discount: 15, status: "active",   uses: 0 },
+  { code: "VELORA10",  discount: 10, status: "active", uses: 0 },
+  { code: "VELORA20",  discount: 20, status: "active", uses: 0 },
+  { code: "HOSGELDIN", discount: 15, status: "active", uses: 0 },
 ];
 
-let activityLog = JSON.parse(localStorage.getItem('velora_log') || '[]');
+let activityLog   = JSON.parse(localStorage.getItem('velora_log') || '[]');
 let currentFilter = 'all';
-let currentPage = 1;
-const perPage = 15;
-let editingId = null;
+let currentPage   = 1;
+const perPage     = 15;
+let editingId     = null;
 
 // ========== AUTH ==========
 const ADMIN_PW_KEY = 'velora_admin_pw';
-// 🔑 VARSAYILAN ŞİFREYİ BURADAN DEĞİŞTİREBİLİRSİN:
-const DEFAULT_PW = 'admin123';
+const DEFAULT_PW   = 'admin123'; // 🔑 Varsayılan şifreyi buradan değiştir
 
 function checkAdmin() {
   const storedPw = localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW;
-  const input = document.getElementById('adminPwInput').value;
+  const input    = document.getElementById('adminPwInput').value;
   if (input === storedPw) {
     document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'flex';
+    document.getElementById('adminPanel').style.display  = 'flex';
     initDashboard();
   } else {
     document.getElementById('loginError').style.display = 'block';
@@ -89,60 +87,84 @@ function checkAdmin() {
 
 function adminLogout() {
   document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('adminPanel').style.display  = 'none';
   document.getElementById('adminPwInput').value = '';
 }
 
+// Site Ayarları sayfasındaki şifre güncelle
 function changeAdminPw() {
   const pw1 = document.getElementById('set-newAdminPw').value;
   const pw2 = document.getElementById('set-newAdminPw2').value;
-  if (!pw1) { showToast('Şifre boş olamaz!', 'error'); return; }
+  if (!pw1)           { showToast('Şifre boş olamaz!', 'error'); return; }
   if (pw1.length < 4) { showToast('Şifre en az 4 karakter olmalı!', 'error'); return; }
-  if (pw1 !== pw2) { showToast('Şifreler eşleşmiyor!', 'error'); return; }
+  if (pw1 !== pw2)    { showToast('Şifreler eşleşmiyor!', 'error'); return; }
   localStorage.setItem(ADMIN_PW_KEY, pw1);
-  document.getElementById('set-newAdminPw').value = '';
+  document.getElementById('set-newAdminPw').value  = '';
   document.getElementById('set-newAdminPw2').value = '';
   showToast('Admin şifresi güncellendi ✅', 'success');
   addLog('settings', 'Admin şifresi değiştirildi');
 }
 
-// ========== NAV (Dashboard Toggle Destekli) ==========
-let dashboardVisible = true;
+// ========== ŞİFRE MODAL ==========
+function openPwModal() {
+  document.getElementById('modal-curPw').value        = '';
+  document.getElementById('modal-newPw').value        = '';
+  document.getElementById('modal-newPw2').value       = '';
+  document.getElementById('pwModalError').textContent = '';
+  document.getElementById('pwModal').classList.add('open');
+  setTimeout(() => document.getElementById('modal-curPw').focus(), 100);
+}
 
+function closePwModal() {
+  document.getElementById('pwModal').classList.remove('open');
+}
+
+function submitPwModal() {
+  const storedPw = localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW;
+  const cur      = document.getElementById('modal-curPw').value;
+  const pw1      = document.getElementById('modal-newPw').value;
+  const pw2      = document.getElementById('modal-newPw2').value;
+  const errEl    = document.getElementById('pwModalError');
+
+  if (cur !== storedPw)       { errEl.textContent = '❌ Mevcut şifre yanlış!'; return; }
+  if (!pw1 || pw1.length < 4) { errEl.textContent = '❌ Yeni şifre en az 4 karakter olmalı!'; return; }
+  if (pw1 !== pw2)            { errEl.textContent = '❌ Şifreler eşleşmiyor!'; return; }
+
+  localStorage.setItem(ADMIN_PW_KEY, pw1);
+  addLog('settings', 'Admin şifresi değiştirildi');
+  closePwModal();
+  showToast('Şifre başarıyla güncellendi ✅', 'success');
+}
+
+// ========== NAV — Dashboard Toggle ==========
 function navTo(page, el) {
-  // ---- DASHBOARD TOGGLE ----
+
+  // DASHBOARD: tıkla → aç/kapat
   if (page === 'dashboard') {
     const dashPage = document.getElementById('page-dashboard');
     const isActive = dashPage.classList.contains('active');
-
     if (isActive) {
-      // Dashboard açıksa kapat
       dashPage.classList.remove('active');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById('topbarTitle').textContent = '';
-      dashboardVisible = false;
-      return;
     } else {
-      // Dashboard kapalıysa aç
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       dashPage.classList.add('active');
       if (el) el.classList.add('active');
       document.getElementById('topbarTitle').textContent = 'Dashboard';
-      dashboardVisible = true;
       initDashboard();
-      return;
     }
+    return;
   }
 
-  // ---- DİĞER SAYFALAR ----
+  // DİĞER SAYFALAR
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   if (el) el.classList.add('active');
 
   const titles = {
-    dashboard:    'Dashboard',
     products:     'Ürün Listesi',
     addProduct:   'Yeni Ürün Ekle',
     coupons:      'Kupon Yönetimi',
@@ -150,7 +172,7 @@ function navTo(page, el) {
     siteSettings: 'Site Ayarları',
     whatsapp:     'WhatsApp & İletişim',
     appearance:   'Görünüm',
-    activity:     'Aktivite Logu'
+    activity:     'Aktivite Logu',
   };
   document.getElementById('topbarTitle').textContent = titles[page] || page;
 
@@ -172,15 +194,15 @@ function initDashboard() {
   });
 
   const users = JSON.parse(localStorage.getItem('velora_users') || '[]');
-  document.getElementById('stat-total').textContent    = products.length;
-  document.getElementById('stat-coupons').textContent  = coupons.filter(c => c.status === 'active').length;
-  document.getElementById('stat-users').textContent    = users.length;
+  document.getElementById('stat-total').textContent   = products.length;
+  document.getElementById('stat-coupons').textContent = coupons.filter(c => c.status === 'active').length;
+  document.getElementById('stat-users').textContent   = users.length;
 
   const cats  = {};
   const types = {};
   products.forEach(p => {
-    cats[p.category]  = (cats[p.category]  || 0) + 1;
-    types[p.type]     = (types[p.type]     || 0) + 1;
+    cats[p.category] = (cats[p.category] || 0) + 1;
+    types[p.type]    = (types[p.type]    || 0) + 1;
   });
 
   const catLabels  = { erkek: 'Erkek', kadin: 'Kadın', cocuk: 'Çocuk' };
@@ -200,7 +222,6 @@ function initDashboard() {
     </div>`;
   });
   Object.entries(types).forEach(([k, v]) => {
-    const pct = Math.round(v / products.length * 100);
     html += `<div style="padding:10px 20px;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
         <span style="color:var(--muted)">${typeLabels[k] || k}</span>
@@ -210,7 +231,6 @@ function initDashboard() {
     </div>`;
   });
   document.getElementById('catBreakdown').innerHTML = html || '<div class="empty-state">Veri yok</div>';
-
   renderRecentActivity();
 }
 
@@ -234,26 +254,23 @@ function renderProductTable() {
   const catLabel  = { erkek: 'Erkek', kadin: 'Kadın', cocuk: 'Çocuk' };
 
   const tbody = document.getElementById('productTableBody');
-  if (slice.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><div class="empty-icon">🔍</div>Ürün bulunamadı</td></tr>`;
-  } else {
-    tbody.innerHTML = slice.map(p => `
-      <tr>
-        <td><img src="${p.image}" class="td-img" onerror="this.src='https://placehold.co/44x44/222/444?text=?'"></td>
-        <td style="font-weight:500">${p.name}</td>
-        <td style="color:var(--accent);font-family:'DM Mono',monospace">${p.price.toLocaleString('tr-TR')} TL</td>
-        <td><span class="badge ${catBadge[p.category] || ''}">${catLabel[p.category] || p.category}</span></td>
-        <td><span class="badge ${typeBadge[p.type] || ''}">${typeLabel[p.type] || p.type}</span></td>
-        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">#${p.id}</td>
-        <td>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-secondary btn-sm" onclick="openEdit(${p.id})">✏️</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">🗑</button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
-  }
+  tbody.innerHTML = slice.length === 0
+    ? `<tr><td colspan="7" class="empty-state"><div class="empty-icon">🔍</div>Ürün bulunamadı</td></tr>`
+    : slice.map(p => `
+        <tr>
+          <td><img src="${p.image}" class="td-img" onerror="this.src='https://placehold.co/44x44/222/444?text=?'"></td>
+          <td style="font-weight:500">${p.name}</td>
+          <td style="color:var(--accent);font-family:'DM Mono',monospace">${p.price.toLocaleString('tr-TR')} TL</td>
+          <td><span class="badge ${catBadge[p.category] || ''}">${catLabel[p.category] || p.category}</span></td>
+          <td><span class="badge ${typeBadge[p.type] || ''}">${typeLabel[p.type] || p.type}</span></td>
+          <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">#${p.id}</td>
+          <td>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-secondary btn-sm" onclick="openEdit(${p.id})">✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">🗑</button>
+            </div>
+          </td>
+        </tr>`).join('');
 
   const pag = document.getElementById('productPagination');
   pag.innerHTML = '';
@@ -292,10 +309,9 @@ function saveProduct() {
   const cat   = document.getElementById('newCategory').value;
   const type  = document.getElementById('newType').value;
   const image = document.getElementById('newImage').value.trim();
-
   if (!name || !price || !cat || !type || !image) { showToast('Tüm alanları doldurun!', 'error'); return; }
 
-  const maxId     = Math.max(...products.map(p => p.id), 0);
+  const maxId      = Math.max(...products.map(p => p.id), 0);
   const newProduct = { id: maxId + 1, name, price, image, category: cat, type };
   products.push(newProduct);
 
@@ -310,9 +326,9 @@ function saveProduct() {
 }
 
 function clearProductForm() {
-  ['newName','newPrice','newImage'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-  ['newCategory','newType'].forEach(id => { const el = document.getElementById(id); if(el) el.selectedIndex = 0; });
-  document.getElementById('previewImg').style.display        = 'none';
+  ['newName','newPrice','newImage'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['newCategory','newType'].forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
+  document.getElementById('previewImg').style.display         = 'none';
   document.getElementById('previewPlaceholder').style.display = 'flex';
   document.getElementById('previewName').textContent          = '—';
   document.getElementById('previewPrice').textContent         = '— TL';
@@ -323,8 +339,8 @@ function bulkAdd() {
   try {
     const arr = JSON.parse(document.getElementById('bulkJson').value);
     if (!Array.isArray(arr)) { showToast('Geçersiz JSON dizisi!', 'error'); return; }
-    let added  = 0;
-    let maxId  = Math.max(...products.map(p => p.id), 0);
+    let added = 0;
+    let maxId = Math.max(...products.map(p => p.id), 0);
     const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
     arr.forEach(item => {
       if (!item.name || !item.category || !item.type) return;
@@ -359,38 +375,22 @@ function openEdit(id) {
   document.getElementById('editModal').classList.add('open');
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  const editImg = document.getElementById('edit-image');
-  if (editImg) {
-    editImg.addEventListener('input', function() {
-      const prev = document.getElementById('editPreviewImg');
-      prev.src   = this.value;
-      prev.style.display = this.value ? 'block' : 'none';
-    });
-  }
-});
-
 function saveEdit() {
-  const id  = parseInt(document.getElementById('edit-id').value);
-  const idx = products.findIndex(p => p.id === id);
+  const id    = parseInt(document.getElementById('edit-id').value);
+  const idx   = products.findIndex(p => p.id === id);
   if (idx === -1) return;
-
   const name  = document.getElementById('edit-name').value.trim();
   const price = parseInt(document.getElementById('edit-price').value);
   const cat   = document.getElementById('edit-category').value;
   const type  = document.getElementById('edit-type').value;
   const image = document.getElementById('edit-image').value.trim();
-
   if (!name || !price || !cat || !type) { showToast('Tüm alanları doldurun!', 'error'); return; }
 
   products[idx] = { ...products[idx], name, price, category: cat, type, image };
 
   const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
   const si     = stored.findIndex(p => p.id === id);
-  if (si !== -1) {
-    stored[si] = products[idx];
-    localStorage.setItem('velora_admin_products', JSON.stringify(stored));
-  }
+  if (si !== -1) { stored[si] = products[idx]; localStorage.setItem('velora_admin_products', JSON.stringify(stored)); }
 
   addLog('edit', `Ürün düzenlendi: "${name}" (ID: ${id})`);
   showToast('Ürün güncellendi ✅', 'success');
@@ -402,10 +402,8 @@ function deleteProduct(id) {
   const p = products.find(x => x.id === id);
   if (!confirm(`"${p?.name}" ürününü silmek istediğinize emin misiniz?`)) return;
   products = products.filter(x => x.id !== id);
-
   const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
   localStorage.setItem('velora_admin_products', JSON.stringify(stored.filter(x => x.id !== id)));
-
   addLog('del', `Ürün silindi: "${p?.name}" (ID: ${id})`);
   showToast('Ürün silindi', 'error');
   renderProductTable();
@@ -417,10 +415,7 @@ function closeEditModal() { document.getElementById('editModal').classList.remov
 // ========== COUPONS ==========
 function renderCoupons() {
   const tbody = document.getElementById('couponTableBody');
-  if (coupons.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Henüz kupon yok</td></tr>`;
-    return;
-  }
+  if (coupons.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Henüz kupon yok</td></tr>`; return; }
   tbody.innerHTML = coupons.map((c, i) => `
     <tr>
       <td><span class="coupon-code">${c.code}</span></td>
@@ -434,8 +429,7 @@ function renderCoupons() {
           <button class="btn btn-danger btn-sm" onclick="deleteCoupon(${i})">🗑</button>
         </div>
       </td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 function openCouponModal()  { document.getElementById('couponModal').classList.add('open');    }
@@ -482,8 +476,8 @@ function saveCoupons() { localStorage.setItem('velora_coupons', JSON.stringify(c
 
 // ========== USERS ==========
 function renderUsers() {
-  const search  = (document.getElementById('userSearch')?.value || '').toLowerCase();
-  const users   = JSON.parse(localStorage.getItem('velora_users') || '[]');
+  const search   = (document.getElementById('userSearch')?.value || '').toLowerCase();
+  const users    = JSON.parse(localStorage.getItem('velora_users') || '[]');
   const filtered = users.filter(u => !search || u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
   document.getElementById('userCount').textContent = filtered.length;
 
@@ -501,8 +495,7 @@ function renderUsers() {
         ? '<span class="badge badge-cocuk">Aktif Oturum</span>'
         : '<span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Çevrimdışı</span>'}</td>
       <td><button class="btn btn-danger btn-sm" onclick="deleteUser(${i})">🗑</button></td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 function deleteUser(i) {
@@ -550,13 +543,13 @@ function saveSiteSettings() {
 
 function saveContact() {
   const contact = {
-    waNumber:  document.getElementById('wa-number').value,
-    waGreeting:document.getElementById('wa-greeting').value,
-    waActive:  document.getElementById('wa-active').checked,
-    email:     document.getElementById('contact-email').value,
-    phone:     document.getElementById('contact-phone').value,
-    address:   document.getElementById('contact-address').value,
-    instagram: document.getElementById('contact-instagram').value,
+    waNumber:   document.getElementById('wa-number').value,
+    waGreeting: document.getElementById('wa-greeting').value,
+    waActive:   document.getElementById('wa-active').checked,
+    email:      document.getElementById('contact-email').value,
+    phone:      document.getElementById('contact-phone').value,
+    address:    document.getElementById('contact-address').value,
+    instagram:  document.getElementById('contact-instagram').value,
     emailjs: {
       service:  document.getElementById('ejs-service').value,
       template: document.getElementById('ejs-template').value,
@@ -611,19 +604,12 @@ function addLog(type, msg) {
 function renderRecentActivity() {
   const el     = document.getElementById('recentActivity');
   const recent = activityLog.slice(0, 8);
-  if (recent.length === 0) {
-    el.innerHTML = '<div class="empty-state" style="padding:24px">Henüz aktivite yok</div>';
-    return;
-  }
+  if (recent.length === 0) { el.innerHTML = '<div class="empty-state" style="padding:24px">Henüz aktivite yok</div>'; return; }
   el.innerHTML = recent.map(l => `
     <div class="log-item">
       <div class="log-dot ${l.type}"></div>
-      <div>
-        <div>${l.msg}</div>
-        <div class="log-time">${l.time}</div>
-      </div>
-    </div>
-  `).join('');
+      <div><div>${l.msg}</div><div class="log-time">${l.time}</div></div>
+    </div>`).join('');
 }
 
 function renderFullLog() {
@@ -632,12 +618,8 @@ function renderFullLog() {
   el.innerHTML = activityLog.map(l => `
     <div class="log-item">
       <div class="log-dot ${l.type}"></div>
-      <div>
-        <div style="font-size:13px">${l.msg}</div>
-        <div class="log-time">${l.time}</div>
-      </div>
-    </div>
-  `).join('');
+      <div><div style="font-size:13px">${l.msg}</div><div class="log-time">${l.time}</div></div>
+    </div>`).join('');
 }
 
 function clearLog() {
@@ -655,7 +637,7 @@ function updateStats() {
 
 // ========== TOAST ==========
 function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
+  const t    = document.getElementById('toast');
   t.textContent = msg;
   t.className   = 'toast show ' + type;
   clearTimeout(t._timer);
@@ -663,10 +645,31 @@ function showToast(msg, type = '') {
 }
 
 // ========== INIT ==========
-window.addEventListener('load', function() {
-  // Modal overlay tıklamasında kapat
-  document.getElementById('couponModal').addEventListener('click', function(e) { if (e.target === this) closeCouponModal(); });
-  document.getElementById('editModal').addEventListener('click',   function(e) { if (e.target === this) closeEditModal();   });
+window.addEventListener('load', function () {
+
+  // Modal dışına tıklayınca kapat
+  document.getElementById('couponModal').addEventListener('click', function (e) { if (e.target === this) closeCouponModal(); });
+  document.getElementById('editModal').addEventListener('click',   function (e) { if (e.target === this) closeEditModal();   });
+  document.getElementById('pwModal').addEventListener('click',     function (e) { if (e.target === this) closePwModal();     });
+
+  // Edit resim önizleme
+  document.getElementById('edit-image')?.addEventListener('input', function () {
+    const prev = document.getElementById('editPreviewImg');
+    prev.src   = this.value;
+    prev.style.display = this.value ? 'block' : 'none';
+  });
+
+  // Şifre modalında Enter
+  ['modal-curPw', 'modal-newPw', 'modal-newPw2'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') submitPwModal();
+    });
+  });
+
+  // Giriş ekranında Enter
+  document.getElementById('adminPwInput')?.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') checkAdmin();
+  });
 
   // Kayıtlı ayarları yükle
   const saved = JSON.parse(localStorage.getItem('velora_settings') || 'null');
@@ -684,19 +687,11 @@ window.addEventListener('load', function() {
 
   const contact = JSON.parse(localStorage.getItem('velora_contact') || 'null');
   if (contact) {
-    if (contact.waNumber)  document.getElementById('wa-number').value          = contact.waNumber;
-    if (contact.instagram) document.getElementById('contact-instagram').value  = contact.instagram;
+    if (contact.waNumber)  document.getElementById('wa-number').value         = contact.waNumber;
+    if (contact.instagram) document.getElementById('contact-instagram').value = contact.instagram;
   }
 
   document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
-
-  // Enter tuşu ile giriş
-  const pwInput = document.getElementById('adminPwInput');
-  if (pwInput) {
-    pwInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') checkAdmin();
-    });
-  }
 });
