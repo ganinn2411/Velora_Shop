@@ -49,8 +49,6 @@ const products = [
   { id: 46, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/christopher-campbell--h_cufTEtcg-unsplash_cehfnl.jpg`,        category: "cocuk", type: "ceket"    },
   { id: 47, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/nathan-dumlao-QqLuSb0sypY-unsplash_gs4zul.jpg`,               category: "cocuk", type: "ceket"    },
   { id: 48, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/phat-tr-ng-UbJ2Q_HInuU-unsplash_sbwzvv.jpg`,                  category: "cocuk", type: "ceket"    },
-
-  // ── YENİ ÜRÜNLER ──
   { id: 50, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_9_mqf5za.jpg`,          category: "erkek", type: "tisort"   },
   { id: 51, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.27_4_rawlcg.jpg`,          category: "erkek", type: "tisort"   },
   { id: 52, name: "Erkek Pantolon",  price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.24_sp3epo.jpg`,            category: "erkek", type: "pantalon" },
@@ -65,6 +63,8 @@ const products = [
   { id: 61, name: "Kadın Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_7_tulz7e.jpg`,          category: "kadin", type: "ceket"    },
   { id: 62, name: "Kadın Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_8_apnfjd.jpg`,          category: "kadin", type: "ceket"    },
   { id: 63, name: "Kadın Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_6_m5xtbh.jpg`,          category: "kadin", type: "ceket"    },
+
+  // ── YENİ ÜRÜNLER 2 ──
   { id: 64, name: "Erkek Tişört",    price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_5_otfdbd.jpg`,          category: "erkek", type: "tisort"   },
   { id: 65, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_4_njzedf.jpg`,          category: "erkek", type: "tisort"   },
   { id: 66, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_ht6gbg.jpg`,            category: "erkek", type: "tisort"   },
@@ -79,6 +79,16 @@ const products = [
   { id: 75, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_1_sp0k6g.jpg`,          category: "erkek", type: "tisort"   },
   { id: 76, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_3_yv7jdx.jpg`,          category: "erkek", type: "tisort"   },
   { id: 77, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_2_k9kdyj.jpg`,          category: "erkek", type: "tisort"   },
+
+  // ── YENİ ÜRÜNLER 3 ──
+  { id: 78, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_2_qcgbca.jpg`,          category: "cocuk", type: "pantalon" },
+  { id: 79, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_4_b4ffsp.jpg`,          category: "cocuk", type: "pantalon" },
+  { id: 80, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_5_ap0xia.jpg`,          category: "cocuk", type: "pantalon" },
+  { id: 81, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_3_zk99uj.jpg`,          category: "cocuk", type: "pantalon" },
+  { id: 82, name: "Çocuk Tişört",    price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.45_eeq1dc.jpg`,            category: "cocuk", type: "tisort"   },
+  { id: 83, name: "Çocuk Tişört",    price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.45_1_cnld7p.jpg`,          category: "cocuk", type: "tisort"   },
+  { id: 84, name: "Çocuk Tişört",    price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.45_2_rayugx.jpg`,          category: "cocuk", type: "tisort"   },
+  { id: 85, name: "Çocuk Ceket",     price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_1_lvqfgm.jpg`,          category: "cocuk", type: "ceket"    },
 ];
 
 
