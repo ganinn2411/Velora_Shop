@@ -1,7 +1,18 @@
-// ========== DATA ==========
+// ========== VELora ADMIN — admin.js ==========
+// localStorage KEY HARİTASI (site ile senkron):
+//   velora_products      → tüm ürünler (site buradan okur)
+//   velora_coupons       → kuponlar
+//   velora_admin_pw      → admin şifresi
+//   velora_log           → aktivite logu
+//   velora_settings      → site ayarları
+//   velora_contact       → iletişim/whatsapp
+//   velora_appearance    → görünüm
+//   velora_users         → kullanıcılar
+
+// ========== VARSAYILAN ÜRÜNLER ==========
 const CDN = "https://res.cloudinary.com/dy2dvpbit/image/upload";
 
-let products = [
+const DEFAULT_PRODUCTS = [
   { id: 1,  name: "Erkek Tişört",    price: 1200, image: `${CDN}/haryo-setyadi-acn5ERAeSb4-unsplash_svhjqz.jpg`, category: "erkek", type: "tisort" },
   { id: 2,  name: "Erkek Tişört",    price: 300,  image: `${CDN}/pexels-david-fowora-2160297192-36801391_hfunqe.jpg`, category: "erkek", type: "tisort" },
   { id: 3,  name: "Erkek Tişört",    price: 800,  image: `${CDN}/sven-ciupka-x8Vg7Up6TUc-unsplash_fyrbqs.jpg`, category: "erkek", type: "tisort" },
@@ -52,15 +63,49 @@ let products = [
   { id: 48, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/phat-tr-ng-UbJ2Q_HInuU-unsplash_sbwzvv.jpg`, category: "cocuk", type: "ceket" },
 ];
 
-const storedProducts = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
-storedProducts.forEach(sp => { if (!products.find(p => p.id === sp.id)) products.push(sp); });
+// ========== ÜRÜN LİSTESİNİ BAŞLAT ==========
+// Tek kaynak: velora_products  (admin + site aynı key'i kullanır)
+function loadProducts() {
+  const stored = localStorage.getItem('velora_products');
+  if (stored) {
+    try { return JSON.parse(stored); } catch(e) {}
+  }
+  // İlk açılış → varsayılanları kaydet, site anında görsün
+  localStorage.setItem('velora_products', JSON.stringify(DEFAULT_PRODUCTS));
+  return DEFAULT_PRODUCTS.slice();
+}
 
-let coupons = JSON.parse(localStorage.getItem('velora_coupons') || 'null') || [
+function saveProducts() {
+  localStorage.setItem('velora_products', JSON.stringify(products));
+  // Eski key'i de temizle ki karışıklık olmasın
+  localStorage.removeItem('velora_admin_products');
+}
+
+let products = loadProducts();
+
+// ========== KUPON LİSTESİNİ BAŞLAT ==========
+const DEFAULT_COUPONS = [
   { code: "VELORA10",  discount: 10, status: "active", uses: 0 },
   { code: "VELORA20",  discount: 20, status: "active", uses: 0 },
   { code: "HOSGELDIN", discount: 15, status: "active", uses: 0 },
 ];
 
+function loadCoupons() {
+  const stored = localStorage.getItem('velora_coupons');
+  if (stored) {
+    try { return JSON.parse(stored); } catch(e) {}
+  }
+  localStorage.setItem('velora_coupons', JSON.stringify(DEFAULT_COUPONS));
+  return DEFAULT_COUPONS.slice();
+}
+
+function saveCoupons() {
+  localStorage.setItem('velora_coupons', JSON.stringify(coupons));
+}
+
+let coupons = loadCoupons();
+
+// ========== DİĞER STATE ==========
 let activityLog   = JSON.parse(localStorage.getItem('velora_log') || '[]');
 let currentFilter = 'all';
 let currentPage   = 1;
@@ -69,7 +114,7 @@ let editingId     = null;
 
 // ========== AUTH ==========
 const ADMIN_PW_KEY = 'velora_admin_pw';
-const DEFAULT_PW   = 'admin123'; // 🔑 Varsayılan şifreyi buradan değiştir
+const DEFAULT_PW   = 'admin123';
 
 function checkAdmin() {
   const storedPw = localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW;
@@ -91,7 +136,6 @@ function adminLogout() {
   document.getElementById('adminPwInput').value = '';
 }
 
-// Site Ayarları sayfasındaki şifre güncelle
 function changeAdminPw() {
   const pw1 = document.getElementById('set-newAdminPw').value;
   const pw2 = document.getElementById('set-newAdminPw2').value;
@@ -105,64 +149,30 @@ function changeAdminPw() {
   addLog('settings', 'Admin şifresi değiştirildi');
 }
 
-// ========== ŞİFRE MODAL ==========
-function openPwModal() {
-  document.getElementById('modal-curPw').value        = '';
-  document.getElementById('modal-newPw').value        = '';
-  document.getElementById('modal-newPw2').value       = '';
-  document.getElementById('pwModalError').textContent = '';
-  document.getElementById('pwModal').classList.add('open');
-  setTimeout(() => document.getElementById('modal-curPw').focus(), 100);
+// ========== SIDEBAR ==========
+function openSidebar()  {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
 }
 
-function closePwModal() {
-  document.getElementById('pwModal').classList.remove('open');
-}
-
-function submitPwModal() {
-  const storedPw = localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW;
-  const cur      = document.getElementById('modal-curPw').value;
-  const pw1      = document.getElementById('modal-newPw').value;
-  const pw2      = document.getElementById('modal-newPw2').value;
-  const errEl    = document.getElementById('pwModalError');
-
-  if (cur !== storedPw)       { errEl.textContent = '❌ Mevcut şifre yanlış!'; return; }
-  if (!pw1 || pw1.length < 4) { errEl.textContent = '❌ Yeni şifre en az 4 karakter olmalı!'; return; }
-  if (pw1 !== pw2)            { errEl.textContent = '❌ Şifreler eşleşmiyor!'; return; }
-
-  localStorage.setItem(ADMIN_PW_KEY, pw1);
-  addLog('settings', 'Admin şifresi değiştirildi');
-  closePwModal();
-  showToast('Şifre başarıyla güncellendi ✅', 'success');
-}
-
-// ========== NAV — Dashboard Toggle ==========
+// ========== NAV ==========
 function navTo(page, el) {
-
-  // DASHBOARD: tıkla → aç/kapat
-  if (page === 'dashboard') {
-    const dashPage = document.getElementById('page-dashboard');
-    const isActive = dashPage.classList.contains('active');
-    if (isActive) {
-      dashPage.classList.remove('active');
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.getElementById('topbarTitle').textContent = '';
-    } else {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      dashPage.classList.add('active');
-      if (el) el.classList.add('active');
-      document.getElementById('topbarTitle').textContent = 'Dashboard';
-      initDashboard();
-    }
-    return;
-  }
-
-  // DİĞER SAYFALAR
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
+
+  const pageEl = document.getElementById('page-' + page);
+  if (!pageEl) return;
+  pageEl.classList.add('active');
   if (el) el.classList.add('active');
+
+  // Bottom nav güncelle
+  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+  const bnavEl = document.getElementById('bnav-' + page);
+  if (bnavEl) bnavEl.classList.add('active');
 
   const titles = {
     products:     'Ürün Listesi',
@@ -176,7 +186,7 @@ function navTo(page, el) {
   };
   document.getElementById('topbarTitle').textContent = titles[page] || page;
 
-  if (page === 'products')   renderProductTable();
+  if (page === 'products')   { currentPage = 1; renderProductTable(); }
   if (page === 'coupons')    renderCoupons();
   if (page === 'users')      renderUsers();
   if (page === 'activity')   renderFullLog();
@@ -185,6 +195,9 @@ function navTo(page, el) {
     editingId = null;
     document.getElementById('addProductTitle').textContent = 'Yeni Ürün Ekle';
   }
+
+  // Mobilde sidebar'ı kapat
+  closeSidebar();
 }
 
 // ========== DASHBOARD ==========
@@ -192,46 +205,19 @@ function initDashboard() {
   document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
+  updateStats();
+}
 
-  const users = JSON.parse(localStorage.getItem('velora_users') || '[]');
-  document.getElementById('stat-total').textContent   = products.length;
-  document.getElementById('stat-coupons').textContent = coupons.filter(c => c.status === 'active').length;
-  document.getElementById('stat-users').textContent   = users.length;
-
-  const cats  = {};
-  const types = {};
-  products.forEach(p => {
-    cats[p.category] = (cats[p.category] || 0) + 1;
-    types[p.type]    = (types[p.type]    || 0) + 1;
-  });
-
-  const catLabels  = { erkek: 'Erkek', kadin: 'Kadın', cocuk: 'Çocuk' };
-  const typeLabels = { tisort: 'Tişört', pantalon: 'Pantolon', ceket: 'Ceket', sapka: 'Şapka' };
-
-  let html = '';
-  Object.entries(cats).forEach(([k, v]) => {
-    const pct = Math.round(v / products.length * 100);
-    html += `<div style="padding:10px 20px;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
-        <span>${catLabels[k] || k}</span>
-        <span style="color:var(--accent);font-family:'DM Mono',monospace">${v} ürün</span>
-      </div>
-      <div style="height:4px;background:var(--surface2);border-radius:4px">
-        <div style="height:4px;width:${pct}%;background:var(--accent);border-radius:4px"></div>
-      </div>
-    </div>`;
-  });
-  Object.entries(types).forEach(([k, v]) => {
-    html += `<div style="padding:10px 20px;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
-        <span style="color:var(--muted)">${typeLabels[k] || k}</span>
-        <span style="color:var(--muted);font-family:'DM Mono',monospace">${v}</span>
-      </div>
-      <div style="height:3px;background:var(--surface2);border-radius:4px"></div>
-    </div>`;
-  });
-  document.getElementById('catBreakdown').innerHTML = html || '<div class="empty-state">Veri yok</div>';
-  renderRecentActivity();
+function updateStats() {
+  const statTotal   = document.getElementById('stat-total');
+  const statCoupons = document.getElementById('stat-coupons');
+  const statUsers   = document.getElementById('stat-users');
+  if (statTotal)   statTotal.textContent   = products.length;
+  if (statCoupons) statCoupons.textContent = coupons.filter(c => c.status === 'active').length;
+  if (statUsers) {
+    const users = JSON.parse(localStorage.getItem('velora_users') || '[]');
+    statUsers.textContent = users.length;
+  }
 }
 
 // ========== PRODUCTS TABLE ==========
@@ -245,8 +231,9 @@ function renderProductTable() {
 
   document.getElementById('productCount').textContent = filtered.length;
 
-  const totalPages = Math.ceil(filtered.length / perPage);
-  const slice      = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const slice = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   const catBadge  = { erkek: 'badge-erkek', kadin: 'badge-kadin', cocuk: 'badge-cocuk' };
   const typeBadge = { tisort: 'badge-tisort', pantalon: 'badge-pantalon', ceket: 'badge-ceket', sapka: 'badge-sapka' };
@@ -255,7 +242,7 @@ function renderProductTable() {
 
   const tbody = document.getElementById('productTableBody');
   tbody.innerHTML = slice.length === 0
-    ? `<tr><td colspan="7" class="empty-state"><div class="empty-icon">🔍</div>Ürün bulunamadı</td></tr>`
+    ? `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🔍</div>Ürün bulunamadı</div></td></tr>`
     : slice.map(p => `
         <tr>
           <td><img src="${p.image}" class="td-img" onerror="this.src='https://placehold.co/44x44/222/444?text=?'"></td>
@@ -296,8 +283,14 @@ function previewImage() {
   const url = document.getElementById('newImage').value;
   const img = document.getElementById('previewImg');
   const ph  = document.getElementById('previewPlaceholder');
-  if (url) { img.src = url; img.style.display = 'block'; ph.style.display = 'none'; }
-  else     { img.style.display = 'none'; ph.style.display = 'flex'; }
+  if (url) {
+    img.src = url;
+    img.style.display = 'block';
+    ph.style.display  = 'none';
+  } else {
+    img.style.display = 'none';
+    ph.style.display  = 'flex';
+  }
   document.getElementById('previewName').textContent  = document.getElementById('newName').value || '—';
   const price = document.getElementById('newPrice').value;
   document.getElementById('previewPrice').textContent = price ? parseInt(price).toLocaleString('tr-TR') + ' TL' : '— TL';
@@ -309,30 +302,44 @@ function saveProduct() {
   const cat   = document.getElementById('newCategory').value;
   const type  = document.getElementById('newType').value;
   const image = document.getElementById('newImage').value.trim();
-  if (!name || !price || !cat || !type || !image) { showToast('Tüm alanları doldurun!', 'error'); return; }
 
-  const maxId      = Math.max(...products.map(p => p.id), 0);
+  if (!name || !price || !cat || !type || !image) {
+    showToast('Tüm alanları doldurun!', 'error');
+    return;
+  }
+
+  const maxId      = products.length > 0 ? Math.max(...products.map(p => p.id)) : 0;
   const newProduct = { id: maxId + 1, name, price, image, category: cat, type };
   products.push(newProduct);
 
-  const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
-  stored.push(newProduct);
-  localStorage.setItem('velora_admin_products', JSON.stringify(stored));
+  // ✅ Siteyle aynı key'e kaydet
+  saveProducts();
 
   addLog('add', `Yeni ürün eklendi: "${name}" (ID: ${newProduct.id})`);
-  showToast(`"${name}" ürünü eklendi ✅`, 'success');
+  showToast(`"${name}" ürünü eklendi ✅ — Site hemen güncellendi`, 'success');
   clearProductForm();
   updateStats();
 }
 
 function clearProductForm() {
-  ['newName','newPrice','newImage'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  ['newCategory','newType'].forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
-  document.getElementById('previewImg').style.display         = 'none';
-  document.getElementById('previewPlaceholder').style.display = 'flex';
-  document.getElementById('previewName').textContent          = '—';
-  document.getElementById('previewPrice').textContent         = '— TL';
-  document.getElementById('bulkJson').value                   = '';
+  ['newName','newPrice','newImage'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['newCategory','newType'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.selectedIndex = 0;
+  });
+  const img = document.getElementById('previewImg');
+  if (img) img.style.display = 'none';
+  const ph = document.getElementById('previewPlaceholder');
+  if (ph) ph.style.display = 'flex';
+  const pn = document.getElementById('previewName');
+  if (pn) pn.textContent = '—';
+  const pp = document.getElementById('previewPrice');
+  if (pp) pp.textContent = '— TL';
+  const bj = document.getElementById('bulkJson');
+  if (bj) bj.value = '';
 }
 
 function bulkAdd() {
@@ -340,19 +347,17 @@ function bulkAdd() {
     const arr = JSON.parse(document.getElementById('bulkJson').value);
     if (!Array.isArray(arr)) { showToast('Geçersiz JSON dizisi!', 'error'); return; }
     let added = 0;
-    let maxId = Math.max(...products.map(p => p.id), 0);
-    const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
+    let maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 0;
     arr.forEach(item => {
       if (!item.name || !item.category || !item.type) return;
       maxId++;
       const np = { id: maxId, name: item.name, price: item.price || 0, image: item.image || '', category: item.category, type: item.type };
       products.push(np);
-      stored.push(np);
       added++;
     });
-    localStorage.setItem('velora_admin_products', JSON.stringify(stored));
+    saveProducts();
     addLog('add', `${added} ürün toplu eklendi`);
-    showToast(`${added} ürün eklendi ✅`, 'success');
+    showToast(`${added} ürün eklendi ✅ — Site hemen güncellendi`, 'success');
     document.getElementById('bulkJson').value = '';
     updateStats();
   } catch(e) { showToast('JSON formatı hatalı!', 'error'); }
@@ -379,21 +384,22 @@ function saveEdit() {
   const id    = parseInt(document.getElementById('edit-id').value);
   const idx   = products.findIndex(p => p.id === id);
   if (idx === -1) return;
+
   const name  = document.getElementById('edit-name').value.trim();
   const price = parseInt(document.getElementById('edit-price').value);
   const cat   = document.getElementById('edit-category').value;
   const type  = document.getElementById('edit-type').value;
   const image = document.getElementById('edit-image').value.trim();
+
   if (!name || !price || !cat || !type) { showToast('Tüm alanları doldurun!', 'error'); return; }
 
   products[idx] = { ...products[idx], name, price, category: cat, type, image };
 
-  const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
-  const si     = stored.findIndex(p => p.id === id);
-  if (si !== -1) { stored[si] = products[idx]; localStorage.setItem('velora_admin_products', JSON.stringify(stored)); }
+  // ✅ Siteyle aynı key'e kaydet
+  saveProducts();
 
   addLog('edit', `Ürün düzenlendi: "${name}" (ID: ${id})`);
-  showToast('Ürün güncellendi ✅', 'success');
+  showToast('Ürün güncellendi ✅ — Site hemen güncellendi', 'success');
   closeEditModal();
   renderProductTable();
 }
@@ -402,8 +408,7 @@ function deleteProduct(id) {
   const p = products.find(x => x.id === id);
   if (!confirm(`"${p?.name}" ürününü silmek istediğinize emin misiniz?`)) return;
   products = products.filter(x => x.id !== id);
-  const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
-  localStorage.setItem('velora_admin_products', JSON.stringify(stored.filter(x => x.id !== id)));
+  saveProducts();
   addLog('del', `Ürün silindi: "${p?.name}" (ID: ${id})`);
   showToast('Ürün silindi', 'error');
   renderProductTable();
@@ -415,15 +420,23 @@ function closeEditModal() { document.getElementById('editModal').classList.remov
 // ========== COUPONS ==========
 function renderCoupons() {
   const tbody = document.getElementById('couponTableBody');
-  if (coupons.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Henüz kupon yok</td></tr>`; return; }
+  if (coupons.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">Henüz kupon yok</div></td></tr>`;
+    return;
+  }
   tbody.innerHTML = coupons.map((c, i) => `
     <tr>
       <td><span class="coupon-code">${c.code}</span></td>
       <td style="color:var(--success);font-weight:600">%${c.discount}</td>
-      <td><span class="badge ${c.status === 'active' ? 'badge-cocuk' : ''}" style="${c.status !== 'active' ? 'background:rgba(100,100,100,0.2);color:var(--muted)' : ''}">${c.status === 'active' ? 'Aktif' : 'Pasif'}</span></td>
+      <td>
+        <span class="badge ${c.status === 'active' ? 'badge-cocuk' : ''}"
+          style="${c.status !== 'active' ? 'background:rgba(100,100,100,0.2);color:var(--muted)' : ''}">
+          ${c.status === 'active' ? 'Aktif' : 'Pasif'}
+        </span>
+      </td>
       <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${c.uses || 0}</td>
       <td>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-secondary btn-sm" onclick="toggleCoupon(${i})">${c.status === 'active' ? '⏸' : '▶️'}</button>
           <button class="btn btn-secondary btn-sm" onclick="copyCoupon('${c.code}')">📋</button>
           <button class="btn btn-danger btn-sm" onclick="deleteCoupon(${i})">🗑</button>
@@ -432,23 +445,32 @@ function renderCoupons() {
     </tr>`).join('');
 }
 
-function openCouponModal()  { document.getElementById('couponModal').classList.add('open');    }
+function openCouponModal() {
+  document.getElementById('coup-code').value     = '';
+  document.getElementById('coup-discount').value = '';
+  document.getElementById('coup-status').selectedIndex = 0;
+  document.getElementById('couponModal').classList.add('open');
+}
 function closeCouponModal() { document.getElementById('couponModal').classList.remove('open'); }
 
 function addCoupon() {
   const code   = document.getElementById('coup-code').value.trim().toUpperCase();
   const disc   = parseInt(document.getElementById('coup-discount').value);
   const status = document.getElementById('coup-status').value;
+
   if (!code || !disc || disc < 1 || disc > 100) { showToast('Geçerli kod ve indirim girin!', 'error'); return; }
   if (coupons.find(c => c.code === code))        { showToast('Bu kod zaten mevcut!', 'error'); return; }
+
   coupons.push({ code, discount: disc, status, uses: 0 });
+
+  // ✅ Siteyle aynı key'e kaydet
   saveCoupons();
+
   addLog('add', `Yeni kupon: ${code} (%${disc})`);
-  showToast(`"${code}" kuponu eklendi ✅`, 'success');
+  showToast(`"${code}" kuponu eklendi ✅ — Sitede aktif`, 'success');
   closeCouponModal();
   renderCoupons();
-  document.getElementById('coup-code').value     = '';
-  document.getElementById('coup-discount').value = '';
+  updateStats();
 }
 
 function toggleCoupon(i) {
@@ -456,6 +478,7 @@ function toggleCoupon(i) {
   saveCoupons();
   addLog('edit', `Kupon durumu değiştirildi: ${coupons[i].code}`);
   renderCoupons();
+  updateStats();
 }
 
 function deleteCoupon(i) {
@@ -466,25 +489,26 @@ function deleteCoupon(i) {
   addLog('del', `Kupon silindi: ${code}`);
   showToast('Kupon silindi', 'error');
   renderCoupons();
+  updateStats();
 }
 
 function copyCoupon(code) {
-  navigator.clipboard.writeText(code).then(() => showToast(`"${code}" kopyalandı`, 'success'));
+  navigator.clipboard.writeText(code).then(() => showToast(`"${code}" kopyalandı 📋`, 'success'));
 }
-
-function saveCoupons() { localStorage.setItem('velora_coupons', JSON.stringify(coupons)); }
 
 // ========== USERS ==========
 function renderUsers() {
   const search   = (document.getElementById('userSearch')?.value || '').toLowerCase();
   const users    = JSON.parse(localStorage.getItem('velora_users') || '[]');
-  const filtered = users.filter(u => !search || u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
+  const filtered = users.filter(u =>
+    !search || u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search)
+  );
   document.getElementById('userCount').textContent = filtered.length;
 
   const activeUser = JSON.parse(localStorage.getItem('activeUser') || 'null');
   const tbody = document.getElementById('userTableBody');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" class="empty-state"><div class="empty-icon">👤</div>Kullanıcı bulunamadı</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">👤</div>Kullanıcı bulunamadı</div></td></tr>`;
     return;
   }
   tbody.innerHTML = filtered.map((u, i) => `
@@ -493,7 +517,8 @@ function renderUsers() {
       <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${u.email}</td>
       <td>${activeUser?.email === u.email
         ? '<span class="badge badge-cocuk">Aktif Oturum</span>'
-        : '<span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Çevrimdışı</span>'}</td>
+        : '<span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Çevrimdışı</span>'
+      }</td>
       <td><button class="btn btn-danger btn-sm" onclick="deleteUser(${i})">🗑</button></td>
     </tr>`).join('');
 }
@@ -586,7 +611,7 @@ function saveAppearance() {
 function exportProducts() {
   const header = 'ID,Ad,Fiyat,Kategori,Tip,Görsel\n';
   const rows   = products.map(p => `${p.id},"${p.name}",${p.price},${p.category},${p.type},"${p.image}"`).join('\n');
-  const blob   = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+  const blob   = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
   const url    = URL.createObjectURL(blob);
   const a      = document.createElement('a');
   a.href = url; a.download = 'velora_urunler.csv'; a.click();
@@ -601,24 +626,16 @@ function addLog(type, msg) {
   localStorage.setItem('velora_log', JSON.stringify(activityLog));
 }
 
-function renderRecentActivity() {
-  const el     = document.getElementById('recentActivity');
-  const recent = activityLog.slice(0, 8);
-  if (recent.length === 0) { el.innerHTML = '<div class="empty-state" style="padding:24px">Henüz aktivite yok</div>'; return; }
-  el.innerHTML = recent.map(l => `
-    <div class="log-item">
-      <div class="log-dot ${l.type}"></div>
-      <div><div>${l.msg}</div><div class="log-time">${l.time}</div></div>
-    </div>`).join('');
-}
-
 function renderFullLog() {
   const el = document.getElementById('fullActivityLog');
   if (activityLog.length === 0) { el.innerHTML = '<div class="empty-state">Log boş</div>'; return; }
   el.innerHTML = activityLog.map(l => `
     <div class="log-item">
       <div class="log-dot ${l.type}"></div>
-      <div><div style="font-size:13px">${l.msg}</div><div class="log-time">${l.time}</div></div>
+      <div>
+        <div style="font-size:13px">${l.msg}</div>
+        <div class="log-time">${l.time}</div>
+      </div>
     </div>`).join('');
 }
 
@@ -630,44 +647,48 @@ function clearLog() {
   showToast('Log temizlendi', 'success');
 }
 
-function updateStats() {
-  document.getElementById('stat-total').textContent   = products.length;
-  document.getElementById('stat-coupons').textContent = coupons.filter(c => c.status === 'active').length;
-}
-
 // ========== TOAST ==========
 function showToast(msg, type = '') {
-  const t    = document.getElementById('toast');
+  const t = document.getElementById('toast');
   t.textContent = msg;
   t.className   = 'toast show ' + type;
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.className = 'toast', 3000);
+  t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
 }
 
 // ========== INIT ==========
 window.addEventListener('load', function () {
 
+  // Eski velora_admin_products varsa velora_products'a taşı
+  const oldStored = localStorage.getItem('velora_admin_products');
+  if (oldStored) {
+    try {
+      const oldArr = JSON.parse(oldStored);
+      oldArr.forEach(sp => {
+        if (!products.find(p => p.id === sp.id)) products.push(sp);
+      });
+      saveProducts();
+    } catch(e) {}
+    localStorage.removeItem('velora_admin_products');
+  }
+
   // Modal dışına tıklayınca kapat
-  document.getElementById('couponModal').addEventListener('click', function (e) { if (e.target === this) closeCouponModal(); });
-  document.getElementById('editModal').addEventListener('click',   function (e) { if (e.target === this) closeEditModal();   });
-  document.getElementById('pwModal').addEventListener('click',     function (e) { if (e.target === this) closePwModal();     });
+  document.getElementById('couponModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeCouponModal();
+  });
+  document.getElementById('editModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+  });
 
   // Edit resim önizleme
-  document.getElementById('edit-image')?.addEventListener('input', function () {
+  document.getElementById('edit-image')?.addEventListener('input', function() {
     const prev = document.getElementById('editPreviewImg');
     prev.src   = this.value;
     prev.style.display = this.value ? 'block' : 'none';
   });
 
-  // Şifre modalında Enter
-  ['modal-curPw', 'modal-newPw', 'modal-newPw2'].forEach(id => {
-    document.getElementById(id)?.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') submitPwModal();
-    });
-  });
-
   // Giriş ekranında Enter
-  document.getElementById('adminPwInput')?.addEventListener('keydown', function (e) {
+  document.getElementById('adminPwInput')?.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') checkAdmin();
   });
 
@@ -694,4 +715,7 @@ window.addEventListener('load', function () {
   document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
+
+  // İlk yüklemede ürün sayısını göster
+  updateStats();
 });
