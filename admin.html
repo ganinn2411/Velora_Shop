@@ -6,951 +6,611 @@
 <title>Velora Admin Panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #0e0e10;
-  --surface: #18181c;
-  --surface2: #222228;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text: #f0ede8;
-  --muted: #888880;
-  --accent: #c9b97a;
-  --accent2: #8b6f3a;
-  --danger: #e05a5a;
-  --success: #5ab87a;
-  --info: #5a8be0;
-  --warning: #e09a5a;
-  --radius: 10px;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow-x:hidden}
-body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
-
-/* ===== LOGIN ===== */
-.login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:999;padding:20px}
-.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px 32px;width:100%;max-width:360px}
-.login-logo{font-size:26px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:4px}
-.login-sub{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'DM Mono',monospace;margin-bottom:28px}
-.login-title{font-size:17px;font-weight:600;margin-bottom:20px}
-
-/* ===== LAYOUT ===== */
-#adminPanel{display:none;flex-direction:column;min-height:100vh;width:100%}
-
-/* ===== TOPBAR (mobile-first) ===== */
-.topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:90;gap:10px}
-.topbar-title{font-size:14px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.topbar-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
-.hamburger-btn{background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:4px;line-height:1;display:flex;align-items:center}
-.topbar-date{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;display:none}
-
-/* ===== SIDEBAR OVERLAY ===== */
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:98;backdrop-filter:blur(2px)}
-.sidebar-overlay.open{display:block}
-
-/* ===== SIDEBAR ===== */
-.sidebar{width:260px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:99;transform:translateX(-100%);transition:transform 0.25s cubic-bezier(.4,0,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch}
-.sidebar.open{transform:translateX(0)}
-.sidebar-logo{padding:24px 20px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
-.logo-text{font-size:22px;font-weight:700;letter-spacing:3px;color:var(--accent)}
-.logo-sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:2px;font-family:'DM Mono',monospace}
-.nav{flex:1;padding:12px 0}
-.nav-section{padding:8px 16px 4px;font-size:10px;letter-spacing:2px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:10px;padding:12px 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all 0.15s;letter-spacing:0.5px;user-select:none;min-height:44px}
-.nav-item:active{background:rgba(255,255,255,0.04)}
-.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(201,185,122,0.06)}
-.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
-.sidebar-footer{padding:14px;border-top:1px solid var(--border);flex-shrink:0}
-.admin-badge{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:var(--radius)}
-.admin-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0}
-.admin-name{font-size:12px;font-weight:500}
-.admin-role{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
-
-/* ===== MAIN ===== */
-.main{flex:1;display:flex;flex-direction:column;min-height:100vh}
-.page{display:none;padding:16px}
-.page.active{display:block}
-
-/* ===== STAT GRID ===== */
-.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.stat-label{font-size:10px;color:var(--muted);letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:6px}
-.stat-value{font-size:24px;font-weight:700;color:var(--text)}
-.stat-sub{font-size:10px;color:var(--muted);margin-top:3px}
-.stat-accent{color:var(--accent)}
-
-/* ===== SECTION HEADER ===== */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap}
-.section-title{font-size:14px;font-weight:600;flex:1;min-width:0}
-
-/* ===== BUTTONS ===== */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;letter-spacing:0.5px;font-family:'Syne',sans-serif;transition:all 0.15s;white-space:nowrap;min-height:36px}
-.btn:active{transform:scale(0.97)}
-.btn-primary{background:var(--accent);color:#111}
-.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border2)}
-.btn-danger{background:rgba(224,90,90,0.15);color:var(--danger);border:1px solid rgba(224,90,90,0.3)}
-.btn-sm{padding:6px 10px;font-size:11px;min-height:32px}
-.btn-full{width:100%;justify-content:center}
-
-/* ===== TABLE ===== */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;min-width:480px}
-th{padding:10px 12px;text-align:left;font-size:10px;letter-spacing:1.5px;color:var(--muted);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);text-transform:uppercase;background:rgba(255,255,255,0.02);white-space:nowrap}
-td{padding:11px 12px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:active td{background:rgba(255,255,255,0.02)}
-.td-img{width:40px;height:40px;object-fit:cover;border-radius:6px}
-
-/* ===== BADGE ===== */
-.badge{display:inline-block;padding:3px 7px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.5px;font-family:'DM Mono',monospace;white-space:nowrap}
-.badge-erkek{background:rgba(90,139,224,0.15);color:#7aacf0}
-.badge-kadin{background:rgba(224,90,139,0.15);color:#f07aac}
-.badge-cocuk{background:rgba(90,184,122,0.15);color:var(--success)}
-.badge-tisort{background:rgba(201,185,122,0.1);color:var(--accent)}
-.badge-pantalon{background:rgba(160,120,80,0.15);color:#d4a06a}
-.badge-ceket{background:rgba(140,90,200,0.15);color:#c07af0}
-.badge-sapka{background:rgba(90,180,200,0.15);color:#7ad0f0}
-
-/* ===== FORM ===== */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-group{display:flex;flex-direction:column;gap:6px}
-.form-group.full{grid-column:1/-1}
-.form-label{font-size:10px;color:var(--muted);letter-spacing:1px;font-family:'DM Mono',monospace}
-.form-input,.form-select{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'Syne',sans-serif;outline:none;transition:border-color 0.15s;width:100%;min-height:42px}
-.form-input:focus,.form-select:focus{border-color:var(--accent)}
-.form-select option{background:var(--surface2)}
-textarea.form-input{min-height:80px;resize:vertical}
-
-/* ===== MODAL ===== */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0}
-.modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1}
-.modal-title{font-size:14px;font-weight:600}
-.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;padding:4px;min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center}
-.modal-body{padding:20px}
-.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--surface)}
-
-/* ===== SETTINGS ===== */
-.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
-.settings-card-title{font-size:11px;font-weight:600;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);color:var(--accent);letter-spacing:1px;font-family:'DM Mono',monospace}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px}
-.toggle-row:last-child{border-bottom:none}
-.toggle-label{font-size:13px}
-.toggle-desc{font-size:11px;color:var(--muted);margin-top:2px}
-.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
-.toggle input{opacity:0;width:0;height:0}
-.slider-toggle{position:absolute;inset:0;background:var(--surface2);border-radius:20px;cursor:pointer;transition:background 0.2s;border:1px solid var(--border2)}
-.slider-toggle::before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:all 0.2s}
-.toggle input:checked+.slider-toggle{background:rgba(201,185,122,0.3);border-color:var(--accent)}
-.toggle input:checked+.slider-toggle::before{transform:translateX(18px);background:var(--accent)}
-
-/* ===== SEARCH ===== */
-.search-bar{position:relative;margin-bottom:14px}
-.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
-.search-input{width:100%;padding:10px 12px 10px 34px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'Syne',sans-serif;outline:none;min-height:42px}
-.search-input:focus{border-color:var(--accent)}
-
-/* ===== TOAST ===== */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 18px;font-size:12px;z-index:500;opacity:0;transition:all 0.3s;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.success{border-color:rgba(90,184,122,0.5);color:var(--success)}
-.toast.error{border-color:rgba(224,90,90,0.5);color:var(--danger)}
-
-/* ===== FILTER BAR ===== */
-.filter-bar{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
-.filter-bar::-webkit-scrollbar{display:none}
-.filter-btn{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--muted);font-family:'Syne',sans-serif;transition:all 0.15s;letter-spacing:0.5px;white-space:nowrap;flex-shrink:0;min-height:32px}
-.filter-btn.active{background:rgba(201,185,122,0.15);border-color:var(--accent);color:var(--accent)}
-
-/* ===== PAGINATION ===== */
-.pagination{display:flex;gap:4px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
-.page-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;transition:all 0.15s;flex-shrink:0}
-.page-btn.active{background:var(--accent);color:#111;border-color:var(--accent)}
-
-/* ===== LOG ===== */
-.log-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);font-size:12px}
-.log-item:last-child{border-bottom:none}
-.log-dot{width:8px;height:8px;border-radius:50%;margin-top:3px;flex-shrink:0}
-.log-dot.add{background:var(--success)}
-.log-dot.edit{background:var(--info)}
-.log-dot.del{background:var(--danger)}
-.log-dot.settings{background:var(--warning)}
-.log-time{color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;margin-top:2px}
-
-/* ===== COUPON ===== */
-.coupon-code{font-family:'DM Mono',monospace;font-size:11px;background:rgba(201,185,122,0.1);color:var(--accent);padding:3px 7px;border-radius:4px}
-
-/* ===== PRODUCT PREVIEW ===== */
-.product-preview-img{width:100%;height:180px;object-fit:cover;border-radius:8px;border:1px solid var(--border);background:var(--surface2);margin-bottom:10px;display:block}
-
-/* ===== EMPTY STATE ===== */
-.empty-state{text-align:center;padding:36px 20px;color:var(--muted);font-size:12px}
-.empty-icon{font-size:28px;margin-bottom:10px}
-
-/* ===== BOTTOM NAV ===== */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:80;padding-bottom:env(safe-area-inset-bottom)}
-.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;color:var(--muted);font-size:9px;font-weight:600;letter-spacing:0.5px;gap:3px;min-height:52px;transition:color 0.15s;border:none;background:none;font-family:'Syne',sans-serif;-webkit-tap-highlight-color:transparent}
-.bottom-nav-item.active{color:var(--accent)}
-.bottom-nav-item span:first-child{font-size:20px;line-height:1}
-
-/* PAGE CONTENT SPACING */
-.page{padding-bottom:72px}
-
-/* ADD PRODUCT LAYOUT */
-.add-product-grid{display:flex;flex-direction:column;gap:16px}
-.settings-two-col{display:flex;flex-direction:column;gap:14px}
-
-/* ===== DESKTOP ===== */
-@media(min-width:768px){
-  #adminPanel{flex-direction:row}
-  .sidebar{transform:translateX(0);position:fixed;top:0;bottom:0;left:0}
-  .sidebar-overlay{display:none!important}
-  .main{margin-left:260px}
-  .topbar{height:60px;padding:0 28px}
-  .hamburger-btn{display:none}
-  .topbar-date{display:block}
-  .page{padding:28px;padding-bottom:28px}
-  .stat-grid{grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-  .stat-value{font-size:28px}
-  .form-grid{grid-template-columns:1fr 1fr}
-  .modal-overlay{align-items:center;padding:24px}
-  .modal{border-radius:14px;max-height:88vh}
-  .settings-two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .add-product-grid{display:grid;grid-template-columns:1fr 340px;gap:24px}
-  .bottom-nav{display:none}
-  table{min-width:auto}
-  .toast{bottom:24px;right:24px;left:auto;transform:translateY(20px)}
-  .toast.show{transform:translateY(0)}
-  .dash-two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-}
-</style>
+<link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ===== LOGIN ===== -->
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
     <div class="login-logo">VELORA</div>
     <div class="login-sub">ADMIN PANEL</div>
     <div class="login-title">Giriş Yap</div>
-    <div class="form-group" style="margin-bottom:14px">
+    <div class="form-group">
       <label class="form-label">ŞİFRE</label>
-      <input type="password" class="form-input" id="adminPwInput" placeholder="Admin şifresi">
+      <input type="password" class="form-input" id="adminPwInput" placeholder="••••••••">
     </div>
     <button class="btn btn-primary btn-full" onclick="checkAdmin()">GİRİŞ YAP</button>
-    <p id="loginError" style="color:var(--danger);font-size:12px;margin-top:10px;text-align:center;display:none">❌ Hatalı şifre!</p>
+    <p id="loginError" style="color:var(--danger);font-size:11px;margin-top:10px;text-align:center;display:none">Hatalı şifre!</p>
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
-<div id="adminPanel">
+<!-- ===== ADMIN PANEL ===== -->
+<div id="adminPanel" class="shell" style="display:none">
 
-<!-- Sidebar overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-<!-- SIDEBAR -->
-<nav class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-text">VELORA</div>
-    <div class="logo-sub">ADMIN PANEL</div>
-  </div>
-  <div class="nav">
-    <div class="nav-section">GENEL</div>
-    <div class="nav-item" onclick="navTo('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</div>
-    <div class="nav-item" onclick="navTo('activity',this)"><span class="nav-icon">📋</span>Aktivite Logu</div>
-    <div class="nav-section" style="margin-top:8px">ÜRÜNLER</div>
-    <div class="nav-item" onclick="navTo('products',this)"><span class="nav-icon">👕</span>Ürün Listesi</div>
-    <div class="nav-item" onclick="navTo('addProduct',this)"><span class="nav-icon">➕</span>Yeni Ürün Ekle</div>
-    <div class="nav-section" style="margin-top:8px">MAĞAZA</div>
-    <div class="nav-item" onclick="navTo('coupons',this)"><span class="nav-icon">🏷️</span>Kupon Yönetimi</div>
-    <div class="nav-item" onclick="navTo('users',this)"><span class="nav-icon">👥</span>Kullanıcılar</div>
-    <div class="nav-section" style="margin-top:8px">AYARLAR</div>
-    <div class="nav-item" onclick="navTo('siteSettings',this)"><span class="nav-icon">⚙️</span>Site Ayarları</div>
-    <div class="nav-item" onclick="navTo('whatsapp',this)"><span class="nav-icon">💬</span>WhatsApp / İletişim</div>
-    <div class="nav-item" onclick="navTo('appearance',this)"><span class="nav-icon">🎨</span>Görünüm</div>
-  </div>
-  <div class="sidebar-footer">
-    <div class="admin-badge">
-      <div class="admin-avatar">AD</div>
-      <div><div class="admin-name">Admin</div><div class="admin-role">superadmin</div></div>
+  <!-- SIDEBAR -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-name">VELORA</div>
+      <div class="logo-sub">ADMIN PANEL</div>
     </div>
-    <button class="btn btn-secondary btn-full" style="margin-top:10px;font-size:11px" onclick="adminLogout()">Çıkış Yap</button>
-  </div>
-</nav>
-
-<!-- MAIN -->
-<div class="main">
-  <div class="topbar">
-    <button class="hamburger-btn" onclick="openSidebar()">☰</button>
-    <span class="topbar-title" id="topbarTitle">Ürün Listesi</span>
-    <div class="topbar-actions">
-      <span class="topbar-date" id="topbarDate"></span>
-      <a href="index.html" target="_blank" class="btn btn-secondary btn-sm">🌐 Site</a>
+    <div class="nav">
+      <div class="nav-sec">Ürünler</div>
+      <div class="nav-item active" onclick="navTo('products',this)">
+        <span class="nav-icon">👕</span>Ürün Listesi
+      </div>
+      <div class="nav-item" onclick="navTo('addProduct',this)">
+        <span class="nav-icon">➕</span>Yeni Ürün Ekle
+      </div>
+      <div class="nav-sec">Mağaza</div>
+      <div class="nav-item" onclick="navTo('coupons',this)">
+        <span class="nav-icon">🏷️</span>Kupon Yönetimi
+      </div>
+      <div class="nav-item" onclick="navTo('users',this)">
+        <span class="nav-icon">👥</span>Kullanıcılar
+      </div>
+      <div class="nav-sec">Ayarlar</div>
+      <div class="nav-item" onclick="navTo('siteSettings',this)">
+        <span class="nav-icon">⚙️</span>Site Ayarları
+      </div>
+      <div class="nav-item" onclick="navTo('whatsapp',this)">
+        <span class="nav-icon">💬</span>WhatsApp / İletişim
+      </div>
+      <div class="nav-item" onclick="navTo('appearance',this)">
+        <span class="nav-icon">🎨</span>Görünüm
+      </div>
+      <div class="nav-item" onclick="navTo('activity',this)">
+        <span class="nav-icon">📋</span>Aktivite Logu
+      </div>
     </div>
-  </div>
-
-  <!-- DASHBOARD (hidden by default) -->
-  <div class="page" id="page-dashboard">
-    <div class="stat-grid">
-      <div class="stat-card"><div class="stat-label">TOPLAM ÜRÜN</div><div class="stat-value stat-accent" id="stat-total">0</div><div class="stat-sub">aktif ürün</div></div>
-      <div class="stat-card"><div class="stat-label">KATEGORİLER</div><div class="stat-value">3</div><div class="stat-sub">Erkek/Kadın/Çocuk</div></div>
-      <div class="stat-card"><div class="stat-label">KUPON KODU</div><div class="stat-value" id="stat-coupons">0</div><div class="stat-sub">aktif kupon</div></div>
-      <div class="stat-card"><div class="stat-label">KULLANICI</div><div class="stat-value" id="stat-users">0</div><div class="stat-sub">kayıtlı</div></div>
+    <div class="sidebar-foot">
+      <div class="admin-pill">
+        <div class="av">AD</div>
+        <div>
+          <div class="admin-name">Admin</div>
+          <div class="admin-role">superadmin</div>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-full" style="margin-top:8px;font-size:11px" onclick="adminLogout()">Çıkış Yap</button>
     </div>
-    <div class="dash-two-col">
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="openSidebar()">☰</button>
+      <span class="topbar-title" id="topbarTitle">Ürün Listesi</span>
+      <div class="topbar-actions">
+        <span class="topbar-date" id="topbarDate"></span>
+        <a href="index.html" target="_blank" class="btn btn-secondary btn-sm">🌐 Site</a>
+      </div>
+    </div>
+
+    <!-- ===== ÜRÜN LİSTESİ ===== -->
+    <div class="page active" id="page-products">
+      <div class="section-header">
+        <span class="section-title">Ürünler (<span id="productCount">0</span>)</span>
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-secondary btn-sm" onclick="exportProducts()">📥 CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="navTo('addProduct',null)">+ Ekle</button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="productSearch" placeholder="Ara..." oninput="currentPage=1;renderProductTable()">
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="setFilter('all',this)">Tümü</button>
+        <button class="filter-btn" onclick="setFilter('erkek',this)">Erkek</button>
+        <button class="filter-btn" onclick="setFilter('kadin',this)">Kadın</button>
+        <button class="filter-btn" onclick="setFilter('cocuk',this)">Çocuk</button>
+        <button class="filter-btn" onclick="setFilter('tisort',this)">Tişört</button>
+        <button class="filter-btn" onclick="setFilter('pantalon',this)">Pantolon</button>
+        <button class="filter-btn" onclick="setFilter('ceket',this)">Ceket</button>
+        <button class="filter-btn" onclick="setFilter('sapka',this)">Şapka</button>
+      </div>
       <div class="table-wrap">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600">Kategori Dağılımı</div>
-        <div id="catBreakdown" style="padding:4px 0"></div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Görsel</th>
+                <th>Ad</th>
+                <th>Fiyat</th>
+                <th>Kategori</th>
+                <th>Tip</th>
+                <th>ID</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody"></tbody>
+          </table>
+        </div>
       </div>
-      <div class="table-wrap" style="margin-top:14px">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600">Son Aktiviteler</div>
-        <div id="recentActivity" style="padding:6px 16px;max-height:260px;overflow-y:auto"></div>
-      </div>
+      <div class="pagination" id="productPagination"></div>
     </div>
-  </div>
 
-  <!-- PRODUCTS -->
-  <div class="page active" id="page-products">
-    <div class="section-header">
-      <span class="section-title">Ürünler (<span id="productCount">0</span>)</span>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-secondary btn-sm" onclick="exportProducts()">📥</button>
-        <button class="btn btn-primary btn-sm" onclick="navTo('addProduct',null)">+ Ekle</button>
+    <!-- ===== YENİ ÜRÜN EKLE ===== -->
+    <div class="page" id="page-addProduct">
+      <div class="section-header">
+        <span class="section-title" id="addProductTitle">Yeni Ürün Ekle</span>
       </div>
-    </div>
-    <div class="search-bar"><span class="search-icon">🔍</span><input type="text" class="search-input" id="productSearch" placeholder="Ara..." oninput="currentPage=1;renderProductTable()"></div>
-    <div class="filter-bar" id="productFilters">
-      <button class="filter-btn active" onclick="setFilter('all',this)">Tümü</button>
-      <button class="filter-btn" onclick="setFilter('erkek',this)">Erkek</button>
-      <button class="filter-btn" onclick="setFilter('kadin',this)">Kadın</button>
-      <button class="filter-btn" onclick="setFilter('cocuk',this)">Çocuk</button>
-      <button class="filter-btn" onclick="setFilter('tisort',this)">Tişört</button>
-      <button class="filter-btn" onclick="setFilter('pantalon',this)">Pantolon</button>
-      <button class="filter-btn" onclick="setFilter('ceket',this)">Ceket</button>
-      <button class="filter-btn" onclick="setFilter('sapka',this)">Şapka</button>
-    </div>
-    <div class="table-wrap"><div class="table-scroll"><table>
-      <thead><tr><th>GÖRSEL</th><th>AD</th><th>FİYAT</th><th>KAT.</th><th>TİP</th><th>İŞLEM</th></tr></thead>
-      <tbody id="productTableBody"></tbody>
-    </table></div></div>
-    <div class="pagination" id="productPagination"></div>
-  </div>
-
-  <!-- ADD PRODUCT -->
-  <div class="page" id="page-addProduct">
-    <div class="section-header"><span class="section-title" id="addProductTitle">Yeni Ürün Ekle</span></div>
-    <div class="add-product-grid">
-      <div class="settings-card">
-        <div class="settings-card-title">ÜRÜN BİLGİLERİ</div>
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">ÜRÜN ADI</label><input type="text" class="form-input" id="newName" placeholder="Erkek Tişört"></div>
-          <div class="form-group"><label class="form-label">FİYAT (TL)</label><input type="number" class="form-input" id="newPrice" placeholder="1200" inputmode="numeric"></div>
-          <div class="form-group"><label class="form-label">KATEGORİ</label><select class="form-select" id="newCategory"><option value="">Seçin</option><option value="erkek">Erkek</option><option value="kadin">Kadın</option><option value="cocuk">Çocuk</option></select></div>
-          <div class="form-group"><label class="form-label">TİP</label><select class="form-select" id="newType"><option value="">Seçin</option><option value="tisort">Tişört</option><option value="pantalon">Pantolon</option><option value="ceket">Ceket</option><option value="sapka">Şapka</option></select></div>
-          <div class="form-group full"><label class="form-label">GÖRSEL URL</label><input type="text" class="form-input" id="newImage" placeholder="https://res.cloudinary.com/..." oninput="previewImage()"></div>
-        </div>
-        <div style="margin-top:16px;display:flex;gap:10px">
-          <button class="btn btn-primary" onclick="saveProduct()">💾 Kaydet</button>
-          <button class="btn btn-secondary" onclick="clearProductForm()">Temizle</button>
-        </div>
-      </div>
-      <div>
+      <div class="add-product-grid">
         <div class="settings-card">
-          <div class="settings-card-title">ÖNİZLEME</div>
-          <img id="previewImg" class="product-preview-img" src="" onerror="this.style.display='none'" style="display:none">
-          <div id="previewPlaceholder" style="width:100%;height:140px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;margin-bottom:10px">URL girin</div>
-          <div id="previewName" style="font-size:13px;font-weight:600;margin-bottom:3px">—</div>
-          <div id="previewPrice" style="color:var(--accent);font-size:12px">— TL</div>
+          <div class="settings-card-title">Ürün Bilgileri</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Ürün Adı</label>
+              <input type="text" class="form-input" id="newName" placeholder="Erkek Tişört">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fiyat (TL)</label>
+              <input type="number" class="form-input" id="newPrice" placeholder="1200" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Kategori</label>
+              <select class="form-select" id="newCategory">
+                <option value="">Seçin</option>
+                <option value="erkek">Erkek</option>
+                <option value="kadin">Kadın</option>
+                <option value="cocuk">Çocuk</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tip</label>
+              <select class="form-select" id="newType">
+                <option value="">Seçin</option>
+                <option value="tisort">Tişört</option>
+                <option value="pantalon">Pantolon</option>
+                <option value="ceket">Ceket</option>
+                <option value="sapka">Şapka</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Görsel URL</label>
+              <input type="text" class="form-input" id="newImage" placeholder="https://res.cloudinary.com/..." oninput="previewImage()">
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px">
+            <button class="btn btn-primary" onclick="saveProduct()">💾 Kaydet</button>
+            <button class="btn btn-secondary" onclick="clearProductForm()">Temizle</button>
+          </div>
         </div>
-        <div class="settings-card">
-          <div class="settings-card-title">TOPLUCA EKLE</div>
-          <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6">JSON formatında birden fazla ürün</p>
-          <textarea class="form-input" id="bulkJson" rows="4" style="font-family:'DM Mono',monospace;font-size:10px" placeholder='[{"name":"...","price":800,"category":"erkek","type":"tisort","image":"https://..."}]'></textarea>
-          <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="bulkAdd()">JSON'dan Ekle</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- COUPONS -->
-  <div class="page" id="page-coupons">
-    <div class="section-header"><span class="section-title">Kupon Yönetimi</span><button class="btn btn-primary btn-sm" onclick="openCouponModal()">+ Yeni</button></div>
-    <div class="table-wrap"><div class="table-scroll"><table>
-      <thead><tr><th>KOD</th><th>İNDİRİM</th><th>DURUM</th><th>KULLANIM</th><th>İŞLEM</th></tr></thead>
-      <tbody id="couponTableBody"></tbody>
-    </table></div></div>
-  </div>
-
-  <!-- USERS -->
-  <div class="page" id="page-users">
-    <div class="section-header"><span class="section-title">Kullanıcılar (<span id="userCount">0</span>)</span><button class="btn btn-danger btn-sm" onclick="clearAllUsers()">🗑 Tümü</button></div>
-    <div class="search-bar"><span class="search-icon">🔍</span><input type="text" class="search-input" id="userSearch" placeholder="İsim veya e-posta..." oninput="renderUsers()"></div>
-    <div class="table-wrap"><div class="table-scroll"><table>
-      <thead><tr><th>İSİM</th><th>E-POSTA</th><th>DURUM</th><th>İŞLEM</th></tr></thead>
-      <tbody id="userTableBody"></tbody>
-    </table></div></div>
-  </div>
-
-  <!-- SITE SETTINGS -->
-  <div class="page" id="page-siteSettings">
-    <div class="section-header"><span class="section-title">Site Ayarları</span><button class="btn btn-primary btn-sm" onclick="saveSiteSettings()">💾 Kaydet</button></div>
-    <div class="settings-two-col">
-      <div>
-        <div class="settings-card">
-          <div class="settings-card-title">MAĞAZA BİLGİLERİ</div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">MAĞAZA ADI</label><input type="text" class="form-input" id="set-storeName" value="VELORA"></div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">SLOGAN</label><input type="text" class="form-input" id="set-slogan" placeholder="Style Redefined"></div>
-          <div class="form-group"><label class="form-label">PARA BİRİMİ</label><select class="form-select" id="set-currency"><option value="TL" selected>TL</option><option value="USD">USD</option><option value="EUR">EUR</option></select></div>
-        </div>
-        <div class="settings-card">
-          <div class="settings-card-title">GÜVENLİK</div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">YENİ ŞİFRE</label><input type="password" class="form-input" id="set-newAdminPw" placeholder="Yeni şifre"></div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">ŞİFREYİ ONAYLA</label><input type="password" class="form-input" id="set-newAdminPw2" placeholder="Tekrar girin"></div>
-          <button class="btn btn-secondary btn-sm" onclick="changeAdminPw()">Şifreyi Güncelle</button>
-        </div>
-      </div>
-      <div>
-        <div class="settings-card">
-          <div class="settings-card-title">SEO & META</div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">SAYFA BAŞLIĞI</label><input type="text" class="form-input" id="set-title" value="VELORA | Modern Giyim"></div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">META AÇIKLAMA</label><textarea class="form-input" id="set-metaDesc" rows="3">Velora - Modern ve şık giyim koleksiyonu.</textarea></div>
-          <div class="form-group"><label class="form-label">ANAHTAR KELİMELER</label><input type="text" class="form-input" id="set-keywords" placeholder="giyim, tişört, pantolon"></div>
-        </div>
-        <div class="settings-card">
-          <div class="settings-card-title">ÖZELLİKLER</div>
-          <div class="toggle-row"><div><div class="toggle-label">Arama Çubuğu</div></div><label class="toggle"><input type="checkbox" id="feat-search" checked><span class="slider-toggle"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-label">Favoriler</div></div><label class="toggle"><input type="checkbox" id="feat-favorites" checked><span class="slider-toggle"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-label">Dark Mode</div></div><label class="toggle"><input type="checkbox" id="feat-darkmode" checked><span class="slider-toggle"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-label">Kupon Sistemi</div></div><label class="toggle"><input type="checkbox" id="feat-coupon" checked><span class="slider-toggle"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-label">Üyelik Sistemi</div></div><label class="toggle"><input type="checkbox" id="feat-auth" checked><span class="slider-toggle"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-label">Bakım Modu</div></div><label class="toggle"><input type="checkbox" id="feat-maintenance"><span class="slider-toggle"></span></label></div>
+        <div>
+          <div class="settings-card">
+            <div class="settings-card-title">Önizleme</div>
+            <img id="previewImg" class="product-preview-img" src="" onerror="this.style.display='none'" style="display:none">
+            <div id="previewPlaceholder" class="preview-placeholder">URL girin</div>
+            <div id="previewName" style="font-size:13px;font-weight:600;margin-bottom:3px">—</div>
+            <div id="previewPrice" style="color:var(--accent);font-size:12px">— TL</div>
+          </div>
+          <div class="settings-card">
+            <div class="settings-card-title">Toplu Ekle (JSON)</div>
+            <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6">JSON formatında birden fazla ürün ekleyin.</p>
+            <textarea class="form-input" id="bulkJson" rows="4" style="font-family:'DM Mono',monospace;font-size:10px;width:100%;resize:vertical" placeholder='[{"name":"...","price":800,"category":"erkek","type":"tisort","image":"https://..."}]'></textarea>
+            <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="bulkAdd()">JSON'dan Ekle</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- WHATSAPP -->
-  <div class="page" id="page-whatsapp">
-    <div class="section-header"><span class="section-title">WhatsApp & İletişim</span><button class="btn btn-primary btn-sm" onclick="saveContact()">💾 Kaydet</button></div>
-    <div class="settings-two-col">
-      <div class="settings-card">
-        <div class="settings-card-title">WHATSAPP SİPARİŞ</div>
-        <div class="form-group" style="margin-bottom:12px"><label class="form-label">NUMARA</label><input type="text" class="form-input" id="wa-number" placeholder="905550066123" value="905550066123" inputmode="tel"></div>
-        <div class="form-group" style="margin-bottom:12px"><label class="form-label">HOŞGELDİN MESAJI</label><textarea class="form-input" id="wa-greeting" rows="3">Merhaba! Sipariş vermek istiyorum.</textarea></div>
-        <div class="toggle-row"><div><div class="toggle-label">WhatsApp Butonu</div><div class="toggle-desc">Sepette aktif</div></div><label class="toggle"><input type="checkbox" id="wa-active" checked><span class="slider-toggle"></span></label></div>
+    <!-- ===== KUPON YÖNETİMİ ===== -->
+    <div class="page" id="page-coupons">
+      <div class="section-header">
+        <span class="section-title">Kupon Yönetimi</span>
+        <button class="btn btn-primary btn-sm" onclick="openCouponModal()">+ Yeni Kupon</button>
       </div>
-      <div class="settings-card">
-        <div class="settings-card-title">İLETİŞİM BİLGİLERİ</div>
-        <div class="form-group" style="margin-bottom:12px"><label class="form-label">E-POSTA</label><input type="email" class="form-input" id="contact-email" placeholder="info@velora.com" inputmode="email"></div>
-        <div class="form-group" style="margin-bottom:12px"><label class="form-label">TELEFON</label><input type="tel" class="form-input" id="contact-phone" placeholder="+90 555 006 6123" inputmode="tel"></div>
-        <div class="form-group" style="margin-bottom:12px"><label class="form-label">ADRES</label><textarea class="form-input" id="contact-address" rows="2" placeholder="Mağaza adresi..."></textarea></div>
-        <div class="form-group"><label class="form-label">INSTAGRAM</label><input type="text" class="form-input" id="contact-instagram" placeholder="@velora"></div>
-      </div>
-    </div>
-    <div class="settings-card">
-      <div class="settings-card-title">EMAILJS AYARLARI</div>
-      <div class="form-grid">
-        <div class="form-group"><label class="form-label">SERVICE ID</label><input type="text" class="form-input" id="ejs-service" placeholder="service_xxxxx" value="service_u871hgw"></div>
-        <div class="form-group"><label class="form-label">TEMPLATE ID</label><input type="text" class="form-input" id="ejs-template" placeholder="template_xxxxx" value="template_nnfkcc3"></div>
-        <div class="form-group full"><label class="form-label">PUBLIC KEY</label><input type="text" class="form-input" id="ejs-pubkey" placeholder="xxxxxxxxxxxxx"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- APPEARANCE -->
-  <div class="page" id="page-appearance">
-    <div class="section-header"><span class="section-title">Görünüm Ayarları</span><button class="btn btn-primary btn-sm" onclick="saveAppearance()">💾 Kaydet</button></div>
-    <div class="settings-two-col">
-      <div>
-        <div class="settings-card">
-          <div class="settings-card-title">BANNER & GÖRSELLER</div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">ANA BANNER URL</label><input type="text" class="form-input" id="app-banner" placeholder="https://..."></div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">LOGO URL</label><input type="text" class="form-input" id="app-logo" placeholder="https://..."></div>
-          <div class="form-group"><label class="form-label">FAVİCON URL</label><input type="text" class="form-input" id="app-favicon" placeholder="https://..."></div>
-        </div>
-        <div class="settings-card">
-          <div class="settings-card-title">TİPOGRAFİ</div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">BAŞLIK FONTU</label><select class="form-select" id="app-headfont"><option>Cinzel</option><option>Playfair Display</option><option>Syne</option><option>Bebas Neue</option><option>Cormorant Garamond</option></select></div>
-          <div class="form-group"><label class="form-label">GÖVDE FONTU</label><select class="form-select" id="app-bodyfont"><option>DM Sans</option><option>Inter</option><option>Lato</option><option>Raleway</option></select></div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Kod</th>
+                <th>İndirim</th>
+                <th>Durum</th>
+                <th>Kullanım</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="couponTableBody"></tbody>
+          </table>
         </div>
       </div>
-      <div>
+    </div>
+
+    <!-- ===== KULLANICILAR ===== -->
+    <div class="page" id="page-users">
+      <div class="section-header">
+        <span class="section-title">Kullanıcılar (<span id="userCount">0</span>)</span>
+        <button class="btn btn-danger btn-sm" onclick="clearAllUsers()">🗑 Tümünü Sil</button>
+      </div>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="userSearch" placeholder="İsim veya e-posta..." oninput="renderUsers()">
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>İsim</th>
+                <th>E-posta</th>
+                <th>Durum</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SİTE AYARLARI ===== -->
+    <div class="page" id="page-siteSettings">
+      <div class="section-header">
+        <span class="section-title">Site Ayarları</span>
+        <button class="btn btn-primary btn-sm" onclick="saveSiteSettings()">💾 Kaydet</button>
+      </div>
+      <div class="settings-two-col">
+        <div>
+          <div class="settings-card">
+            <div class="settings-card-title">Mağaza Bilgileri</div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Mağaza Adı</label>
+              <input type="text" class="form-input" id="set-storeName" value="VELORA">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Slogan</label>
+              <input type="text" class="form-input" id="set-slogan" placeholder="Style Redefined">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Para Birimi</label>
+              <select class="form-select" id="set-currency">
+                <option value="TL" selected>TL</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-card">
+            <div class="settings-card-title">Güvenlik — Admin Şifresi</div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Yeni Şifre</label>
+              <input type="password" class="form-input" id="set-newAdminPw" placeholder="Yeni şifre">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Şifreyi Onayla</label>
+              <input type="password" class="form-input" id="set-newAdminPw2" placeholder="Tekrar girin">
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="changeAdminPw()">Şifreyi Güncelle</button>
+          </div>
+        </div>
+        <div>
+          <div class="settings-card">
+            <div class="settings-card-title">SEO & Meta</div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Sayfa Başlığı</label>
+              <input type="text" class="form-input" id="set-title" value="VELORA | Modern Giyim">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Meta Açıklama</label>
+              <textarea class="form-input" id="set-metaDesc" rows="3" style="resize:vertical">Velora - Modern ve şık giyim koleksiyonu.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Anahtar Kelimeler</label>
+              <input type="text" class="form-input" id="set-keywords" placeholder="giyim, tişört, pantolon">
+            </div>
+          </div>
+          <div class="settings-card">
+            <div class="settings-card-title">Özellikler</div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Arama Çubuğu</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-search" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Favoriler</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-favorites" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Dark Mode</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-darkmode" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Kupon Sistemi</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-coupon" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Üyelik Sistemi</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-auth" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Bakım Modu</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-maintenance"><span class="slider-toggle"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== WHATSAPP / İLETİŞİM ===== -->
+    <div class="page" id="page-whatsapp">
+      <div class="section-header">
+        <span class="section-title">WhatsApp & İletişim</span>
+        <button class="btn btn-primary btn-sm" onclick="saveContact()">💾 Kaydet</button>
+      </div>
+      <div class="settings-two-col">
         <div class="settings-card">
-          <div class="settings-card-title">RENK PALETİ</div>
-          <div style="display:flex;flex-direction:column;gap:14px">
-            <div style="display:flex;align-items:center;justify-content:space-between"><div><div class="toggle-label">Birincil Renk</div><div class="toggle-desc">Buton ve vurgu</div></div><input type="color" id="color-primary" value="#c9b97a" style="width:44px;height:32px;border:none;border-radius:6px;cursor:pointer;background:none"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between"><div><div class="toggle-label">Arka Plan</div><div class="toggle-desc">Sayfa arka planı</div></div><input type="color" id="color-bg" value="#ffffff" style="width:44px;height:32px;border:none;border-radius:6px;cursor:pointer;background:none"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between"><div><div class="toggle-label">Metin Rengi</div><div class="toggle-desc">Ana metin</div></div><input type="color" id="color-text" value="#111111" style="width:44px;height:32px;border:none;border-radius:6px;cursor:pointer;background:none"></div>
+          <div class="settings-card-title">WhatsApp Sipariş</div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Numara</label>
+            <input type="text" class="form-input" id="wa-number" placeholder="905550066123" value="905550066123" inputmode="tel">
+          </div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Hoşgeldin Mesajı</label>
+            <textarea class="form-input" id="wa-greeting" rows="3" style="resize:vertical">Merhaba! Sipariş vermek istiyorum.</textarea>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">WhatsApp Butonu</div>
+              <div class="toggle-desc">Sepette aktif göster</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="wa-active" checked><span class="slider-toggle"></span></label>
           </div>
         </div>
         <div class="settings-card">
-          <div class="settings-card-title">DUYURU BANDI</div>
-          <div class="toggle-row" style="margin-bottom:12px"><div><div class="toggle-label">Duyuru Bandı</div><div class="toggle-desc">Sayfa üstünde mesaj</div></div><label class="toggle"><input type="checkbox" id="app-announcebar" checked><span class="slider-toggle"></span></label></div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">BANT MESAJI</label><input type="text" class="form-input" id="app-announcetext" value="✨ Yeni Koleksiyon! Kod: VELORA10"></div>
-          <div class="form-group"><label class="form-label">BANT ARKAPLAN</label><input type="color" id="app-announcecolor" value="#111111" style="width:100%;height:36px;border:1px solid var(--border2);border-radius:8px;cursor:pointer;background:none;padding:4px"></div>
+          <div class="settings-card-title">İletişim Bilgileri</div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">E-posta</label>
+            <input type="email" class="form-input" id="contact-email" placeholder="info@velora.com" inputmode="email">
+          </div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Telefon</label>
+            <input type="tel" class="form-input" id="contact-phone" placeholder="+90 555 006 6123" inputmode="tel">
+          </div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Adres</label>
+            <textarea class="form-input" id="contact-address" rows="2" style="resize:vertical" placeholder="Mağaza adresi..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Instagram</label>
+            <input type="text" class="form-input" id="contact-instagram" placeholder="@velora">
+          </div>
+        </div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-card-title">EmailJS Ayarları</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Service ID</label>
+            <input type="text" class="form-input" id="ejs-service" placeholder="service_xxxxx" value="service_u871hgw">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Template ID</label>
+            <input type="text" class="form-input" id="ejs-template" placeholder="template_xxxxx" value="template_nnfkcc3">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Public Key</label>
+            <input type="text" class="form-input" id="ejs-pubkey" placeholder="xxxxxxxxxxxxx">
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ACTIVITY LOG -->
-  <div class="page" id="page-activity">
-    <div class="section-header"><span class="section-title">Aktivite Logu</span><button class="btn btn-danger btn-sm" onclick="clearLog()">🗑 Temizle</button></div>
-    <div class="table-wrap"><div id="fullActivityLog" style="padding:4px 16px;max-height:500px;overflow-y:auto"></div></div>
-  </div>
+    <!-- ===== GÖRÜNÜM ===== -->
+    <div class="page" id="page-appearance">
+      <div class="section-header">
+        <span class="section-title">Görünüm Ayarları</span>
+        <button class="btn btn-primary btn-sm" onclick="saveAppearance()">💾 Kaydet</button>
+      </div>
+      <div class="settings-two-col">
+        <div>
+          <div class="settings-card">
+            <div class="settings-card-title">Banner & Görseller</div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Ana Banner URL</label>
+              <input type="text" class="form-input" id="app-banner" placeholder="https://...">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Logo URL</label>
+              <input type="text" class="form-input" id="app-logo" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Favicon URL</label>
+              <input type="text" class="form-input" id="app-favicon" placeholder="https://...">
+            </div>
+          </div>
+          <div class="settings-card">
+            <div class="settings-card-title">Tipografi</div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Başlık Fontu</label>
+              <select class="form-select" id="app-headfont">
+                <option>Cinzel</option>
+                <option>Playfair Display</option>
+                <option>Syne</option>
+                <option>Bebas Neue</option>
+                <option>Cormorant Garamond</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gövde Fontu</label>
+              <select class="form-select" id="app-bodyfont">
+                <option>DM Sans</option>
+                <option>Inter</option>
+                <option>Lato</option>
+                <option>Raleway</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="settings-card">
+            <div class="settings-card-title">Renk Paleti</div>
+            <div class="color-row">
+              <div>
+                <div class="toggle-label">Birincil Renk</div>
+                <div class="toggle-desc">Buton ve vurgu rengi</div>
+              </div>
+              <input type="color" id="color-primary" value="#c9b97a" class="color-input">
+            </div>
+            <div class="color-row">
+              <div>
+                <div class="toggle-label">Arka Plan</div>
+                <div class="toggle-desc">Sayfa arka planı</div>
+              </div>
+              <input type="color" id="color-bg" value="#ffffff" class="color-input">
+            </div>
+            <div class="color-row">
+              <div>
+                <div class="toggle-label">Metin Rengi</div>
+                <div class="toggle-desc">Ana metin rengi</div>
+              </div>
+              <input type="color" id="color-text" value="#111111" class="color-input">
+            </div>
+          </div>
+          <div class="settings-card">
+            <div class="settings-card-title">Duyuru Bandı</div>
+            <div class="toggle-row" style="margin-bottom:12px">
+              <div>
+                <div class="toggle-label">Duyuru Bandı</div>
+                <div class="toggle-desc">Sayfa üstünde mesaj göster</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="app-announcebar" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Bant Mesajı</label>
+              <input type="text" class="form-input" id="app-announcetext" value="✨ Yeni Koleksiyon! Kod: VELORA10">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bant Arka Plan Rengi</label>
+              <input type="color" id="app-announcecolor" value="#111111" style="width:100%;height:36px;border:1px solid var(--border2);border-radius:8px;cursor:pointer;padding:4px">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-</div><!-- /main -->
+    <!-- ===== AKTİVİTE LOGU ===== -->
+    <div class="page" id="page-activity">
+      <div class="section-header">
+        <span class="section-title">Aktivite Logu</span>
+        <button class="btn btn-danger btn-sm" onclick="clearLog()">🗑 Temizle</button>
+      </div>
+      <div class="table-wrap">
+        <div id="fullActivityLog" style="padding:4px 16px;max-height:520px;overflow-y:auto"></div>
+      </div>
+    </div>
 
-<!-- BOTTOM NAV (mobile) -->
-<nav class="bottom-nav">
-  <button class="bottom-nav-item active" id="bnav-products" onclick="navTo('products',null)"><span>👕</span><span>Ürünler</span></button>
-  <button class="bottom-nav-item" id="bnav-coupons" onclick="navTo('coupons',null)"><span>🏷️</span><span>Kuponlar</span></button>
-  <button class="bottom-nav-item" id="bnav-addProduct" onclick="navTo('addProduct',null)"><span>➕</span><span>Ekle</span></button>
-  <button class="bottom-nav-item" id="bnav-users" onclick="navTo('users',null)"><span>👥</span><span>Kullanıcı</span></button>
-  <button class="bottom-nav-item" id="bnav-more" onclick="openSidebar()"><span>☰</span><span>Menü</span></button>
-</nav>
+  </div><!-- /main -->
+
+  <!-- BOTTOM NAV (mobil) -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav-item active" id="bnav-products" onclick="navTo('products',null)">
+      <span>👕</span><span>Ürünler</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-coupons" onclick="navTo('coupons',null)">
+      <span>🏷️</span><span>Kuponlar</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-addProduct" onclick="navTo('addProduct',null)">
+      <span>➕</span><span>Ekle</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-users" onclick="navTo('users',null)">
+      <span>👥</span><span>Kullanıcı</span>
+    </button>
+    <button class="bottom-nav-item" onclick="openSidebar()">
+      <span>☰</span><span>Menü</span>
+    </button>
+  </nav>
 
 </div><!-- /adminPanel -->
 
-<!-- COUPON MODAL -->
+<!-- ===== KUPON MODAL ===== -->
 <div class="modal-overlay" id="couponModal">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">Yeni Kupon Ekle</span><button class="modal-close" onclick="closeCouponModal()">×</button></div>
+    <div class="modal-header">
+      <span class="modal-title">Yeni Kupon Ekle</span>
+      <button class="modal-close" onclick="closeCouponModal()">×</button>
+    </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">KUPON KODU</label><input type="text" class="form-input" id="coup-code" placeholder="YENI20" style="text-transform:uppercase" autocomplete="off"></div>
-        <div class="form-group"><label class="form-label">İNDİRİM (%)</label><input type="number" class="form-input" id="coup-discount" placeholder="10" min="1" max="100" inputmode="numeric"></div>
-        <div class="form-group full"><label class="form-label">DURUM</label><select class="form-select" id="coup-status"><option value="active">Aktif</option><option value="inactive">Pasif</option></select></div>
+        <div class="form-group">
+          <label class="form-label">Kupon Kodu</label>
+          <input type="text" class="form-input" id="coup-code" placeholder="YENI20" style="text-transform:uppercase" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">İndirim (%)</label>
+          <input type="number" class="form-input" id="coup-discount" placeholder="10" min="1" max="100" inputmode="numeric">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Durum</label>
+          <select class="form-select" id="coup-status">
+            <option value="active">Aktif</option>
+            <option value="inactive">Pasif</option>
+          </select>
+        </div>
       </div>
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeCouponModal()">İptal</button><button class="btn btn-primary" onclick="addCoupon()">Kaydet</button></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCouponModal()">İptal</button>
+      <button class="btn btn-primary" onclick="addCoupon()">Kaydet</button>
+    </div>
   </div>
 </div>
 
-<!-- EDIT PRODUCT MODAL -->
+<!-- ===== ÜRÜN DÜZENLE MODAL ===== -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">Ürünü Düzenle</span><button class="modal-close" onclick="closeEditModal()">×</button></div>
+    <div class="modal-header">
+      <span class="modal-title">Ürünü Düzenle</span>
+      <button class="modal-close" onclick="closeEditModal()">×</button>
+    </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">ÜRÜN ADI</label><input type="text" class="form-input" id="edit-name"></div>
-        <div class="form-group"><label class="form-label">FİYAT (TL)</label><input type="number" class="form-input" id="edit-price" inputmode="numeric"></div>
-        <div class="form-group"><label class="form-label">KATEGORİ</label><select class="form-select" id="edit-category"><option value="erkek">Erkek</option><option value="kadin">Kadın</option><option value="cocuk">Çocuk</option></select></div>
-        <div class="form-group"><label class="form-label">TİP</label><select class="form-select" id="edit-type"><option value="tisort">Tişört</option><option value="pantalon">Pantolon</option><option value="ceket">Ceket</option><option value="sapka">Şapka</option></select></div>
-        <div class="form-group full"><label class="form-label">GÖRSEL URL</label><input type="text" class="form-input" id="edit-image"></div>
+        <div class="form-group">
+          <label class="form-label">Ürün Adı</label>
+          <input type="text" class="form-input" id="edit-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fiyat (TL)</label>
+          <input type="number" class="form-input" id="edit-price" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kategori</label>
+          <select class="form-select" id="edit-category">
+            <option value="erkek">Erkek</option>
+            <option value="kadin">Kadın</option>
+            <option value="cocuk">Çocuk</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tip</label>
+          <select class="form-select" id="edit-type">
+            <option value="tisort">Tişört</option>
+            <option value="pantalon">Pantolon</option>
+            <option value="ceket">Ceket</option>
+            <option value="sapka">Şapka</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Görsel URL</label>
+          <input type="text" class="form-input" id="edit-image">
+        </div>
       </div>
       <img id="editPreviewImg" src="" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-top:12px;display:none">
       <input type="hidden" id="edit-id">
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeEditModal()">İptal</button><button class="btn btn-primary" onclick="saveEdit()">Kaydet</button></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeEditModal()">İptal</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Kaydet</button>
+    </div>
   </div>
 </div>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script>
-const CDN="https://res.cloudinary.com/dy2dvpbit/image/upload";
-let products=[
-  {id:1,name:"Erkek Tişört",price:1200,image:`${CDN}/haryo-setyadi-acn5ERAeSb4-unsplash_svhjqz.jpg`,category:"erkek",type:"tisort"},
-  {id:2,name:"Erkek Tişört",price:300,image:`${CDN}/pexels-david-fowora-2160297192-36801391_hfunqe.jpg`,category:"erkek",type:"tisort"},
-  {id:3,name:"Erkek Tişört",price:800,image:`${CDN}/sven-ciupka-x8Vg7Up6TUc-unsplash_fyrbqs.jpg`,category:"erkek",type:"tisort"},
-  {id:4,name:"Erkek Tişört",price:950,image:`${CDN}/faith-yarn-Wr0TpKqf26s-unsplash_j2qqmb.jpg`,category:"erkek",type:"tisort"},
-  {id:5,name:"Erkek Pantolon",price:800,image:`${CDN}/tuananh-blue-fB9Ex6Q5L_g-unsplash_ogcpzj.jpg`,category:"erkek",type:"pantalon"},
-  {id:6,name:"Erkek Pantolon",price:300,image:`${CDN}/tuananh-blue-j_3IlDX-6uQ-unsplash_i2sbm4.jpg`,category:"erkek",type:"pantalon"},
-  {id:7,name:"Erkek Pantolon",price:150,image:`${CDN}/tuananh-blue-rJQCoHb8XxA-unsplash_tgtnxn.jpg`,category:"erkek",type:"pantalon"},
-  {id:8,name:"Erkek Pantolon",price:1500,image:`${CDN}/tuananh-blue-XdXk39Bj3B0-unsplash_s1pu8m.jpg`,category:"erkek",type:"pantalon"},
-  {id:9,name:"Erkek Şapka",price:1500,image:`${CDN}/fatmanur-simsek-yILrYgG322s-unsplash_r4bhpq.jpg`,category:"erkek",type:"sapka"},
-  {id:10,name:"Erkek Şapka",price:1500,image:`${CDN}/mateus-jud-s-gRaxKXUio-unsplash_om2buz.jpg`,category:"erkek",type:"sapka"},
-  {id:11,name:"Erkek Şapka",price:1500,image:`${CDN}/mathias-reding-dWFaMnAX49Q-unsplash_zulbnu.jpg`,category:"erkek",type:"sapka"},
-  {id:12,name:"Erkek Şapka",price:1500,image:`${CDN}/soroush-alavi-PVvoEQH6cOI-unsplash_zu7zmz.jpg`,category:"erkek",type:"sapka"},
-  {id:13,name:"Erkek Ceket",price:1500,image:`${CDN}/adrian-ordonez-P0W27GRvyww-unsplash_jsodmg.jpg`,category:"erkek",type:"ceket"},
-  {id:14,name:"Erkek Ceket",price:1500,image:`${CDN}/caio-coelho-QRN47la37gw-unsplash_fh7biy.jpg`,category:"erkek",type:"ceket"},
-  {id:15,name:"Erkek Ceket",price:1500,image:`${CDN}/colton-sturgeon-oB7lLU9dwLc-unsplash_meuzv2.jpg`,category:"erkek",type:"ceket"},
-  {id:16,name:"Erkek Ceket",price:1500,image:`${CDN}/mike-montgomery-JNizejfX4B8-unsplash_d0pql3.jpg`,category:"erkek",type:"ceket"},
-  {id:17,name:"Kadın Tişört",price:1200,image:`${CDN}/charlesdeluvio-kPKFdPQTz9Y-unsplash_ulpc0v.jpg`,category:"kadin",type:"tisort"},
-  {id:18,name:"Kadın Tişört",price:300,image:`${CDN}/feey-3fM186uPnZQ-unsplash_yrpqo0.jpg`,category:"kadin",type:"tisort"},
-  {id:19,name:"Kadın Tişört",price:800,image:`${CDN}/ronan-furuta-tt9hFR4aEKY-unsplash_lcdnvc.jpg`,category:"kadin",type:"tisort"},
-  {id:20,name:"Kadın Tişört",price:950,image:`${CDN}/tuananh-blue-PvI3uWqDfTo-unsplash_gi8ei4.jpg`,category:"kadin",type:"tisort"},
-  {id:21,name:"Kadın Pantolon",price:800,image:`${CDN}/tamara-bellis-zDyJOj8ZXG0-unsplash_iuvn83.jpg`,category:"kadin",type:"pantalon"},
-  {id:22,name:"Kadın Pantolon",price:300,image:`${CDN}/tuananh-blue-XdXk39Bj3B0-unsplash_mh2ook.jpg`,category:"kadin",type:"pantalon"},
-  {id:24,name:"Kadın Pantolon",price:1500,image:`${CDN}/tuananh-blue-XdXk39Bj3B0-unsplash_s1pu8m.jpg`,category:"kadin",type:"pantalon"},
-  {id:49,name:"Kadın Pantolon",price:950,image:`${CDN}/tuananh-blue-2QSK4kFoVZE-unsplash_ivazfe.jpg`,category:"kadin",type:"pantalon"},
-  {id:25,name:"Kadın Şapka",price:1500,image:`${CDN}/omar-sabra-V5yIyQ2m-bo-unsplash_cmq5g7.jpg`,category:"kadin",type:"sapka"},
-  {id:26,name:"Kadın Şapka",price:1500,image:`${CDN}/nathan-dumlao-Y8hAxuKgP8g-unsplash_rr4mzr.jpg`,category:"kadin",type:"sapka"},
-  {id:27,name:"Kadın Şapka",price:1500,image:`${CDN}/kajetan-sumila-U8CyGLw2-ek-unsplash_xewyl5.jpg`,category:"kadin",type:"sapka"},
-  {id:28,name:"Kadın Şapka",price:1500,image:`${CDN}/elena-golubeva-rISh07SbuV4-unsplash_a4clvj.jpg`,category:"kadin",type:"sapka"},
-  {id:29,name:"Kadın Ceket",price:1500,image:`${CDN}/anna-evans-eELIrBJXBPk-unsplash_rtml0f.jpg`,category:"kadin",type:"ceket"},
-  {id:30,name:"Kadın Ceket",price:1500,image:`${CDN}/donald-teel--J7OdbfiZ1o-unsplash_sr2e7y.jpg`,category:"kadin",type:"ceket"},
-  {id:31,name:"Kadın Ceket",price:1500,image:`${CDN}/lea-ochel-nsRBbE6-YLs-unsplash_eklemz.jpg`,category:"kadin",type:"ceket"},
-  {id:32,name:"Kadın Ceket",price:1500,image:`${CDN}/noelle-rebekah-PNCXp2Uh6WM-unsplash_mqx4v8.jpg`,category:"kadin",type:"ceket"},
-  {id:33,name:"Çocuk Tişört",price:1200,image:`${CDN}/fabio-alves-eAUE_FmclYE-unsplash_nt2rlg.jpg`,category:"cocuk",type:"tisort"},
-  {id:34,name:"Çocuk Tişört",price:300,image:`${CDN}/md-salman-tWOz2_EK5EQ-unsplash_tzznsh.jpg`,category:"cocuk",type:"tisort"},
-  {id:35,name:"Çocuk Tişört",price:800,image:`${CDN}/ryan-hoffman-u6n1HrW0sdQ-unsplash_xfyvkg.jpg`,category:"cocuk",type:"tisort"},
-  {id:36,name:"Çocuk Tişört",price:950,image:`${CDN}/tuananh-blue-20wx7IY7Ggk-unsplash_dulwe5.jpg`,category:"cocuk",type:"tisort"},
-  {id:37,name:"Çocuk Pantolon",price:800,image:`${CDN}/christopher-luther-gwOLhTqWcaA-unsplash_kgfzef.jpg`,category:"cocuk",type:"pantalon"},
-  {id:38,name:"Çocuk Pantolon",price:300,image:`${CDN}/pexels-amina-filkins-5560028_ib5oqv.jpg`,category:"cocuk",type:"pantalon"},
-  {id:39,name:"Çocuk Pantolon",price:150,image:`${CDN}/pexels-dmitriy-steinke-559643503-30683064_gmi9fs.jpg`,category:"cocuk",type:"pantalon"},
-  {id:40,name:"Çocuk Pantolon",price:1500,image:`${CDN}/pexels-dmitriy-steinke-559643503-30683099_eeqlgb.jpg`,category:"cocuk",type:"pantalon"},
-  {id:41,name:"Çocuk Şapka",price:1500,image:`${CDN}/ahmed-syed-6NVrH0HB_DE-unsplash_eow23i.jpg`,category:"cocuk",type:"sapka"},
-  {id:42,name:"Çocuk Şapka",price:1500,image:`${CDN}/angel-monsanto-iii-0wzyDMY8gCo-unsplash_gi7yc2.jpg`,category:"cocuk",type:"sapka"},
-  {id:43,name:"Çocuk Şapka",price:1500,image:`${CDN}/markus-spiske--rlShVn1_U8-unsplash_ybzneb.jpg`,category:"cocuk",type:"sapka"},
-  {id:44,name:"Çocuk Şapka",price:1500,image:`${CDN}/yang-deng-2loKxdi6Hmo-unsplash_sqvn1x.jpg`,category:"cocuk",type:"sapka"},
-  {id:45,name:"Çocuk Ceket",price:1500,image:`${CDN}/2-bro-s-media-LV_ZrBEGupE-unsplash_ovmfbe.jpg`,category:"cocuk",type:"ceket"},
-  {id:46,name:"Çocuk Ceket",price:1500,image:`${CDN}/christopher-campbell--h_cufTEtcg-unsplash_cehfnl.jpg`,category:"cocuk",type:"ceket"},
-  {id:47,name:"Çocuk Ceket",price:1500,image:`${CDN}/nathan-dumlao-QqLuSb0sypY-unsplash_gs4zul.jpg`,category:"cocuk",type:"ceket"},
-  {id:48,name:"Çocuk Ceket",price:1500,image:`${CDN}/phat-tr-ng-UbJ2Q_HInuU-unsplash_sbwzvv.jpg`,category:"cocuk",type:"ceket"},
-];
-
-try{const sp=JSON.parse(localStorage.getItem('velora_admin_products')||'[]');sp.forEach(s=>{if(!products.find(p=>p.id===s.id))products.push(s)});}catch(e){}
-
-let coupons=[];
-try{coupons=JSON.parse(localStorage.getItem('velora_coupons')||'null')||[{code:"VELORA10",discount:10,status:"active",uses:0},{code:"VELORA20",discount:20,status:"active",uses:0},{code:"HOSGELDIN",discount:15,status:"active",uses:0}];}catch(e){coupons=[];}
-
-let activityLog=[];
-try{activityLog=JSON.parse(localStorage.getItem('velora_log')||'[]');}catch(e){}
-let currentFilter='all',currentPage=1,perPage=12;
-const ADMIN_PW_KEY='velora_admin_pw',DEFAULT_PW='admin123';
-
-// AUTH
-function checkAdmin(){
-  const stored=localStorage.getItem(ADMIN_PW_KEY)||DEFAULT_PW;
-  const input=document.getElementById('adminPwInput').value;
-  if(input===stored){
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('adminPanel').style.display='flex';
-    navTo('products',null);
-    initStats();
-  }else{
-    document.getElementById('loginError').style.display='block';
-    document.getElementById('adminPwInput').value='';
-  }
-}
-function adminLogout(){
-  document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('adminPanel').style.display='none';
-  document.getElementById('adminPwInput').value='';
-  closeSidebar();
-}
-function changeAdminPw(){
-  const pw1=document.getElementById('set-newAdminPw').value;
-  const pw2=document.getElementById('set-newAdminPw2').value;
-  if(!pw1){showToast('Şifre boş olamaz!','error');return;}
-  if(pw1.length<4){showToast('En az 4 karakter!','error');return;}
-  if(pw1!==pw2){showToast('Şifreler eşleşmiyor!','error');return;}
-  localStorage.setItem(ADMIN_PW_KEY,pw1);
-  document.getElementById('set-newAdminPw').value='';
-  document.getElementById('set-newAdminPw2').value='';
-  showToast('Şifre güncellendi ✅','success');
-  addLog('settings','Admin şifresi değiştirildi');
-}
-
-// SIDEBAR
-function openSidebar(){
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('sidebarOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-  document.body.style.overflow='';
-}
-
-// NAV
-const pageMap={dashboard:'Dashboard',products:'Ürün Listesi',addProduct:'Yeni Ürün Ekle',coupons:'Kupon Yönetimi',users:'Kullanıcılar',siteSettings:'Site Ayarları',whatsapp:'WhatsApp / İletişim',appearance:'Görünüm',activity:'Aktivite Logu'};
-const bnavMap={products:'bnav-products',coupons:'bnav-coupons',addProduct:'bnav-addProduct',users:'bnav-users'};
-
-function navTo(page,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active'));
-  const pageEl=document.getElementById('page-'+page);
-  if(pageEl)pageEl.classList.add('active');
-  if(el)el.classList.add('active');
-  const bnavId=bnavMap[page];
-  if(bnavId){const bn=document.getElementById(bnavId);if(bn)bn.classList.add('active');}
-  document.getElementById('topbarTitle').textContent=pageMap[page]||page;
-  closeSidebar();
-  window.scrollTo(0,0);
-  if(page==='products')renderProductTable();
-  if(page==='coupons')renderCoupons();
-  if(page==='users')renderUsers();
-  if(page==='activity')renderFullLog();
-  if(page==='dashboard')initDashboard();
-  if(page==='addProduct'){clearProductForm();document.getElementById('addProductTitle').textContent='Yeni Ürün Ekle';}
-}
-
-// DASHBOARD
-function initStats(){
-  const users=[];try{users.push(...JSON.parse(localStorage.getItem('velora_users')||'[]'));}catch(e){}
-  const el=document.getElementById('stat-total');if(el)el.textContent=products.length;
-  const el2=document.getElementById('stat-coupons');if(el2)el2.textContent=coupons.filter(c=>c.status==='active').length;
-  const el3=document.getElementById('stat-users');if(el3)el3.textContent=users.length;
-}
-function initDashboard(){
-  document.getElementById('topbarDate').textContent=new Date().toLocaleDateString('tr-TR',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
-  initStats();
-  const cats={},types={};
-  products.forEach(p=>{cats[p.category]=(cats[p.category]||0)+1;types[p.type]=(types[p.type]||0)+1;});
-  const catL={erkek:'Erkek',kadin:'Kadın',cocuk:'Çocuk'};
-  const typL={tisort:'Tişört',pantalon:'Pantolon',ceket:'Ceket',sapka:'Şapka'};
-  let html='';
-  Object.entries(cats).forEach(([k,v])=>{const pct=Math.round(v/products.length*100);html+=`<div style="padding:10px 16px;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span>${catL[k]||k}</span><span style="color:var(--accent);font-family:'DM Mono',monospace">${v}</span></div><div style="height:4px;background:var(--surface2);border-radius:4px"><div style="height:4px;width:${pct}%;background:var(--accent);border-radius:4px"></div></div></div>`;});
-  Object.entries(types).forEach(([k,v])=>{html+=`<div style="padding:8px 16px;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--muted)">${typL[k]||k}</span><span style="color:var(--muted);font-family:'DM Mono',monospace">${v}</span></div></div>`;});
-  document.getElementById('catBreakdown').innerHTML=html||'<div class="empty-state">Veri yok</div>';
-  renderRecentActivity();
-}
-
-// PRODUCTS
-function renderProductTable(){
-  const search=(document.getElementById('productSearch')?.value||'').toLowerCase();
-  let filtered=products.filter(p=>{
-    const mF=currentFilter==='all'||p.category===currentFilter||p.type===currentFilter;
-    const mS=!search||p.name.toLowerCase().includes(search)||p.category.includes(search)||p.type.includes(search);
-    return mF&&mS;
-  });
-  const el=document.getElementById('productCount');if(el)el.textContent=filtered.length;
-  const totalPages=Math.ceil(filtered.length/perPage)||1;
-  if(currentPage>totalPages)currentPage=1;
-  const slice=filtered.slice((currentPage-1)*perPage,currentPage*perPage);
-  const catB={erkek:'badge-erkek',kadin:'badge-kadin',cocuk:'badge-cocuk'};
-  const typB={tisort:'badge-tisort',pantalon:'badge-pantalon',ceket:'badge-ceket',sapka:'badge-sapka'};
-  const typL={tisort:'Tişört',pantalon:'Pantolon',ceket:'Ceket',sapka:'Şapka'};
-  const catL={erkek:'Erkek',kadin:'Kadın',cocuk:'Çocuk'};
-  const tbody=document.getElementById('productTableBody');
-  tbody.innerHTML=slice.length===0?`<tr><td colspan="6" class="empty-state"><div class="empty-icon">🔍</div>Ürün bulunamadı</td></tr>`:slice.map(p=>`<tr><td><img src="${p.image}" class="td-img" onerror="this.src='https://placehold.co/40x40/222/444?text=?'"></td><td style="font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</td><td style="color:var(--accent);font-family:'DM Mono',monospace;white-space:nowrap">${p.price.toLocaleString('tr-TR')} TL</td><td><span class="badge ${catB[p.category]||''}">${catL[p.category]||p.category}</span></td><td><span class="badge ${typB[p.type]||''}">${typL[p.type]||p.type}</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-secondary btn-sm" onclick="openEdit(${p.id})" style="padding:5px 8px">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})" style="padding:5px 8px">🗑</button></div></td></tr>`).join('');
-  const pag=document.getElementById('productPagination');pag.innerHTML='';
-  if(totalPages>1){for(let i=1;i<=totalPages;i++){const btn=document.createElement('button');btn.className='page-btn'+(i===currentPage?' active':'');btn.textContent=i;btn.onclick=()=>{currentPage=i;renderProductTable();window.scrollTo(0,0);};pag.appendChild(btn);}}
-}
-
-function setFilter(f,btn){
-  currentFilter=f;currentPage=1;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderProductTable();
-}
-
-// ADD PRODUCT
-function previewImage(){
-  const url=document.getElementById('newImage').value;
-  const img=document.getElementById('previewImg');
-  const ph=document.getElementById('previewPlaceholder');
-  if(url){img.src=url;img.style.display='block';ph.style.display='none';}
-  else{img.style.display='none';ph.style.display='flex';}
-  document.getElementById('previewName').textContent=document.getElementById('newName').value||'—';
-  const price=document.getElementById('newPrice').value;
-  document.getElementById('previewPrice').textContent=price?parseInt(price).toLocaleString('tr-TR')+' TL':'— TL';
-}
-function saveProduct(){
-  const name=document.getElementById('newName').value.trim();
-  const price=parseInt(document.getElementById('newPrice').value);
-  const cat=document.getElementById('newCategory').value;
-  const type=document.getElementById('newType').value;
-  const image=document.getElementById('newImage').value.trim();
-  if(!name||!price||!cat||!type||!image){showToast('Tüm alanları doldurun!','error');return;}
-  const maxId=Math.max(...products.map(p=>p.id),0);
-  const np={id:maxId+1,name,price,image,category:cat,type};
-  products.push(np);
-  try{const stored=JSON.parse(localStorage.getItem('velora_admin_products')||'[]');stored.push(np);localStorage.setItem('velora_admin_products',JSON.stringify(stored));}catch(e){}
-  addLog('add',`Ürün eklendi: "${name}" (ID:${np.id})`);
-  showToast(`"${name}" eklendi ✅`,'success');
-  clearProductForm();
-  initStats();
-}
-function clearProductForm(){
-  ['newName','newPrice','newImage'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['newCategory','newType'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
-  const img=document.getElementById('previewImg');if(img)img.style.display='none';
-  const ph=document.getElementById('previewPlaceholder');if(ph)ph.style.display='flex';
-  document.getElementById('previewName').textContent='—';
-  document.getElementById('previewPrice').textContent='— TL';
-  const bj=document.getElementById('bulkJson');if(bj)bj.value='';
-}
-function bulkAdd(){
-  try{
-    const arr=JSON.parse(document.getElementById('bulkJson').value);
-    if(!Array.isArray(arr)){showToast('Geçersiz JSON!','error');return;}
-    let added=0,maxId=Math.max(...products.map(p=>p.id),0);
-    const stored=[];try{stored.push(...JSON.parse(localStorage.getItem('velora_admin_products')||'[]'));}catch(e){}
-    arr.forEach(item=>{if(!item.name||!item.category||!item.type)return;maxId++;const np={id:maxId,name:item.name,price:item.price||0,image:item.image||'',category:item.category,type:item.type};products.push(np);stored.push(np);added++;});
-    localStorage.setItem('velora_admin_products',JSON.stringify(stored));
-    addLog('add',`${added} ürün toplu eklendi`);
-    showToast(`${added} ürün eklendi ✅`,'success');
-    document.getElementById('bulkJson').value='';
-    initStats();
-  }catch(e){showToast('JSON formatı hatalı!','error');}
-}
-
-// EDIT/DELETE
-function openEdit(id){
-  const p=products.find(x=>x.id===id);if(!p)return;
-  document.getElementById('edit-id').value=id;
-  document.getElementById('edit-name').value=p.name;
-  document.getElementById('edit-price').value=p.price;
-  document.getElementById('edit-category').value=p.category;
-  document.getElementById('edit-type').value=p.type;
-  document.getElementById('edit-image').value=p.image;
-  const prev=document.getElementById('editPreviewImg');prev.src=p.image;prev.style.display='block';
-  document.getElementById('editModal').classList.add('open');
-}
-function saveEdit(){
-  const id=parseInt(document.getElementById('edit-id').value);
-  const idx=products.findIndex(p=>p.id===id);if(idx===-1)return;
-  const name=document.getElementById('edit-name').value.trim();
-  const price=parseInt(document.getElementById('edit-price').value);
-  const cat=document.getElementById('edit-category').value;
-  const type=document.getElementById('edit-type').value;
-  const image=document.getElementById('edit-image').value.trim();
-  if(!name||!price||!cat||!type){showToast('Tüm alanları doldurun!','error');return;}
-  products[idx]={...products[idx],name,price,category:cat,type,image};
-  try{const stored=JSON.parse(localStorage.getItem('velora_admin_products')||'[]');const si=stored.findIndex(p=>p.id===id);if(si!==-1){stored[si]=products[idx];}else{stored.push(products[idx]);}localStorage.setItem('velora_admin_products',JSON.stringify(stored));}catch(e){}
-  addLog('edit',`Ürün düzenlendi: "${name}" (ID:${id})`);
-  showToast('Ürün güncellendi ✅','success');
-  closeEditModal();
-  renderProductTable();
-}
-function deleteProduct(id){
-  const p=products.find(x=>x.id===id);
-  if(!confirm(`"${p?.name}" silinsin mi?`))return;
-  products=products.filter(x=>x.id!==id);
-  try{const stored=JSON.parse(localStorage.getItem('velora_admin_products')||'[]');localStorage.setItem('velora_admin_products',JSON.stringify(stored.filter(x=>x.id!==id)));}catch(e){}
-  addLog('del',`Ürün silindi: "${p?.name}" (ID:${id})`);
-  showToast('Ürün silindi','error');
-  renderProductTable();
-  initStats();
-}
-function closeEditModal(){document.getElementById('editModal').classList.remove('open');}
-
-// COUPONS
-function renderCoupons(){
-  const tbody=document.getElementById('couponTableBody');
-  if(!coupons.length){tbody.innerHTML='<tr><td colspan="5" class="empty-state">Henüz kupon yok</td></tr>';return;}
-  tbody.innerHTML=coupons.map((c,i)=>`<tr><td><span class="coupon-code">${c.code}</span></td><td style="color:var(--success);font-weight:600">%${c.discount}</td><td><span class="badge ${c.status==='active'?'badge-cocuk':''}" style="${c.status!=='active'?'background:rgba(100,100,100,0.2);color:var(--muted)':''}">${c.status==='active'?'Aktif':'Pasif'}</span></td><td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">${c.uses||0}</td><td><div style="display:flex;gap:4px"><button class="btn btn-secondary btn-sm" onclick="toggleCoupon(${i})" style="padding:5px 7px">${c.status==='active'?'⏸':'▶️'}</button><button class="btn btn-secondary btn-sm" onclick="copyCoupon('${c.code}')" style="padding:5px 7px">📋</button><button class="btn btn-danger btn-sm" onclick="deleteCoupon(${i})" style="padding:5px 7px">🗑</button></div></td></tr>`).join('');
-}
-function openCouponModal(){document.getElementById('couponModal').classList.add('open');}
-function closeCouponModal(){document.getElementById('couponModal').classList.remove('open');}
-function addCoupon(){
-  const code=document.getElementById('coup-code').value.trim().toUpperCase();
-  const disc=parseInt(document.getElementById('coup-discount').value);
-  const status=document.getElementById('coup-status').value;
-  if(!code||!disc||disc<1||disc>100){showToast('Geçerli kod ve indirim girin!','error');return;}
-  if(coupons.find(c=>c.code===code)){showToast('Bu kod zaten mevcut!','error');return;}
-  coupons.push({code,discount:disc,status,uses:0});
-  saveCoupons();addLog('add',`Kupon: ${code} (%${disc})`);showToast(`"${code}" eklendi ✅`,'success');
-  closeCouponModal();renderCoupons();
-  document.getElementById('coup-code').value='';document.getElementById('coup-discount').value='';
-}
-function toggleCoupon(i){coupons[i].status=coupons[i].status==='active'?'inactive':'active';saveCoupons();addLog('edit',`Kupon durumu: ${coupons[i].code}`);renderCoupons();}
-function deleteCoupon(i){
-  const code=coupons[i].code;
-  if(!confirm(`"${code}" silinsin mi?`))return;
-  coupons.splice(i,1);saveCoupons();addLog('del',`Kupon silindi: ${code}`);showToast('Kupon silindi','error');renderCoupons();
-}
-function copyCoupon(code){navigator.clipboard?.writeText(code).then(()=>showToast(`"${code}" kopyalandı`,'success'));}
-function saveCoupons(){try{localStorage.setItem('velora_coupons',JSON.stringify(coupons));}catch(e){}}
-
-// USERS
-function renderUsers(){
-  const search=(document.getElementById('userSearch')?.value||'').toLowerCase();
-  let users=[];try{users=JSON.parse(localStorage.getItem('velora_users')||'[]');}catch(e){}
-  const filtered=users.filter(u=>!search||u.name?.toLowerCase().includes(search)||u.email?.toLowerCase().includes(search));
-  const el=document.getElementById('userCount');if(el)el.textContent=filtered.length;
-  let activeUser=null;try{activeUser=JSON.parse(localStorage.getItem('activeUser')||'null');}catch(e){}
-  const tbody=document.getElementById('userTableBody');
-  if(!filtered.length){tbody.innerHTML='<tr><td colspan="4" class="empty-state"><div class="empty-icon">👤</div>Kullanıcı bulunamadı</td></tr>';return;}
-  tbody.innerHTML=filtered.map((u,i)=>`<tr><td style="font-weight:500">${u.name||'-'}</td><td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;max-width:130px;overflow:hidden;text-overflow:ellipsis">${u.email||'-'}</td><td>${activeUser?.email===u.email?'<span class="badge badge-cocuk">Aktif</span>':'<span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Çevrimdışı</span>'}</td><td><button class="btn btn-danger btn-sm" onclick="deleteUser(${i})" style="padding:5px 8px">🗑</button></td></tr>`).join('');
-}
-function deleteUser(i){
-  let users=[];try{users=JSON.parse(localStorage.getItem('velora_users')||'[]');}catch(e){}
-  const u=users[i];if(!confirm(`"${u.name}" silinsin mi?`))return;
-  users.splice(i,1);localStorage.setItem('velora_users',JSON.stringify(users));
-  addLog('del',`Kullanıcı silindi: ${u.name}`);showToast('Kullanıcı silindi','error');renderUsers();
-}
-function clearAllUsers(){
-  if(!confirm('TÜM kullanıcılar silinsin mi?'))return;
-  localStorage.setItem('velora_users','[]');localStorage.removeItem('activeUser');
-  addLog('del','Tüm kullanıcılar silindi');showToast('Tüm kullanıcılar silindi','error');renderUsers();
-}
-
-// SETTINGS
-function saveSiteSettings(){
-  const settings={storeName:document.getElementById('set-storeName').value,slogan:document.getElementById('set-slogan').value,currency:document.getElementById('set-currency').value,title:document.getElementById('set-title').value,metaDesc:document.getElementById('set-metaDesc').value,keywords:document.getElementById('set-keywords').value,features:{search:document.getElementById('feat-search').checked,favorites:document.getElementById('feat-favorites').checked,darkmode:document.getElementById('feat-darkmode').checked,coupon:document.getElementById('feat-coupon').checked,auth:document.getElementById('feat-auth').checked,maintenance:document.getElementById('feat-maintenance').checked}};
-  try{localStorage.setItem('velora_settings',JSON.stringify(settings));}catch(e){}
-  addLog('settings','Site ayarları güncellendi');showToast('Ayarlar kaydedildi ✅','success');
-}
-function saveContact(){
-  const c={waNumber:document.getElementById('wa-number').value,waGreeting:document.getElementById('wa-greeting').value,waActive:document.getElementById('wa-active').checked,email:document.getElementById('contact-email').value,phone:document.getElementById('contact-phone').value,address:document.getElementById('contact-address').value,instagram:document.getElementById('contact-instagram').value,emailjs:{service:document.getElementById('ejs-service').value,template:document.getElementById('ejs-template').value,pubkey:document.getElementById('ejs-pubkey').value}};
-  try{localStorage.setItem('velora_contact',JSON.stringify(c));}catch(e){}
-  addLog('settings','İletişim ayarları güncellendi');showToast('İletişim ayarları kaydedildi ✅','success');
-}
-function saveAppearance(){
-  const a={banner:document.getElementById('app-banner').value,logo:document.getElementById('app-logo').value,favicon:document.getElementById('app-favicon').value,colors:{primary:document.getElementById('color-primary').value,bg:document.getElementById('color-bg').value,text:document.getElementById('color-text').value},headfont:document.getElementById('app-headfont').value,bodyfont:document.getElementById('app-bodyfont').value,announcebar:document.getElementById('app-announcebar').checked,announcetext:document.getElementById('app-announcetext').value,announcecolor:document.getElementById('app-announcecolor').value};
-  try{localStorage.setItem('velora_appearance',JSON.stringify(a));}catch(e){}
-  addLog('settings','Görünüm ayarları güncellendi');showToast('Görünüm ayarları kaydedildi ✅','success');
-}
-
-// EXPORT
-function exportProducts(){
-  const header='ID,Ad,Fiyat,Kategori,Tip,Görsel\n';
-  const rows=products.map(p=>`${p.id},"${p.name}",${p.price},${p.category},${p.type},"${p.image}"`).join('\n');
-  const blob=new Blob([header+rows],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='velora_urunler.csv';a.click();URL.revokeObjectURL(url);
-  addLog('settings','Ürün listesi CSV indirildi');
-}
-
-// LOG
-function addLog(type,msg){
-  activityLog.unshift({type,msg,time:new Date().toLocaleString('tr-TR')});
-  if(activityLog.length>200)activityLog.pop();
-  try{localStorage.setItem('velora_log',JSON.stringify(activityLog));}catch(e){}
-}
-function renderRecentActivity(){
-  const el=document.getElementById('recentActivity');if(!el)return;
-  const recent=activityLog.slice(0,6);
-  if(!recent.length){el.innerHTML='<div class="empty-state" style="padding:20px">Henüz aktivite yok</div>';return;}
-  el.innerHTML=recent.map(l=>`<div class="log-item"><div class="log-dot ${l.type}"></div><div><div>${l.msg}</div><div class="log-time">${l.time}</div></div></div>`).join('');
-}
-function renderFullLog(){
-  const el=document.getElementById('fullActivityLog');if(!el)return;
-  if(!activityLog.length){el.innerHTML='<div class="empty-state">Log boş</div>';return;}
-  el.innerHTML=activityLog.map(l=>`<div class="log-item"><div class="log-dot ${l.type}"></div><div><div style="font-size:12px">${l.msg}</div><div class="log-time">${l.time}</div></div></div>`).join('');
-}
-function clearLog(){
-  if(!confirm('Aktivite logu temizlensin mi?'))return;
-  activityLog=[];try{localStorage.setItem('velora_log','[]');}catch(e){}renderFullLog();showToast('Log temizlendi','success');
-}
-
-// TOAST
-function showToast(msg,type=''){
-  const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',3000);
-}
-
-// INIT
-window.addEventListener('load',function(){
-  document.getElementById('couponModal').addEventListener('click',function(e){if(e.target===this)closeCouponModal();});
-  document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
-  document.getElementById('edit-image')?.addEventListener('input',function(){const prev=document.getElementById('editPreviewImg');prev.src=this.value;prev.style.display=this.value?'block':'none';});
-  document.getElementById('adminPwInput')?.addEventListener('keydown',function(e){if(e.key==='Enter')checkAdmin();});
-  document.getElementById('topbarDate').textContent=new Date().toLocaleDateString('tr-TR',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
-
-  try{
-    const saved=JSON.parse(localStorage.getItem('velora_settings')||'null');
-    if(saved){
-      if(saved.storeName)document.getElementById('set-storeName').value=saved.storeName;
-      if(saved.slogan)document.getElementById('set-slogan').value=saved.slogan;
-      if(saved.title)document.getElementById('set-title').value=saved.title;
-      if(saved.features)Object.entries(saved.features).forEach(([k,v])=>{const el=document.getElementById('feat-'+k);if(el)el.checked=v;});
-    }
-    const contact=JSON.parse(localStorage.getItem('velora_contact')||'null');
-    if(contact){
-      if(contact.waNumber)document.getElementById('wa-number').value=contact.waNumber;
-      if(contact.instagram)document.getElementById('contact-instagram').value=contact.instagram;
-    }
-  }catch(e){}
-});
-</script>
+<script src="admin.js"></script>
 </body>
 </html>
