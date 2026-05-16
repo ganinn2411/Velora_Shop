@@ -109,7 +109,6 @@ function updateCartCount() {
   }
 }
 
-// Header'daki "X ürün" yazısını güncelle (cart.html header'ı için)
 function updateHeaderCount() {
   const cartData = JSON.parse(localStorage.getItem("cart")) || [];
   const total = cartData.reduce((s, i) => s + (i.quantity || 0), 0);
@@ -117,7 +116,6 @@ function updateHeaderCount() {
   if (el) el.textContent = total > 0 ? `${total} ürün` : "";
 }
 
-// Kupon kutusunu sepet durumuna göre göster / gizle
 function checkCouponVisibility() {
   const cartData = JSON.parse(localStorage.getItem("cart")) || [];
   const box = document.getElementById("coupon-box");
@@ -126,7 +124,6 @@ function checkCouponVisibility() {
 
 updateCartCount();
 
-// Sayfa tamamen yüklenince çalıştır
 window.addEventListener("load", function () {
   updateHeaderCount();
   checkCouponVisibility();
@@ -380,10 +377,6 @@ function applyCoupon() {
   renderCart();
 }
 
-// =====================
-// KUPON KALDIR — DÜZELTİLDİ
-// Tüm elementler null kontrolü ile güvenli şekilde erişiliyor
-// =====================
 function removeCoupon() {
   aktifKupon = null;
 
@@ -418,7 +411,6 @@ function renderCart() {
   container.innerHTML = "";
   let araToplamTL = 0;
 
-  // Kupon kutusunu ve header sayısını güncelle
   const couponBox = document.getElementById("coupon-box");
   if (couponBox) couponBox.style.display = cart.length > 0 ? "block" : "none";
   updateHeaderCount();
@@ -427,10 +419,6 @@ function renderCart() {
     const itemTotal = item.price * item.quantity;
     araToplamTL += itemTotal;
 
-    // =====================
-    // DÜZELTİLDİ: removeItem artık id + size + color alıyor
-    // Böylece aynı üründen farklı beden/renk varyantları ayrı ayrı silinebilir
-    // =====================
     container.innerHTML += `
       <div class="cart-item">
         <a href="product.html?id=${item.id}">
@@ -452,7 +440,6 @@ function renderCart() {
     `;
   });
 
-  // Kupon indirimi hesapla ve toplamı güncelle
   const discountRow     = document.getElementById("discountRow");
   const discountDisplay = document.getElementById("discountDisplay");
   const totalEl         = document.getElementById("total");
@@ -469,9 +456,6 @@ function renderCart() {
   }
 }
 
-// =====================
-// DÜZELTİLDİ: changeQty artık size ve color parametresi alıyor
-// =====================
 function changeQty(id, size, color, delta) {
   const item = cart.find(i => i.id === id && i.size === size && i.color === color);
   if (!item) return;
@@ -484,10 +468,6 @@ function changeQty(id, size, color, delta) {
   updateCartCount();
 }
 
-// =====================
-// DÜZELTİLDİ: removeItem artık id + size + color kombinasyonuna göre siliyor
-// Önceki hâl sadece id'ye göre sildiği için aynı ürünün tüm varyantlarını siliyordu
-// =====================
 function removeItem(id, size, color) {
   cart = cart.filter(i => !(i.id === id && i.size === size && i.color === color));
   localStorage.setItem("cart", JSON.stringify(cart));
@@ -516,7 +496,6 @@ function updateSaveIcons() {
 
 setTimeout(updateSaveIcons, 100);
 
-// FAVORİ SAYFASI
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("favorites-list")) {
     let saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
@@ -716,18 +695,90 @@ function setError(fgId, show) {
 }
 function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
+// =====================
+// ŞİFRE VALİDASYONU
+// =====================
+const PW_RULES = {
+  length:  { regex: /.{8,}/,          ruleId: "rule-length"  },
+  upper:   { regex: /[A-Z]/,          ruleId: "rule-upper"   },
+  number:  { regex: /[0-9]/,          ruleId: "rule-number"  },
+  special: { regex: /[^a-zA-Z0-9]/,   ruleId: "rule-special" }
+};
+
+function checkPasswordStrength(value) {
+  let passed = 0;
+  Object.keys(PW_RULES).forEach(key => {
+    const rule    = PW_RULES[key];
+    const ok      = rule.regex.test(value);
+    const el      = document.getElementById(rule.ruleId);
+    if (el) {
+      el.classList.toggle("rule-ok",   ok);
+      el.classList.toggle("rule-fail", !ok && value.length > 0);
+      el.textContent = (ok ? "✓ " : "✗ ") + el.textContent.slice(2);
+    }
+    if (ok) passed++;
+  });
+
+  const fill = document.getElementById("pw-strength-fill");
+  if (!fill) return;
+  const pct = (passed / 4) * 100;
+  fill.style.width = pct + "%";
+  fill.className = "pw-strength-fill";
+  if      (passed <= 1) fill.classList.add("pw-weak");
+  else if (passed === 2) fill.classList.add("pw-fair");
+  else if (passed === 3) fill.classList.add("pw-good");
+  else                   fill.classList.add("pw-strong");
+}
+
+function isPasswordValid(value) {
+  return Object.values(PW_RULES).every(r => r.regex.test(value));
+}
+
+// Göster/Gizle düğmesi
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  const isText = inp.type === "text";
+  inp.type = isText ? "password" : "text";
+  // SVG'yi göz kapalı/açık olarak değiştir
+  btn.innerHTML = isText
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+         <circle cx="12" cy="12" r="3"/>
+       </svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+         <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+         <line x1="1" y1="1" x2="23" y2="23"/>
+       </svg>`;
+}
+
+// Şifreyi hash'le (basit SHA-256 benzeri — gerçek projede bcrypt kullanın)
+async function hashPassword(password) {
+  const msgBuffer = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
 // ── Geçici kayıt verisi ──
 let tempUser = {};
 
 // ── KAYIT ──
-function handleRegister() {
-  const name  = document.getElementById("reg-name").value.trim();
-  const email = document.getElementById("reg-email").value.trim();
+async function handleRegister() {
+  const name      = document.getElementById("reg-name").value.trim();
+  const email     = document.getElementById("reg-email").value.trim();
+  const password  = document.getElementById("reg-password").value;
+  const password2 = document.getElementById("reg-password2").value;
   const termsCheck = document.getElementById("termsCheck");
   let ok = true;
 
+  // Ad soyad
   if (!name) { setError("fg-name", true);  ok = false; } else { setError("fg-name", false); }
 
+  // E-posta
   if (!email || !isValidEmail(email)) {
     document.getElementById("email-error-msg").textContent =
       !email ? "E-posta adresi zorunludur." : "Geçerli bir e-posta adresi giriniz.";
@@ -735,6 +786,21 @@ function handleRegister() {
     ok = false;
   } else { setError("fg-email", false); }
 
+  // Şifre geçerliliği
+  if (!isPasswordValid(password)) {
+    document.getElementById("password-error-msg").textContent = "Şifre gereksinimleri karşılanmıyor.";
+    setError("fg-password", true);
+    ok = false;
+  } else { setError("fg-password", false); }
+
+  // Şifre eşleşmesi
+  if (password !== password2) {
+    document.getElementById("password2-error-msg").textContent = "Şifreler eşleşmiyor.";
+    setError("fg-password2", true);
+    ok = false;
+  } else { setError("fg-password2", false); }
+
+  // Sözleşme
   if (termsCheck && !termsCheck.checked) {
     setError("fg-terms", true);
     ok = false;
@@ -744,6 +810,7 @@ function handleRegister() {
 
   if (!ok) return;
 
+  // Kayıtlı mı?
   const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
   if (allUsers.find(u => u.email.toLowerCase() === email.toLowerCase())) {
     document.getElementById("email-error-msg").textContent = "Bu e-posta zaten kayıtlı. Giriş yapın.";
@@ -751,7 +818,8 @@ function handleRegister() {
     return;
   }
 
-  tempUser = { name, email };
+  const hashedPw = await hashPassword(password);
+  tempUser = { name, email, passwordHash: hashedPw };
   document.getElementById("verify-email-label").textContent = email;
 
   const verifyCode = String(Math.floor(1000 + Math.random() * 9000));
@@ -820,12 +888,13 @@ function handleVerify() {
 
   if (code === tempUser.code) {
     const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
-    const saveUser = { name: tempUser.name, email: tempUser.email };
+    const saveUser = { name: tempUser.name, email: tempUser.email, passwordHash: tempUser.passwordHash };
     if (!allUsers.find(u => u.email.toLowerCase() === tempUser.email.toLowerCase())) {
       allUsers.push(saveUser);
       localStorage.setItem("velora_users", JSON.stringify(allUsers));
     }
-    localStorage.setItem("activeUser", JSON.stringify(saveUser));
+    // activeUser'a passwordHash saklamıyoruz (güvenlik)
+    localStorage.setItem("activeUser", JSON.stringify({ name: saveUser.name, email: saveUser.email }));
     showToast("Üyeliğiniz tamamlandı! Hoş geldiniz 🎉", "success");
     setTimeout(() => { window.location.href = "index.html"; }, 1200);
   } else {
@@ -842,29 +911,58 @@ function handleVerify() {
 }
 
 // ── GİRİŞ ──
-function handleLogin() {
-  const email = document.getElementById("login-email").value.trim();
-  if (!email || !isValidEmail(email)) { setError("fg-login-email", true); return; }
+async function handleLogin() {
+  const email    = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  let ok = true;
+
+  if (!email || !isValidEmail(email)) {
+    document.getElementById("login-email-error-msg").textContent = "Geçerli bir e-posta adresi giriniz.";
+    setError("fg-login-email", true);
+    ok = false;
+  } else { setError("fg-login-email", false); }
+
+  if (!password) {
+    document.getElementById("login-password-error-msg").textContent = "Şifre zorunludur.";
+    setError("fg-login-password", true);
+    ok = false;
+  } else { setError("fg-login-password", false); }
+
+  if (!ok) return;
 
   const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
   const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
 
-  if (user) {
-    const rememberMe = document.getElementById("rememberMe");
-    if (rememberMe && rememberMe.checked) {
-      localStorage.setItem("activeUser", JSON.stringify(user));
-      localStorage.setItem("velora_remember", "true");
-    } else {
-      localStorage.removeItem("velora_remember");
-      sessionStorage.setItem("activeUser", JSON.stringify(user));
-      localStorage.setItem("activeUser", JSON.stringify(user));
-    }
-    setError("fg-login-email", false);
-    showToast("Hoş geldiniz, " + user.name + "!", "success");
-    setTimeout(() => { window.location.href = "index.html"; }, 1200);
-  } else {
+  if (!user) {
+    document.getElementById("login-email-error-msg").textContent = "Bu e-posta ile kayıtlı kullanıcı bulunamadı.";
     setError("fg-login-email", true);
+    return;
   }
+
+  // Şifreyi doğrula
+  const hashedPw = await hashPassword(password);
+  if (user.passwordHash && hashedPw !== user.passwordHash) {
+    document.getElementById("login-password-error-msg").textContent = "Şifre hatalı.";
+    setError("fg-login-password", true);
+    return;
+  }
+
+  const rememberMe = document.getElementById("rememberMe");
+  const sessionUser = { name: user.name, email: user.email };
+
+  if (rememberMe && rememberMe.checked) {
+    localStorage.setItem("activeUser", JSON.stringify(sessionUser));
+    localStorage.setItem("velora_remember", "true");
+  } else {
+    localStorage.removeItem("velora_remember");
+    sessionStorage.setItem("activeUser", JSON.stringify(sessionUser));
+    localStorage.setItem("activeUser", JSON.stringify(sessionUser));
+  }
+
+  setError("fg-login-email",    false);
+  setError("fg-login-password", false);
+  showToast("Hoş geldiniz, " + user.name + "!", "success");
+  setTimeout(() => { window.location.href = "index.html"; }, 1200);
 }
 
 // ── ÇIKIŞ ──
@@ -956,10 +1054,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const rememberCb = document.getElementById("rememberMe");
     if (rememberCb) rememberCb.checked = true;
   }
+
   const regEmail   = document.getElementById("reg-email");
   const loginEmail = document.getElementById("login-email");
+  const loginPw    = document.getElementById("login-password");
+
   if (regEmail)   regEmail.addEventListener("keydown",   e => { if (e.key === "Enter") handleRegister(); });
   if (loginEmail) loginEmail.addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
+  if (loginPw)    loginPw.addEventListener("keydown",    e => { if (e.key === "Enter") handleLogin(); });
 });
 
 // Profil ikonunu güncelle
