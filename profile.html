@@ -8,6 +8,176 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+/* ── Admin Panel Butonu ── */
+.admin-entry {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #e0d9d0;
+  text-align: center;
+}
+body.dark .admin-entry { border-top-color: #2a2a2a; }
+
+.admin-entry-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #aaa;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.admin-entry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: 1px solid #c9b97a;
+  color: #c9b97a;
+  padding: 9px 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+  text-decoration: none;
+}
+.admin-entry-btn:hover {
+  background: #c9b97a;
+  color: #fff;
+}
+.admin-entry-btn svg { flex-shrink: 0; }
+
+/* ── Admin Modal ── */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.admin-modal-overlay.open { display: flex; }
+
+.admin-modal {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 360px;
+  padding: 36px 32px 28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  position: relative;
+  animation: fadeInUp 0.3s ease;
+}
+body.dark .admin-modal {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+}
+
+.admin-modal-logo {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #c9b97a;
+  margin-bottom: 4px;
+}
+.admin-modal-sub {
+  font-size: 10px;
+  color: #aaa;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.admin-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1a1714;
+}
+body.dark .admin-modal-title { color: #f0f0f0; }
+
+.admin-modal-close {
+  position: absolute;
+  top: 14px; right: 18px;
+  background: none; border: none;
+  font-size: 22px; color: #aaa;
+  cursor: pointer; line-height: 1;
+}
+.admin-modal-close:hover { color: #333; }
+
+.admin-pw-group { margin-bottom: 16px; position: relative; }
+.admin-pw-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 7px;
+}
+.admin-pw-input {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 11px 40px 11px 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #fafafa;
+  color: #1a1714;
+}
+body.dark .admin-pw-input { background: #111; border-color: #333; color: #f0f0f0; }
+.admin-pw-input:focus { border-color: #c9b97a; }
+.admin-pw-input.error { border-color: #c0392b; }
+
+.admin-pw-toggle {
+  position: absolute;
+  right: 10px; bottom: 10px;
+  background: none; border: none;
+  cursor: pointer; color: #aaa;
+  padding: 2px;
+  line-height: 1;
+}
+.admin-pw-toggle:hover { color: #555; }
+
+.admin-pw-error {
+  font-size: 11px;
+  color: #c0392b;
+  margin-top: 5px;
+  display: none;
+}
+.admin-pw-error.show { display: block; }
+
+.admin-modal-btn {
+  width: 100%;
+  background: #1a1714;
+  color: #fff;
+  border: none;
+  padding: 13px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+  margin-top: 4px;
+}
+.admin-modal-btn:hover { opacity: 0.85; }
+body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
+
+.admin-modal-note {
+  font-size: 11px;
+  color: #bbb;
+  text-align: center;
+  margin-top: 14px;
+  font-family: 'Montserrat', monospace;
+}
+</style>
 </head>
 <body>
 
@@ -38,23 +208,51 @@
     </div>
     <div class="modal-body">
       <h3>1. Genel Hükümler</h3>
-      <p>VELORA'ya üye olarak bu platformun sunduğu hizmetlerden yararlanabilirsiniz. Siteyi kullanarak aşağıdaki şart ve koşulları kabul etmiş sayılırsınız.</p>
+      <p>VELORA'ya üye olarak bu platformun sunduğu hizmetlerden yararlanabilirsiniz.</p>
       <h3>2. Kişisel Verilerin Korunması</h3>
-      <p>Ad, soyad ve e-posta adresiniz yalnızca hesap yönetimi ve sipariş süreçleri için kullanılır. Verileriniz üçüncü şahıslarla paylaşılmaz ve KVKK kapsamında korunur.</p>
+      <p>Ad, soyad ve e-posta adresiniz yalnızca hesap yönetimi ve sipariş süreçleri için kullanılır.</p>
       <h3>3. Üyelik</h3>
-      <p>Üyelik işlemi e-posta doğrulaması ile tamamlanır. Hesabınızın güvenliğinden siz sorumlusunuz. Başkasına ait bilgilerle kayıt oluşturmak yasaktır.</p>
+      <p>Üyelik işlemi e-posta doğrulaması ile tamamlanır.</p>
       <h3>4. Alışveriş ve Ödeme</h3>
-      <p>Siparişler WhatsApp üzerinden iletilir. Fiyatlar TL cinsinden belirtilmiş olup değişiklik hakkı saklıdır. Ödeme detayları sipariş sırasında tarafınıza bildirilir.</p>
+      <p>Siparişler WhatsApp üzerinden iletilir. Fiyatlar TL cinsinden belirtilmiştir.</p>
       <h3>5. İade ve İptal</h3>
-      <p>Ürünler teslim tarihinden itibaren 14 gün içinde iade edilebilir. İade için iletişim bölümünden bizimle iletişime geçiniz.</p>
+      <p>Ürünler teslim tarihinden itibaren 14 gün içinde iade edilebilir.</p>
       <h3>6. Çerezler</h3>
-      <p>Sitemiz, kullanıcı deneyimini geliştirmek amacıyla yerel depolama (localStorage) kullanmaktadır. Tarayıcınız üzerinden bu verileri silebilirsiniz.</p>
+      <p>Sitemiz kullanıcı deneyimini geliştirmek amacıyla yerel depolama kullanmaktadır.</p>
       <h3>7. Değişiklikler</h3>
-      <p>VELORA, bu şartları önceden bildirmeksizin değiştirme hakkını saklı tutar. Güncel şartlar her zaman bu sayfada yayımlanır.</p>
+      <p>VELORA, bu şartları önceden bildirmeksizin değiştirme hakkını saklı tutar.</p>
     </div>
     <div class="modal-footer">
       <button class="auth-btn" onclick="acceptTerms()">Okudum, Kabul Ediyorum</button>
     </div>
+  </div>
+</div>
+
+<!-- ── ADMİN GİRİŞ MODALİ ── -->
+<div class="admin-modal-overlay" id="adminModal">
+  <div class="admin-modal">
+    <button class="admin-modal-close" onclick="closeAdminModal()">×</button>
+    <div class="admin-modal-logo">VELORA</div>
+    <div class="admin-modal-sub">Admin Panel</div>
+    <div class="admin-modal-title">Yönetici Girişi</div>
+
+    <div class="admin-pw-group">
+      <label class="admin-pw-label">Admin Şifresi</label>
+      <input type="password" class="admin-pw-input" id="adminModalPw"
+             placeholder="Şifrenizi girin"
+             onkeydown="if(event.key==='Enter') checkAdminEntry()">
+      <button class="admin-pw-toggle" onclick="toggleAdminPw()" tabindex="-1" id="adminPwToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+      <div class="admin-pw-error" id="adminPwError">Hatalı şifre! Tekrar deneyin.</div>
+    </div>
+
+    <button class="admin-modal-btn" onclick="checkAdminEntry()">Admin Paneline Gir</button>
+    <p class="admin-modal-note">admin.html</p>
   </div>
 </div>
 
@@ -80,7 +278,6 @@
         <div class="error-msg" id="email-error-msg">Geçerli bir e-posta adresi giriniz.</div>
       </div>
 
-      <!-- ŞİFRE -->
       <div class="form-group" id="fg-password">
         <label>Şifre</label>
         <div class="password-wrap">
@@ -94,7 +291,6 @@
             </svg>
           </button>
         </div>
-        <!-- Güç çubuğu -->
         <div class="pw-strength-bar">
           <div class="pw-strength-fill" id="pw-strength-fill"></div>
         </div>
@@ -107,7 +303,6 @@
         <div class="error-msg" id="password-error-msg">Şifre gereksinimleri karşılanmıyor.</div>
       </div>
 
-      <!-- ŞİFRE TEKRAR -->
       <div class="form-group" id="fg-password2">
         <label>Şifre Tekrar</label>
         <div class="password-wrap">
@@ -123,7 +318,6 @@
         <div class="error-msg" id="password2-error-msg">Şifreler eşleşmiyor.</div>
       </div>
 
-      <!-- SÖZLEŞME CHECKBOX -->
       <div class="checkbox-group" id="fg-terms">
         <label class="checkbox-label">
           <input type="checkbox" id="termsCheck">
@@ -192,7 +386,6 @@
         <div class="error-msg" id="login-password-error-msg">Şifre hatalı.</div>
       </div>
 
-      <!-- BENİ HATIRLA -->
       <div class="checkbox-group remember-group">
         <label class="checkbox-label">
           <input type="checkbox" id="rememberMe">
@@ -203,6 +396,19 @@
 
       <button class="auth-btn" onclick="handleLogin()">Giriş Yap</button>
       <p class="switch-text">Hesabınız yok mu? <span onclick="showRegister()">Üye Ol</span></p>
+
+      <!-- ── Admin Panel Giriş Butonu ── -->
+      <div class="admin-entry">
+        <span class="admin-entry-label">Yönetici Girişi</span>
+        <button class="admin-entry-btn" onclick="openAdminModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Admin Paneli
+        </button>
+      </div>
     </div>
 
     <!-- 4. PROFİL -->
@@ -227,7 +433,6 @@
           </div>
         </div>
 
-        <!-- ŞİFRE DEĞİŞTİRME FORMU (başta gizli) -->
         <div id="pw-change-form" class="pw-change-form hidden">
           <div class="form-group" id="fg-current-pw">
             <label>Mevcut Şifre</label>
@@ -300,5 +505,65 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>emailjs.init("AMxxbdCuDcWeWcuio");</script>
 <script src="script.js"></script>
+<script>
+// ── Admin Modal Fonksiyonları ──
+function openAdminModal() {
+  document.getElementById('adminModal').classList.add('open');
+  document.getElementById('adminModalPw').value = '';
+  document.getElementById('adminModalPw').classList.remove('error');
+  document.getElementById('adminPwError').classList.remove('show');
+  setTimeout(() => document.getElementById('adminModalPw').focus(), 100);
+}
+
+function closeAdminModal() {
+  document.getElementById('adminModal').classList.remove('open');
+}
+
+// Modalın dışına tıklayınca kapat
+document.getElementById('adminModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminModal();
+});
+
+function toggleAdminPw() {
+  const input = document.getElementById('adminModalPw');
+  const btn   = document.getElementById('adminPwToggle');
+  const isText = input.type === 'text';
+  input.type = isText ? 'password' : 'text';
+  // Göz ikonunu değiştir
+  btn.innerHTML = isText
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+         <circle cx="12" cy="12" r="3"/>
+       </svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+         <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+         <line x1="1" y1="1" x2="23" y2="23"/>
+       </svg>`;
+}
+
+function checkAdminEntry() {
+  const input     = document.getElementById('adminModalPw');
+  const errorEl   = document.getElementById('adminPwError');
+  const pw        = input.value;
+  const storedPw  = localStorage.getItem('velora_admin_pw') || 'admin123';
+
+  if (pw === storedPw) {
+    // Doğru şifre — admin paneline yönlendir
+    window.location.href = 'admin.html';
+  } else {
+    // Hatalı şifre
+    input.classList.add('error');
+    errorEl.classList.add('show');
+    input.value = '';
+    input.focus();
+    setTimeout(() => {
+      input.classList.remove('error');
+    }, 1500);
+  }
+}
+</script>
 </body>
 </html>
