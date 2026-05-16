@@ -464,11 +464,13 @@
 
   /* PASSWORD */
   .login-screen {
-    min-height: 100vh;
+    position: fixed;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--bg);
+    z-index: 999;
   }
 
   .login-card {
