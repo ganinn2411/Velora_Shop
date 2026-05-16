@@ -70,6 +70,7 @@ let editingId = null;
 
 // ========== AUTH ==========
 const ADMIN_PW_KEY = 'velora_admin_pw';
+// 🔑 VARSAYILAN ŞİFREYİ BURADAN DEĞİŞTİREBİLİRSİN:
 const DEFAULT_PW = 'admin123';
 
 function checkAdmin() {
@@ -81,6 +82,8 @@ function checkAdmin() {
     initDashboard();
   } else {
     document.getElementById('loginError').style.display = 'block';
+    document.getElementById('adminPwInput').value = '';
+    document.getElementById('adminPwInput').focus();
   }
 }
 
@@ -94,6 +97,7 @@ function changeAdminPw() {
   const pw1 = document.getElementById('set-newAdminPw').value;
   const pw2 = document.getElementById('set-newAdminPw2').value;
   if (!pw1) { showToast('Şifre boş olamaz!', 'error'); return; }
+  if (pw1.length < 4) { showToast('Şifre en az 4 karakter olmalı!', 'error'); return; }
   if (pw1 !== pw2) { showToast('Şifreler eşleşmiyor!', 'error'); return; }
   localStorage.setItem(ADMIN_PW_KEY, pw1);
   document.getElementById('set-newAdminPw').value = '';
@@ -102,42 +106,84 @@ function changeAdminPw() {
   addLog('settings', 'Admin şifresi değiştirildi');
 }
 
-// ========== NAV ==========
+// ========== NAV (Dashboard Toggle Destekli) ==========
+let dashboardVisible = true;
+
 function navTo(page, el) {
+  // ---- DASHBOARD TOGGLE ----
+  if (page === 'dashboard') {
+    const dashPage = document.getElementById('page-dashboard');
+    const isActive = dashPage.classList.contains('active');
+
+    if (isActive) {
+      // Dashboard açıksa kapat
+      dashPage.classList.remove('active');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('topbarTitle').textContent = '';
+      dashboardVisible = false;
+      return;
+    } else {
+      // Dashboard kapalıysa aç
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      dashPage.classList.add('active');
+      if (el) el.classList.add('active');
+      document.getElementById('topbarTitle').textContent = 'Dashboard';
+      dashboardVisible = true;
+      initDashboard();
+      return;
+    }
+  }
+
+  // ---- DİĞER SAYFALAR ----
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   if (el) el.classList.add('active');
 
-  const titles = { dashboard: 'Dashboard', products: 'Ürün Listesi', addProduct: 'Yeni Ürün Ekle',
-    coupons: 'Kupon Yönetimi', users: 'Kullanıcılar', siteSettings: 'Site Ayarları',
-    whatsapp: 'WhatsApp & İletişim', appearance: 'Görünüm', activity: 'Aktivite Logu' };
+  const titles = {
+    dashboard:    'Dashboard',
+    products:     'Ürün Listesi',
+    addProduct:   'Yeni Ürün Ekle',
+    coupons:      'Kupon Yönetimi',
+    users:        'Kullanıcılar',
+    siteSettings: 'Site Ayarları',
+    whatsapp:     'WhatsApp & İletişim',
+    appearance:   'Görünüm',
+    activity:     'Aktivite Logu'
+  };
   document.getElementById('topbarTitle').textContent = titles[page] || page;
 
-  if (page === 'products') renderProductTable();
-  if (page === 'coupons') renderCoupons();
-  if (page === 'users') renderUsers();
-  if (page === 'activity') renderFullLog();
-  if (page === 'addProduct') { clearProductForm(); editingId = null; document.getElementById('addProductTitle').textContent = 'Yeni Ürün Ekle'; }
+  if (page === 'products')   renderProductTable();
+  if (page === 'coupons')    renderCoupons();
+  if (page === 'users')      renderUsers();
+  if (page === 'activity')   renderFullLog();
+  if (page === 'addProduct') {
+    clearProductForm();
+    editingId = null;
+    document.getElementById('addProductTitle').textContent = 'Yeni Ürün Ekle';
+  }
 }
 
 // ========== DASHBOARD ==========
 function initDashboard() {
-  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-
-  const users = JSON.parse(localStorage.getItem('velora_users') || '[]');
-  document.getElementById('stat-total').textContent = products.length;
-  document.getElementById('stat-coupons').textContent = coupons.filter(c => c.status === 'active').length;
-  document.getElementById('stat-users').textContent = users.length;
-
-  const cats = {};
-  const types = {};
-  products.forEach(p => {
-    cats[p.category] = (cats[p.category] || 0) + 1;
-    types[p.type] = (types[p.type] || 0) + 1;
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
-  const catLabels = { erkek: 'Erkek', kadin: 'Kadın', cocuk: 'Çocuk' };
+  const users = JSON.parse(localStorage.getItem('velora_users') || '[]');
+  document.getElementById('stat-total').textContent    = products.length;
+  document.getElementById('stat-coupons').textContent  = coupons.filter(c => c.status === 'active').length;
+  document.getElementById('stat-users').textContent    = users.length;
+
+  const cats  = {};
+  const types = {};
+  products.forEach(p => {
+    cats[p.category]  = (cats[p.category]  || 0) + 1;
+    types[p.type]     = (types[p.type]     || 0) + 1;
+  });
+
+  const catLabels  = { erkek: 'Erkek', kadin: 'Kadın', cocuk: 'Çocuk' };
   const typeLabels = { tisort: 'Tişört', pantalon: 'Pantolon', ceket: 'Ceket', sapka: 'Şapka' };
 
   let html = '';
@@ -180,12 +226,12 @@ function renderProductTable() {
   document.getElementById('productCount').textContent = filtered.length;
 
   const totalPages = Math.ceil(filtered.length / perPage);
-  const slice = filtered.slice((currentPage-1)*perPage, currentPage*perPage);
+  const slice      = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
-  const catBadge = { erkek: 'badge-erkek', kadin: 'badge-kadin', cocuk: 'badge-cocuk' };
+  const catBadge  = { erkek: 'badge-erkek', kadin: 'badge-kadin', cocuk: 'badge-cocuk' };
   const typeBadge = { tisort: 'badge-tisort', pantalon: 'badge-pantalon', ceket: 'badge-ceket', sapka: 'badge-sapka' };
   const typeLabel = { tisort: 'Tişört', pantalon: 'Pantolon', ceket: 'Ceket', sapka: 'Şapka' };
-  const catLabel = { erkek: 'Erkek', kadin: 'Kadın', cocuk: 'Çocuk' };
+  const catLabel  = { erkek: 'Erkek', kadin: 'Kadın', cocuk: 'Çocuk' };
 
   const tbody = document.getElementById('productTableBody');
   if (slice.length === 0) {
@@ -222,7 +268,7 @@ function renderProductTable() {
 
 function setFilter(f, btn) {
   currentFilter = f;
-  currentPage = 1;
+  currentPage   = 1;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderProductTable();
@@ -232,24 +278,24 @@ function setFilter(f, btn) {
 function previewImage() {
   const url = document.getElementById('newImage').value;
   const img = document.getElementById('previewImg');
-  const ph = document.getElementById('previewPlaceholder');
+  const ph  = document.getElementById('previewPlaceholder');
   if (url) { img.src = url; img.style.display = 'block'; ph.style.display = 'none'; }
-  else { img.style.display = 'none'; ph.style.display = 'flex'; }
-  document.getElementById('previewName').textContent = document.getElementById('newName').value || '—';
+  else     { img.style.display = 'none'; ph.style.display = 'flex'; }
+  document.getElementById('previewName').textContent  = document.getElementById('newName').value || '—';
   const price = document.getElementById('newPrice').value;
   document.getElementById('previewPrice').textContent = price ? parseInt(price).toLocaleString('tr-TR') + ' TL' : '— TL';
 }
 
 function saveProduct() {
-  const name = document.getElementById('newName').value.trim();
+  const name  = document.getElementById('newName').value.trim();
   const price = parseInt(document.getElementById('newPrice').value);
-  const cat = document.getElementById('newCategory').value;
-  const type = document.getElementById('newType').value;
+  const cat   = document.getElementById('newCategory').value;
+  const type  = document.getElementById('newType').value;
   const image = document.getElementById('newImage').value.trim();
 
   if (!name || !price || !cat || !type || !image) { showToast('Tüm alanları doldurun!', 'error'); return; }
 
-  const maxId = Math.max(...products.map(p => p.id), 0);
+  const maxId     = Math.max(...products.map(p => p.id), 0);
   const newProduct = { id: maxId + 1, name, price, image, category: cat, type };
   products.push(newProduct);
 
@@ -264,21 +310,21 @@ function saveProduct() {
 }
 
 function clearProductForm() {
-  ['newName','newPrice','newImage'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-  ['newCategory','newType'].forEach(id => { const el = document.getElementById(id); if(el) el.selectedIndex=0; });
-  document.getElementById('previewImg').style.display='none';
-  document.getElementById('previewPlaceholder').style.display='flex';
-  document.getElementById('previewName').textContent='—';
-  document.getElementById('previewPrice').textContent='— TL';
-  document.getElementById('bulkJson').value='';
+  ['newName','newPrice','newImage'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  ['newCategory','newType'].forEach(id => { const el = document.getElementById(id); if(el) el.selectedIndex = 0; });
+  document.getElementById('previewImg').style.display        = 'none';
+  document.getElementById('previewPlaceholder').style.display = 'flex';
+  document.getElementById('previewName').textContent          = '—';
+  document.getElementById('previewPrice').textContent         = '— TL';
+  document.getElementById('bulkJson').value                   = '';
 }
 
 function bulkAdd() {
   try {
     const arr = JSON.parse(document.getElementById('bulkJson').value);
     if (!Array.isArray(arr)) { showToast('Geçersiz JSON dizisi!', 'error'); return; }
-    let added = 0;
-    let maxId = Math.max(...products.map(p => p.id), 0);
+    let added  = 0;
+    let maxId  = Math.max(...products.map(p => p.id), 0);
     const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
     arr.forEach(item => {
       if (!item.name || !item.category || !item.type) return;
@@ -291,24 +337,24 @@ function bulkAdd() {
     localStorage.setItem('velora_admin_products', JSON.stringify(stored));
     addLog('add', `${added} ürün toplu eklendi`);
     showToast(`${added} ürün eklendi ✅`, 'success');
-    document.getElementById('bulkJson').value='';
+    document.getElementById('bulkJson').value = '';
     updateStats();
   } catch(e) { showToast('JSON formatı hatalı!', 'error'); }
 }
 
-// ========== EDIT/DELETE ==========
+// ========== EDIT / DELETE ==========
 function openEdit(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   editingId = id;
-  document.getElementById('edit-id').value = id;
-  document.getElementById('edit-name').value = p.name;
-  document.getElementById('edit-price').value = p.price;
+  document.getElementById('edit-id').value       = id;
+  document.getElementById('edit-name').value     = p.name;
+  document.getElementById('edit-price').value    = p.price;
   document.getElementById('edit-category').value = p.category;
-  document.getElementById('edit-type').value = p.type;
-  document.getElementById('edit-image').value = p.image;
+  document.getElementById('edit-type').value     = p.type;
+  document.getElementById('edit-image').value    = p.image;
   const prev = document.getElementById('editPreviewImg');
-  prev.src = p.image;
+  prev.src   = p.image;
   prev.style.display = 'block';
   document.getElementById('editModal').classList.add('open');
 }
@@ -318,21 +364,21 @@ document.addEventListener('DOMContentLoaded', function() {
   if (editImg) {
     editImg.addEventListener('input', function() {
       const prev = document.getElementById('editPreviewImg');
-      prev.src = this.value;
+      prev.src   = this.value;
       prev.style.display = this.value ? 'block' : 'none';
     });
   }
 });
 
 function saveEdit() {
-  const id = parseInt(document.getElementById('edit-id').value);
+  const id  = parseInt(document.getElementById('edit-id').value);
   const idx = products.findIndex(p => p.id === id);
   if (idx === -1) return;
 
-  const name = document.getElementById('edit-name').value.trim();
+  const name  = document.getElementById('edit-name').value.trim();
   const price = parseInt(document.getElementById('edit-price').value);
-  const cat = document.getElementById('edit-category').value;
-  const type = document.getElementById('edit-type').value;
+  const cat   = document.getElementById('edit-category').value;
+  const type  = document.getElementById('edit-type').value;
   const image = document.getElementById('edit-image').value.trim();
 
   if (!name || !price || !cat || !type) { showToast('Tüm alanları doldurun!', 'error'); return; }
@@ -340,8 +386,11 @@ function saveEdit() {
   products[idx] = { ...products[idx], name, price, category: cat, type, image };
 
   const stored = JSON.parse(localStorage.getItem('velora_admin_products') || '[]');
-  const si = stored.findIndex(p => p.id === id);
-  if (si !== -1) { stored[si] = products[idx]; localStorage.setItem('velora_admin_products', JSON.stringify(stored)); }
+  const si     = stored.findIndex(p => p.id === id);
+  if (si !== -1) {
+    stored[si] = products[idx];
+    localStorage.setItem('velora_admin_products', JSON.stringify(stored));
+  }
 
   addLog('edit', `Ürün düzenlendi: "${name}" (ID: ${id})`);
   showToast('Ürün güncellendi ✅', 'success');
@@ -389,23 +438,23 @@ function renderCoupons() {
   `).join('');
 }
 
-function openCouponModal() { document.getElementById('couponModal').classList.add('open'); }
+function openCouponModal()  { document.getElementById('couponModal').classList.add('open');    }
 function closeCouponModal() { document.getElementById('couponModal').classList.remove('open'); }
 
 function addCoupon() {
-  const code = document.getElementById('coup-code').value.trim().toUpperCase();
-  const disc = parseInt(document.getElementById('coup-discount').value);
+  const code   = document.getElementById('coup-code').value.trim().toUpperCase();
+  const disc   = parseInt(document.getElementById('coup-discount').value);
   const status = document.getElementById('coup-status').value;
   if (!code || !disc || disc < 1 || disc > 100) { showToast('Geçerli kod ve indirim girin!', 'error'); return; }
-  if (coupons.find(c => c.code === code)) { showToast('Bu kod zaten mevcut!', 'error'); return; }
+  if (coupons.find(c => c.code === code))        { showToast('Bu kod zaten mevcut!', 'error'); return; }
   coupons.push({ code, discount: disc, status, uses: 0 });
   saveCoupons();
   addLog('add', `Yeni kupon: ${code} (%${disc})`);
   showToast(`"${code}" kuponu eklendi ✅`, 'success');
   closeCouponModal();
   renderCoupons();
-  document.getElementById('coup-code').value='';
-  document.getElementById('coup-discount').value='';
+  document.getElementById('coup-code').value     = '';
+  document.getElementById('coup-discount').value = '';
 }
 
 function toggleCoupon(i) {
@@ -433,8 +482,8 @@ function saveCoupons() { localStorage.setItem('velora_coupons', JSON.stringify(c
 
 // ========== USERS ==========
 function renderUsers() {
-  const search = (document.getElementById('userSearch')?.value || '').toLowerCase();
-  const users = JSON.parse(localStorage.getItem('velora_users') || '[]');
+  const search  = (document.getElementById('userSearch')?.value || '').toLowerCase();
+  const users   = JSON.parse(localStorage.getItem('velora_users') || '[]');
   const filtered = users.filter(u => !search || u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
   document.getElementById('userCount').textContent = filtered.length;
 
@@ -448,7 +497,9 @@ function renderUsers() {
     <tr>
       <td style="font-weight:500">${u.name}</td>
       <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${u.email}</td>
-      <td>${activeUser?.email === u.email ? '<span class="badge badge-cocuk">Aktif Oturum</span>' : '<span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Çevrimdışı</span>'}</td>
+      <td>${activeUser?.email === u.email
+        ? '<span class="badge badge-cocuk">Aktif Oturum</span>'
+        : '<span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Çevrimdışı</span>'}</td>
       <td><button class="btn btn-danger btn-sm" onclick="deleteUser(${i})">🗑</button></td>
     </tr>
   `).join('');
@@ -456,7 +507,7 @@ function renderUsers() {
 
 function deleteUser(i) {
   const users = JSON.parse(localStorage.getItem('velora_users') || '[]');
-  const u = users[i];
+  const u     = users[i];
   if (!confirm(`"${u.name}" kullanıcısını silmek istediğinize emin misiniz?`)) return;
   users.splice(i, 1);
   localStorage.setItem('velora_users', JSON.stringify(users));
@@ -478,17 +529,17 @@ function clearAllUsers() {
 function saveSiteSettings() {
   const settings = {
     storeName: document.getElementById('set-storeName').value,
-    slogan: document.getElementById('set-slogan').value,
-    currency: document.getElementById('set-currency').value,
-    title: document.getElementById('set-title').value,
-    metaDesc: document.getElementById('set-metaDesc').value,
-    keywords: document.getElementById('set-keywords').value,
+    slogan:    document.getElementById('set-slogan').value,
+    currency:  document.getElementById('set-currency').value,
+    title:     document.getElementById('set-title').value,
+    metaDesc:  document.getElementById('set-metaDesc').value,
+    keywords:  document.getElementById('set-keywords').value,
     features: {
-      search: document.getElementById('feat-search').checked,
-      favorites: document.getElementById('feat-favorites').checked,
-      darkmode: document.getElementById('feat-darkmode').checked,
-      coupon: document.getElementById('feat-coupon').checked,
-      auth: document.getElementById('feat-auth').checked,
+      search:      document.getElementById('feat-search').checked,
+      favorites:   document.getElementById('feat-favorites').checked,
+      darkmode:    document.getElementById('feat-darkmode').checked,
+      coupon:      document.getElementById('feat-coupon').checked,
+      auth:        document.getElementById('feat-auth').checked,
       maintenance: document.getElementById('feat-maintenance').checked,
     }
   };
@@ -499,17 +550,17 @@ function saveSiteSettings() {
 
 function saveContact() {
   const contact = {
-    waNumber: document.getElementById('wa-number').value,
-    waGreeting: document.getElementById('wa-greeting').value,
-    waActive: document.getElementById('wa-active').checked,
-    email: document.getElementById('contact-email').value,
-    phone: document.getElementById('contact-phone').value,
-    address: document.getElementById('contact-address').value,
+    waNumber:  document.getElementById('wa-number').value,
+    waGreeting:document.getElementById('wa-greeting').value,
+    waActive:  document.getElementById('wa-active').checked,
+    email:     document.getElementById('contact-email').value,
+    phone:     document.getElementById('contact-phone').value,
+    address:   document.getElementById('contact-address').value,
     instagram: document.getElementById('contact-instagram').value,
     emailjs: {
-      service: document.getElementById('ejs-service').value,
+      service:  document.getElementById('ejs-service').value,
       template: document.getElementById('ejs-template').value,
-      pubkey: document.getElementById('ejs-pubkey').value,
+      pubkey:   document.getElementById('ejs-pubkey').value,
     }
   };
   localStorage.setItem('velora_contact', JSON.stringify(contact));
@@ -519,18 +570,18 @@ function saveContact() {
 
 function saveAppearance() {
   const app = {
-    banner: document.getElementById('app-banner').value,
-    logo: document.getElementById('app-logo').value,
+    banner:  document.getElementById('app-banner').value,
+    logo:    document.getElementById('app-logo').value,
     favicon: document.getElementById('app-favicon').value,
     colors: {
       primary: document.getElementById('color-primary').value,
-      bg: document.getElementById('color-bg').value,
-      text: document.getElementById('color-text').value,
+      bg:      document.getElementById('color-bg').value,
+      text:    document.getElementById('color-text').value,
     },
-    headfont: document.getElementById('app-headfont').value,
-    bodyfont: document.getElementById('app-bodyfont').value,
-    announcebar: document.getElementById('app-announcebar').checked,
-    announcetext: document.getElementById('app-announcetext').value,
+    headfont:      document.getElementById('app-headfont').value,
+    bodyfont:      document.getElementById('app-bodyfont').value,
+    announcebar:   document.getElementById('app-announcebar').checked,
+    announcetext:  document.getElementById('app-announcetext').value,
     announcecolor: document.getElementById('app-announcecolor').value,
   };
   localStorage.setItem('velora_appearance', JSON.stringify(app));
@@ -541,10 +592,10 @@ function saveAppearance() {
 // ========== EXPORT ==========
 function exportProducts() {
   const header = 'ID,Ad,Fiyat,Kategori,Tip,Görsel\n';
-  const rows = products.map(p => `${p.id},"${p.name}",${p.price},${p.category},${p.type},"${p.image}"`).join('\n');
-  const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const rows   = products.map(p => `${p.id},"${p.name}",${p.price},${p.category},${p.type},"${p.image}"`).join('\n');
+  const blob   = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+  const url    = URL.createObjectURL(blob);
+  const a      = document.createElement('a');
   a.href = url; a.download = 'velora_urunler.csv'; a.click();
   URL.revokeObjectURL(url);
   addLog('settings', 'Ürün listesi CSV olarak indirildi');
@@ -558,9 +609,12 @@ function addLog(type, msg) {
 }
 
 function renderRecentActivity() {
-  const el = document.getElementById('recentActivity');
+  const el     = document.getElementById('recentActivity');
   const recent = activityLog.slice(0, 8);
-  if (recent.length === 0) { el.innerHTML = '<div class="empty-state" style="padding:24px">Henüz aktivite yok</div>'; return; }
+  if (recent.length === 0) {
+    el.innerHTML = '<div class="empty-state" style="padding:24px">Henüz aktivite yok</div>';
+    return;
+  }
   el.innerHTML = recent.map(l => `
     <div class="log-item">
       <div class="log-dot ${l.type}"></div>
@@ -595,7 +649,7 @@ function clearLog() {
 }
 
 function updateStats() {
-  document.getElementById('stat-total').textContent = products.length;
+  document.getElementById('stat-total').textContent   = products.length;
   document.getElementById('stat-coupons').textContent = coupons.filter(c => c.status === 'active').length;
 }
 
@@ -603,23 +657,23 @@ function updateStats() {
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast show ' + type;
+  t.className   = 'toast show ' + type;
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.className = 'toast', 3000);
 }
 
 // ========== INIT ==========
 window.addEventListener('load', function() {
-  // Close modals on overlay click
+  // Modal overlay tıklamasında kapat
   document.getElementById('couponModal').addEventListener('click', function(e) { if (e.target === this) closeCouponModal(); });
-  document.getElementById('editModal').addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
+  document.getElementById('editModal').addEventListener('click',   function(e) { if (e.target === this) closeEditModal();   });
 
-  // Load saved settings
+  // Kayıtlı ayarları yükle
   const saved = JSON.parse(localStorage.getItem('velora_settings') || 'null');
   if (saved) {
     if (saved.storeName) document.getElementById('set-storeName').value = saved.storeName;
-    if (saved.slogan) document.getElementById('set-slogan').value = saved.slogan;
-    if (saved.title) document.getElementById('set-title').value = saved.title;
+    if (saved.slogan)    document.getElementById('set-slogan').value    = saved.slogan;
+    if (saved.title)     document.getElementById('set-title').value     = saved.title;
     if (saved.features) {
       Object.entries(saved.features).forEach(([k, v]) => {
         const el = document.getElementById('feat-' + k);
@@ -627,15 +681,18 @@ window.addEventListener('load', function() {
       });
     }
   }
+
   const contact = JSON.parse(localStorage.getItem('velora_contact') || 'null');
   if (contact) {
-    if (contact.waNumber) document.getElementById('wa-number').value = contact.waNumber;
-    if (contact.instagram) document.getElementById('contact-instagram').value = contact.instagram;
+    if (contact.waNumber)  document.getElementById('wa-number').value          = contact.waNumber;
+    if (contact.instagram) document.getElementById('contact-instagram').value  = contact.instagram;
   }
 
-  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
 
-  // Allow Enter key on login
+  // Enter tuşu ile giriş
   const pwInput = document.getElementById('adminPwInput');
   if (pwInput) {
     pwInput.addEventListener('keydown', function(e) {
