@@ -219,6 +219,77 @@
           <div class="profile-info-label">E-posta</div>
           <div class="profile-info-value" id="profile-email-detail"></div>
         </div>
+        <div class="profile-info-row">
+          <div class="profile-info-label">Şifre</div>
+          <div class="profile-info-value">
+            <span class="pw-dots">••••••••</span>
+            <button class="pw-change-toggle" id="pw-change-toggle" onclick="togglePwChangeForm()">Değiştir</button>
+          </div>
+        </div>
+
+        <!-- ŞİFRE DEĞİŞTİRME FORMU (başta gizli) -->
+        <div id="pw-change-form" class="pw-change-form hidden">
+          <div class="form-group" id="fg-current-pw">
+            <label>Mevcut Şifre</label>
+            <div class="password-wrap">
+              <input type="password" id="current-pw" placeholder="Mevcut şifrenizi girin" autocomplete="current-password">
+              <button type="button" class="toggle-pw" onclick="togglePw('current-pw', this)" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="error-msg" id="current-pw-error-msg">Mevcut şifre hatalı.</div>
+          </div>
+
+          <div class="form-group" id="fg-new-pw">
+            <label>Yeni Şifre</label>
+            <div class="password-wrap">
+              <input type="password" id="new-pw" placeholder="Yeni şifrenizi oluşturun"
+                     autocomplete="new-password" oninput="checkPasswordStrength2(this.value)">
+              <button type="button" class="toggle-pw" onclick="togglePw('new-pw', this)" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="pw-strength-bar">
+              <div class="pw-strength-fill" id="pw-strength-fill2"></div>
+            </div>
+            <div class="pw-rules" id="pw-rules2">
+              <span id="rule2-length"  class="rule">✗ En az 8 karakter</span>
+              <span id="rule2-upper"   class="rule">✗ En az 1 büyük harf</span>
+              <span id="rule2-number"  class="rule">✗ En az 1 rakam</span>
+              <span id="rule2-special" class="rule">✗ En az 1 özel karakter (!@#$% vb.)</span>
+            </div>
+            <div class="error-msg" id="new-pw-error-msg">Şifre gereksinimleri karşılanmıyor.</div>
+          </div>
+
+          <div class="form-group" id="fg-new-pw2">
+            <label>Yeni Şifre Tekrar</label>
+            <div class="password-wrap">
+              <input type="password" id="new-pw2" placeholder="Yeni şifrenizi tekrar girin" autocomplete="new-password">
+              <button type="button" class="toggle-pw" onclick="togglePw('new-pw2', this)" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="error-msg" id="new-pw2-error-msg">Şifreler eşleşmiyor.</div>
+          </div>
+
+          <div class="pw-change-actions">
+            <button class="auth-btn" onclick="handleChangePassword()">Şifreyi Güncelle</button>
+            <button class="pw-cancel-btn" onclick="togglePwChangeForm()">İptal</button>
+          </div>
+        </div>
+
         <button class="logout-btn" onclick="handleLogout()">Çıkış Yap</button>
       </div>
     </div>
