@@ -2,6 +2,7 @@ const CDN = "https://res.cloudinary.com/dy2dvpbit/image/upload";
 
 const products = [
   { id: 1,  name: "Erkek Tişört",    price: 1200, image: `${CDN}/haryo-setyadi-acn5ERAeSb4-unsplash_svhjqz.jpg`,                    category: "erkek",  type: "tisort"   },
+  { id: 1,  name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_9_mqf5za.jpg`,               category: "erkek",  type: "tisort"   },
   { id: 2,  name: "Erkek Tişört",    price: 300,  image: `${CDN}/pexels-david-fowora-2160297192-36801391_hfunqe.jpg`,               category: "erkek",  type: "tisort"   },
   { id: 3,  name: "Erkek Tişört",    price: 800,  image: `${CDN}/sven-ciupka-x8Vg7Up6TUc-unsplash_fyrbqs.jpg`,                     category: "erkek",  type: "tisort"   },
   { id: 4,  name: "Erkek Tişört",    price: 950,  image: `${CDN}/faith-yarn-Wr0TpKqf26s-unsplash_j2qqmb.jpg`,                      category: "erkek",  type: "tisort"   },
@@ -49,6 +50,7 @@ const products = [
   { id: 46, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/christopher-campbell--h_cufTEtcg-unsplash_cehfnl.jpg`,            category: "cocuk",  type: "ceket"    },
   { id: 47, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/nathan-dumlao-QqLuSb0sypY-unsplash_gs4zul.jpg`,                   category: "cocuk",  type: "ceket"    },
   { id: 48, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/phat-tr-ng-UbJ2Q_HInuU-unsplash_sbwzvv.jpg`,                      category: "cocuk",  type: "ceket"    },
+  
 ];
 
 
