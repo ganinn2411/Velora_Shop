@@ -965,6 +965,117 @@ async function handleLogin() {
   setTimeout(() => { window.location.href = "index.html"; }, 1200);
 }
 
+// =====================
+// ŞİFRE DEĞİŞTİRME (Profil)
+// =====================
+
+function togglePwChangeForm() {
+  const form   = document.getElementById("pw-change-form");
+  const toggle = document.getElementById("pw-change-toggle");
+  if (!form) return;
+  const isHidden = form.classList.contains("hidden");
+  form.classList.toggle("hidden");
+  if (toggle) toggle.textContent = isHidden ? "İptal" : "Değiştir";
+  // Formu kapatırken temizle
+  if (!isHidden) {
+    ["current-pw","new-pw","new-pw2"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    ["fg-current-pw","fg-new-pw","fg-new-pw2"].forEach(id => setError(id, false));
+    const fill2 = document.getElementById("pw-strength-fill2");
+    if (fill2) { fill2.style.width = "0%"; fill2.className = "pw-strength-fill"; }
+    ["rule2-length","rule2-upper","rule2-number","rule2-special"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.classList.remove("rule-ok","rule-fail"); el.textContent = "✗ " + el.textContent.slice(2); }
+    });
+  }
+}
+
+const PW_RULES2 = {
+  length:  { regex: /.{8,}/,        ruleId: "rule2-length"  },
+  upper:   { regex: /[A-Z]/,        ruleId: "rule2-upper"   },
+  number:  { regex: /[0-9]/,        ruleId: "rule2-number"  },
+  special: { regex: /[^a-zA-Z0-9]/, ruleId: "rule2-special" }
+};
+
+function checkPasswordStrength2(value) {
+  let passed = 0;
+  Object.keys(PW_RULES2).forEach(key => {
+    const rule = PW_RULES2[key];
+    const ok   = rule.regex.test(value);
+    const el   = document.getElementById(rule.ruleId);
+    if (el) {
+      el.classList.toggle("rule-ok",   ok);
+      el.classList.toggle("rule-fail", !ok && value.length > 0);
+      el.textContent = (ok ? "✓ " : "✗ ") + el.textContent.slice(2);
+    }
+    if (ok) passed++;
+  });
+  const fill = document.getElementById("pw-strength-fill2");
+  if (!fill) return;
+  const pct = (passed / 4) * 100;
+  fill.style.width = pct + "%";
+  fill.className = "pw-strength-fill";
+  if      (passed <= 1) fill.classList.add("pw-weak");
+  else if (passed === 2) fill.classList.add("pw-fair");
+  else if (passed === 3) fill.classList.add("pw-good");
+  else                   fill.classList.add("pw-strong");
+}
+
+async function handleChangePassword() {
+  const currentPw = document.getElementById("current-pw").value;
+  const newPw     = document.getElementById("new-pw").value;
+  const newPw2    = document.getElementById("new-pw2").value;
+  let ok = true;
+
+  // Mevcut şifre boş mu?
+  if (!currentPw) {
+    document.getElementById("current-pw-error-msg").textContent = "Mevcut şifrenizi girin.";
+    setError("fg-current-pw", true); ok = false;
+  } else { setError("fg-current-pw", false); }
+
+  // Yeni şifre kuralları
+  if (!isPasswordValid(newPw)) {
+    document.getElementById("new-pw-error-msg").textContent = "Şifre gereksinimleri karşılanmıyor.";
+    setError("fg-new-pw", true); ok = false;
+  } else { setError("fg-new-pw", false); }
+
+  // Şifreler eşleşiyor mu?
+  if (newPw !== newPw2) {
+    document.getElementById("new-pw2-error-msg").textContent = "Şifreler eşleşmiyor.";
+    setError("fg-new-pw2", true); ok = false;
+  } else { setError("fg-new-pw2", false); }
+
+  if (!ok) return;
+
+  // Mevcut şifreyi doğrula
+  const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+  if (!activeUser) { showToast("Oturum bulunamadı.", "error"); return; }
+
+  const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
+  const userIdx  = allUsers.findIndex(u => u.email.toLowerCase() === activeUser.email.toLowerCase());
+
+  if (userIdx === -1) { showToast("Kullanıcı bulunamadı.", "error"); return; }
+
+  const currentHash = await hashPassword(currentPw);
+
+  // Eski hesaplarda passwordHash olmayabilir
+  if (allUsers[userIdx].passwordHash && currentHash !== allUsers[userIdx].passwordHash) {
+    document.getElementById("current-pw-error-msg").textContent = "Mevcut şifre hatalı.";
+    setError("fg-current-pw", true);
+    return;
+  }
+
+  // Yeni şifreyi kaydet
+  const newHash = await hashPassword(newPw);
+  allUsers[userIdx].passwordHash = newHash;
+  localStorage.setItem("velora_users", JSON.stringify(allUsers));
+
+  showToast("Şifreniz başarıyla güncellendi! ✅", "success");
+  togglePwChangeForm();
+}
+
 // ── ÇIKIŞ ──
 function handleLogout() {
   if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
