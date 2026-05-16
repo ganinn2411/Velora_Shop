@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  
 </head>
 <body>
 
@@ -64,10 +63,8 @@
     </div>
 
     <a href="wishlist.html" class="fav-link">FAVORİLER</a>
-    
+
   </nav>
-
-
 
   <!-- Sağ ikonlar grubu -->
   <div class="header-actions">
@@ -138,6 +135,12 @@
   <div class="footer-bottom">© 2026 VELORA – Tüm Hakları Saklıdır</div>
 </footer>
 
+<!--
+  ✅ velora-data.js → script.js'den ÖNCE yüklenmeli.
+     Admin panelinden eklenen ürünleri ve kuponları localStorage'dan okur.
+     script.js içinde:  let products = vGetProducts();  şeklinde kullanın.
+-->
+<script src="velora-data.js"></script>
 <script src="script.js"></script>
 
 </body>
