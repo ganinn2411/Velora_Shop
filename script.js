@@ -72,7 +72,17 @@ function addToCart(id) {
 
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
-  showToast("Ürün sepete eklendi ✅", "success");
+  showCenterToast(product.name);
+}
+
+function showCenterToast(productName) {
+  const el  = document.getElementById('centerToast');
+  const msg = document.getElementById('centerToastMsg');
+  if (!el) return;
+  if (msg) msg.textContent = productName;
+  el.classList.add('show');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.classList.remove('show'); }, 2200);
 }
 
 function updateCartCount() {
