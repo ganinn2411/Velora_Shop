@@ -2167,19 +2167,19 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: calc(100vw - 48px);
+  max-width: 300px;
   background: #1a1714;
   color: #f5f0e8;
   border: 1px solid #c9b97a;
   border-radius: 4px;
   padding: 24px 20px;
   text-align: center;
-  z-index: 99999;
+  z-index: 999999;
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
   transition: opacity 0.3s ease;
-  width: 80vw;
-  max-width: 300px;
 }
 .center-toast.show {
   opacity: 1;
