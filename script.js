@@ -80,6 +80,15 @@ function showCenterToast(productName) {
   const msg = document.getElementById('centerToastMsg');
   if (!el) return;
   if (msg) msg.textContent = productName;
+
+  // Her seferinde pozisyonu viewport'a göre hesapla
+  const w = Math.min(window.innerWidth - 48, 320);
+  el.style.width  = w + 'px';
+  el.style.left   = (window.innerWidth / 2) + 'px';
+  el.style.top    = (window.innerHeight / 2) + 'px';
+  el.style.marginLeft = -(w / 2) + 'px';
+  el.style.marginTop  = '-80px'; // yaklaşık yarı yükseklik
+
   el.classList.add('show');
   clearTimeout(el._timer);
   el._timer = setTimeout(() => { el.classList.remove('show'); }, 2200);
