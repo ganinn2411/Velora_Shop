@@ -2201,7 +2201,6 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   text-transform: uppercase;
   color: #8a8178;
   word-break: break-word;
-  overflow-wrap: break-word;
 }
 body.dark .center-toast {
   background: #0f0f0f;
