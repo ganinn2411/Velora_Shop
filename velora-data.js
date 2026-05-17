@@ -115,9 +115,14 @@
   // Her kuponun: code (büyük harfli kod), discount (indirim yüzdesi),
   //              status (active/inactive), uses (kaç kez kullanıldı) alanları var.
   var VELORA_DEFAULT_COUPONS = [
-    { code:"VELORA10",  discount:10, status:"active", uses:0 },
-    { code:"VELORA20",  discount:20, status:"active", uses:0 },
-    { code:"HOSGELDIN", discount:15, status:"active", uses:0 }
+    var VELORA_DEFAULT_COUPONS = [
+  { code:"VELORA10",  discount:10, status:"active", uses:0 },
+  { code:"VELORA20",  discount:20, status:"active", uses:0 },
+  { code:"HOSGELDIN", discount:15, status:"active", uses:0 },
+  { code:"GG2",       discount:50, status:"active", uses:0 },
+  { code:"AA",        discount:40, status:"active", uses:0 },
+  { code:"MM",        discount:20, status:"active", uses:0 }
+];
   ];
 
   // ── İLK AÇILIŞ TOHUM FONKSİYONU ──────────────────────────────────────
@@ -128,9 +133,7 @@
   (function seedDefaults() {
     try {
       // "velora_products" anahtarı yoksa varsayılan ürünleri kaydet
-      if (!localStorage.getItem("velora_products")) {
-        localStorage.setItem("velora_products", JSON.stringify(VELORA_DEFAULT_PRODUCTS));
-      }
+      localStorage.setItem("velora_coupons", JSON.stringify(VELORA_DEFAULT_COUPONS));
       // "velora_coupons" anahtarı yoksa varsayılan kuponları kaydet
       if (!localStorage.getItem("velora_coupons")) {
         localStorage.setItem("velora_coupons", JSON.stringify(VELORA_DEFAULT_COUPONS));
