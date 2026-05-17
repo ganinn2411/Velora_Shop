@@ -138,11 +138,17 @@ body.dark .admin-pw-input { background: #111; border-color: #333; color: #f0f0f0
 .admin-pw-input:focus { border-color: #c9b97a; }
 .admin-pw-input.error { border-color: #c0392b; }
 
+.admin-pw-group { position: relative; }
+
 .admin-pw-toggle {
   position: absolute;
-  right: 10px; bottom: 10px;
-  background: none; border: none;
-  cursor: pointer; color: #aaa;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
   padding: 2px;
   line-height: 1;
 }
