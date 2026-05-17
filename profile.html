@@ -546,23 +546,21 @@ function toggleAdminPw() {
 }
 
 function checkAdminEntry() {
-  const input     = document.getElementById('adminModalPw');
-  const errorEl   = document.getElementById('adminPwError');
-  const pw        = input.value;
-  const storedPw  = localStorage.getItem('velora_admin_pw') || 'admin123';
+  const input    = document.getElementById('adminModalPw');
+  const errorEl  = document.getElementById('adminPwError');
+  const pw       = input.value;
+  const storedPw = localStorage.getItem('velora_admin_pw') || 'admin123';
 
   if (pw === storedPw) {
-    // Doğru şifre — admin paneline yönlendir
+    // Oturumu kaydet, admin.html tekrar şifre sormaz
+    sessionStorage.setItem('velora_admin_session', '1');
     window.location.href = 'admin.html';
   } else {
-    // Hatalı şifre
     input.classList.add('error');
     errorEl.classList.add('show');
     input.value = '';
     input.focus();
-    setTimeout(() => {
-      input.classList.remove('error');
-    }, 1500);
+    setTimeout(() => { input.classList.remove('error'); }, 1500);
   }
 }
 </script>
