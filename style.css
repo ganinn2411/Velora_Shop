@@ -1,6 +1,8 @@
-/* =====================
-   DARK MODE CSS DEĞİŞKENLERİ
-   ===================== */
+/* =====================================================================
+   Tüm sayfada kullanılacak renk, arka plan, yazı ve gölge değerleri
+   CSS değişkeni olarak burada tanımlanır. var(--bg) gibi kullanılır,
+   böylece rengi tek yerden değiştirmek tüm siteyi günceller.
+   ===================================================================== */
 :root {
   --bg:           #f5ede0;
   --bg-secondary: #ede0cf;
@@ -19,6 +21,11 @@
   --shadow:       rgba(100,70,40,0.10);
 }
 
+/* =====================================================================
+   JavaScript body elementine "dark" class'ı eklediğinde bu kurallar
+   devreye girer. :root'daki değişkenlerin üzerine yazar, bu sayede
+   tüm bileşenler otomatik olarak koyu renge geçer.
+   ===================================================================== */
 body.dark {
   --bg:           #0f0f0f;
   --bg-secondary: #1a1a1a;
@@ -37,9 +44,11 @@ body.dark {
   --shadow:       rgba(0,0,0,0.4);
 }
 
-/* =====================
-   DARK MODE TOGGLE BUTONU
-   ===================== */
+/* =====================================================================
+   Header'ın sağındaki ay/güneş ikonlu dark mode toggle butonunun stili.
+   Yuvarlak (border-radius: 50%), hover'da 20 derece döner (transform: rotate),
+   tıklanınca toggleTheme() fonksiyonunu çalıştırır.
+   ===================================================================== */
 .theme-toggle {
   display: flex;
   align-items: center;
@@ -64,14 +73,28 @@ body.dark {
   transform: rotate(20deg);
 }
 
+/* =====================================================================
+   Tüm elementlerin varsayılan margin ve padding değerlerini sıfırlar,
+   box-sizing: border-box ise padding ve border'ı elementin toplam
+   genişliğine dahil eder, böylece hesaplamalar daha öngörülü olur.
+   ===================================================================== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* =====================================================================
+   Sayfada <a href="#section"> gibi bağlantılara tıklandığında
+   anında zıplamak yerine yumuşak kayarak gitmesini sağlar.
+   ===================================================================== */
 html { scroll-behavior: smooth; }
 
+/* =====================================================================
+   Sayfanın genel yazı tipi, arka plan rengi ve yazı rengi burada
+   belirlenir. padding-top: 74px, sabit header'ın içeriğin üstüne
+   binmemesi için eklenir (header yüksekliği kadar).
+   ===================================================================== */
 body {
   background: var(--bg);
   color: var(--text);
@@ -80,9 +103,11 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* =====================
-   HEADER
-   ===================== */
+/* =====================================================================
+   Header sayfayı kaydırırken ekranda sabit kalır (position: fixed).
+   z-index: 1000 ile diğer tüm elementlerin üstünde görünür.
+   Flexbox ile logo sola, nav ortaya, ikonlar sağa hizalanır.
+   ===================================================================== */
 .header {
   position: fixed;
   top: 0; left: 0;
@@ -98,6 +123,10 @@ body {
   transition: background 0.3s, border-color 0.3s;
 }
 
+/* =====================================================================
+   VELORA marka adının görünümü. letter-spacing ile harfler arasında
+   boşluk bırakılır, bu lüks marka yazı stilinin klasik özelliğidir.
+   ===================================================================== */
 .logo {
   font-size: 22px;
   font-weight: 700;
@@ -109,9 +138,11 @@ body {
 }
 .logo a { text-decoration: none; color: var(--text); }
 
-/* =====================
-   HEADER ACTIONS (sağ ikonlar grubu)
-   ===================== */
+/* =====================================================================
+   Header'ın sağ tarafındaki profil ikonu, dark mode butonu ve sepet
+   ikonunu yan yana (flex, gap: 12px) hizalar, flex-shrink: 0 ile
+   ekran küçülünce bu grup sıkışmaz.
+   ===================================================================== */
 .header-actions {
   display: flex;
   align-items: center;
@@ -119,9 +150,10 @@ body {
   flex-shrink: 0;
 }
 
-/* =====================
-   NAV
-   ===================== */
+/* =====================================================================
+   Yatay navigasyon menüsü. Flex ile linkleri yan yana sıralar.
+   Her link hover'da opacity: 0.5 ile soluklaşır.
+   ===================================================================== */
 .nav {
   display: flex;
   align-items: center;
@@ -152,11 +184,18 @@ body {
 }
 .fav-link:hover { opacity: 0.6; }
 
-/* =====================
-   MEGA MENU
-   ===================== */
+/* =====================================================================
+   Kategori linklerine hover yapıldığında açılan alt menü wrapper'ı.
+   position: relative ile mega menü bu elemana göre konumlanır.
+   ===================================================================== */
 .nav-item { position: relative; }
 
+/* =====================================================================
+   Açılır kategori alt menüsü. Başlangıçta opacity: 0 ve
+   visibility: hidden ile tamamen gizlidir. Hover'da opacity: 1 ve
+   transform: translateY(0) ile aşağı süzülerek görünür hale gelir.
+   pointer-events: none gizliyken yanlışlıkla tıklanmasını engeller.
+   ===================================================================== */
 .mega-menu {
   position: absolute;
   top: 100%; left: 0;
@@ -185,9 +224,11 @@ body {
 .mega-col a { display: block; text-decoration: none; color: var(--text); padding: 4px 0; font-size: 13px; }
 .mega-col a:hover { opacity: 0.6; }
 
-/* =====================
-   SEARCH BOX
-   ===================== */
+/* =====================================================================
+   Header'ın ortasındaki arama kutusu. Input ve select yan yana
+   hizalanır. Renk ve arka plan CSS değişkeni kullanır, dark modda
+   otomatik güncellenir.
+   ===================================================================== */
 .search-box {
   display: flex;
   align-items: center;
@@ -206,9 +247,10 @@ body {
 }
 .search-box input { width: 160px; }
 
-/* =====================
-   CART ICON
-   ===================== */
+/* =====================================================================
+   Sepet ikonu. position: relative, üstündeki kırmızı ürün sayacı
+   badge'inin köşeye sabitlenmesi için kullanılır.
+   ===================================================================== */
 .cart {
   position: relative;
   display: flex;
@@ -219,6 +261,12 @@ body {
   font-size: 14px;
   flex-shrink: 0;
 }
+
+/* =====================================================================
+   Sepetteki ürün sayısını gösteren kırmızı yuvarlak sayaç.
+   position: absolute ile sepet ikonunun sağ üst köşesine yapışır.
+   JavaScript tarafından güncellenir.
+   ===================================================================== */
 .cart-badge {
   position: absolute;
   top: -8px; right: -10px;
@@ -230,12 +278,16 @@ body {
   line-height: 1;
 }
 
-/* Hamburger masaüstünde gizli */
+/* =====================================================================
+   Hamburger (☰) butonu masaüstünde gizlidir. Mobil ekranda
+   CSS media query ile display: flex yapılarak görünür hale gelir.
+   ===================================================================== */
 .hamburger { display: none; }
 
-/* =====================
-   HERO
-   ===================== */
+/* =====================================================================
+   Ana sayfa hero bölümü. Görsel üstüne metin bindirmek için
+   position: relative kullanılır. overflow: hidden taşan görseli gizler.
+   ===================================================================== */
 .hero {
   position: relative;
   display: flex;
@@ -249,6 +301,12 @@ body {
   object-fit: cover;
   display: block;
 }
+
+/* =====================================================================
+   Hero görselinin üstündeki metin bloğu. position: absolute ve
+   transform: translate(-50%, -50%) ile hem yatayda hem dikeyde
+   tam ortaya hizalanır.
+   ===================================================================== */
 .hero-text {
   position: absolute;
   top: 50%; left: 50%;
@@ -261,9 +319,10 @@ body {
   filter: brightness(0) invert(1);
 }
 
-/* =====================
-   SLIDER
-   ===================== */
+/* =====================================================================
+   Slider'ın dışını saran wrapper. overflow: hidden, kartların
+   ok butonunun dışına taşmasını engeller.
+   ===================================================================== */
 .slider-wrapper {
   position: relative;
   overflow: hidden;
@@ -271,6 +330,12 @@ body {
   padding: 0;
 }
 
+/* =====================================================================
+   Yatay kaydırmalı ürün listesi. overflow-x: auto yatay kaydırmayı
+   açar; üç farklı tarayıcı için scrollbar-width: none ve
+   ::-webkit-scrollbar { display: none } ile scrollbar görsel olarak gizlenir.
+   scroll-behavior: smooth ok butonlarıyla yumuşak kayma sağlar.
+   ===================================================================== */
 .product-slider {
   display: flex;
   gap: 24px;
@@ -282,9 +347,12 @@ body {
 }
 .product-slider::-webkit-scrollbar { display: none; }
 
-/* =====================
-   ÜRÜN KARTI (Slider & Favoriler)
-   ===================== */
+/* =====================================================================
+   Tek bir ürün kartı. flex: 0 0 220px ile slider içinde sabit
+   220px genişlikte kalır, büyümez küçülmez. position: relative,
+   üstündeki favori yıldızının köşeye sabitlenmesi için gereklidir.
+   Hover'da yukarı kayar (translateY(-4px)).
+   ===================================================================== */
 .product-card {
   flex: 0 0 220px;
   width: 220px;
@@ -295,6 +363,10 @@ body {
 }
 .product-card:hover { transform: translateY(-4px); }
 
+/* =====================================================================
+   Ürün görselinin wrapper'ı. overflow: hidden zorunludur; olmadan
+   hover'daki scale(1.05) zoom efekti kartın dışına taşar.
+   ===================================================================== */
 .product-card__img-wrap {
   position: relative;
   overflow: hidden;
@@ -306,11 +378,20 @@ body {
   display: block;
   transition: transform 0.4s ease;
 }
+
+/* =====================================================================
+   Karta hover yapıldığında görsel hafifçe büyür (scale 1.05).
+   overflow: hidden sayesinde kart sınırının dışına taşmaz.
+   ===================================================================== */
 .product-card:hover .product-card__img-wrap img {
   transform: scale(1.05);
 }
 
-/* FAVORİ YILDIZ */
+/* =====================================================================
+   Ürün görselinin sağ üst köşesindeki favori (★) yıldız ikonu.
+   position: absolute ile karta göre köşeye yapıştırılır.
+   z-index: 2 ile görsel katmanının üstünde görünür.
+   ===================================================================== */
 .product-card__fav {
   position: absolute;
   top: 10px; right: 10px;
@@ -326,6 +407,11 @@ body {
 }
 .product-card__fav:hover { transform: scale(1.25); }
 
+/* =====================================================================
+   Ürün adı, fiyatı ve "Sepete Ekle" butonunu barındıran alt bilgi alanı.
+   Butonun arka planı ve yazı rengi CSS değişkeni kullanır, dark modda
+   otomatik renk tersine döner.
+   ===================================================================== */
 .product-card__info {
   padding: 10px 4px 4px;
 }
@@ -356,7 +442,10 @@ body {
 }
 .product-card__info button:hover { opacity: 0.75; }
 
-/* SLIDER OKLAR */
+/* =====================================================================
+   Slider'ın sol ve sağ ok butonları. position: absolute ile slider'ın
+   kenarına yerleştirilir. z-index: 10 ile kartların üstünde görünür.
+   ===================================================================== */
 .arrow {
   position: absolute;
   top: 45%;
@@ -380,9 +469,11 @@ body {
 .arrow.left  { left: 4px; }
 .arrow.right { right: 4px; }
 
-/* =====================
-   KATEGORİ SAYFASI GRID
-   ===================== */
+/* =====================================================================
+   Kategori sayfasındaki ürün ızgarası. grid-template-columns ile
+   4 eşit sütunlu düzen oluşturulur. Slider'daki flex yerine
+   burada grid kullanılır çünkü kartlar sayfayı doldurmalı.
+   ===================================================================== */
 .category-page #products {
   padding: 20px 40px 60px;
   display: grid;
@@ -396,9 +487,10 @@ body {
   width: 100%;
 }
 
-/* =====================
-   CATEGORY TITLE
-   ===================== */
+/* =====================================================================
+   Kategori sayfasının başlık alanı. Kategori adı (Kadın, Erkek vb.)
+   JavaScript tarafından buraya yazılır.
+   ===================================================================== */
 #category-title {
   padding: 40px 40px 0;
   font-size: 22px;
@@ -406,9 +498,10 @@ body {
   letter-spacing: 2px;
 }
 
-/* =====================
-   REMOVE BTN (Favoriler)
-   ===================== */
+/* =====================================================================
+   Favoriler sayfasında her ürün kartının sol üstündeki (×) kaldır butonu.
+   position: absolute ve z-index: 10 ile görsel üstünde görünür.
+   ===================================================================== */
 .remove-btn {
   position: absolute;
   top: 10px; left: 10px;
@@ -426,15 +519,21 @@ body {
 }
 .remove-btn:hover { transform: scale(1.2); }
 
-/* =====================
-   ÜRÜN DETAY SAYFASI
-   ===================== */
+/* =====================================================================
+   Ürün detay sayfasının iki sütunlu düzeni. Sol tarafta görsel,
+   sağ tarafta ürün bilgisi bulunur. gap: 60px aralarında boşluk bırakır.
+   ===================================================================== */
 .product-page {
   display: flex;
   gap: 60px;
   padding: 80px 120px;
 }
 .product-image { flex: 1; }
+
+/* =====================================================================
+   Detay sayfasındaki ürün görseli. Hover'da hafifçe büyür ve
+   cursor: zoom-in ile kullanıcıya tıklanabilir olduğunu gösterir.
+   ===================================================================== */
 .product-image img {
   width: 100%;
   max-width: 450px;
@@ -455,6 +554,11 @@ body {
 
 label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px; }
 
+/* =====================================================================
+   Detay sayfasındaki beden seçim butonları. Aktif beden seçilince
+   .active class eklenir ve arka plan ile yazı rengi tersine döner
+   (arka plan koyu, yazı açık). JavaScript tarafından yönetilir.
+   ===================================================================== */
 .sizes { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .sizes button {
   padding: 8px 14px;
@@ -470,6 +574,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .sizes button:hover,
 .sizes button.active { background: var(--text); color: var(--bg); }
 
+/* =====================================================================
+   Ürün renk seçimi için yuvarlak renkli daireler. Seçilen renge
+   .active class eklenir, outline ve scale ile seçili gösterilir.
+   ===================================================================== */
 .colors { display: flex; gap: 12px; margin-bottom: 25px; }
 .color {
   width: 24px; height: 24px;
@@ -488,9 +596,12 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .blue  { background: #0057b7; }
 .beige { background: #d4b896; border: 1px solid #c4a882; }
 
-/* =====================
-   SEPETE EKLE BUTONU (Detay Sayfası)
-   ===================== */
+/* =====================================================================
+   Detay sayfasındaki "Sepete Ekle" butonu. ::before pseudo elementi
+   beyaz bir katman oluşturur; hover'da translateX(-101% → 0) ile
+   sağdan sola süpüren renk geçiş efekti yapılır. Bu efekt sayesinde
+   renk değişimi soldan sağa akıyormuş gibi görünür.
+   ===================================================================== */
 .btn-add-to-cart {
   display: flex;
   align-items: center;
@@ -552,12 +663,16 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .back-btn svg { cursor: pointer; transition: 0.3s; }
 .back-btn:hover svg { transform: translateX(-3px); opacity: 0.6; }
 
-/* =====================
-   SEPET SAYFASI
-   ===================== */
+/* =====================================================================
+   Sepet sayfasının genel düzeni ve başlık stili.
+   ===================================================================== */
 .cart-page { padding: 60px 120px; }
 .cart-page h1 { font-weight: 300; letter-spacing: 3px; margin-bottom: 40px; }
 
+/* =====================================================================
+   Sepetteki her bir ürün satırı. Flex ile görsel, isim, adet ve fiyat
+   yan yana hizalanır. border-bottom ile satırlar birbirinden ayrılır.
+   ===================================================================== */
 .cart-item {
   display: flex;
   align-items: center;
@@ -579,6 +694,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .product-img:hover { opacity: 0.8; }
 .cart-price { font-size: 14px; font-weight: 700; color: var(--text); min-width: 80px; text-align: center; }
 
+/* =====================================================================
+   Sepette ürün adedini artır/azalt kontrolleri. Butonlar CSS değişkeni
+   renk kullanır, dark modda otomatik tersine döner.
+   ===================================================================== */
 .quantity { display: flex; align-items: center; gap: 10px; }
 .quantity button {
   background: var(--btn-bg); color: var(--btn-color); border: none;
@@ -592,6 +711,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .quantity span { font-size: 14px; min-width: 20px; text-align: center; }
 .remove { color: #cc0000; cursor: pointer; font-size: 18px; flex-shrink: 0; }
 
+/* =====================================================================
+   Sepet alt bölümü: toplam tutar ve ödemeye geç butonu.
+   text-align: right ile sağa hizalanır.
+   ===================================================================== */
 .cart-footer { margin-top: 40px; text-align: right; }
 .cart-footer h2 { font-weight: 400; font-size: 18px; letter-spacing: 1px; }
 .checkout {
@@ -605,9 +728,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 }
 .checkout:hover { opacity: 0.75; }
 
-/* =====================
-   FAVORİLER SAYFASI
-   ===================== */
+/* =====================================================================
+   Favoriler sayfası genel düzeni. Ürünler 4 sütunlu grid ile
+   dizilir. Slider'ın aksine burada kaydırma yoktur.
+   ===================================================================== */
 .favorites-container { padding: 60px 40px; }
 .favorites-container h2 { font-weight: 300; letter-spacing: 3px; margin-bottom: 40px; }
 
@@ -625,9 +749,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   height: 340px;
 }
 
-/* =====================
-   HAKKIMIZDA
-   ===================== */
+/* =====================================================================
+   Footer'ın üzerindeki hakkımızda tanıtım bölümü.
+   border-top ile görsel olarak sayfanın geri kalanından ayrılır.
+   ===================================================================== */
 .about-section {
   padding: 80px 100px;
   text-align: center;
@@ -637,9 +762,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .about-section h2 { font-size: 18px; margin-bottom: 20px; letter-spacing: 3px; font-weight: 400; color: var(--text); }
 .about-section p { max-width: 700px; margin: 0 auto 15px; color: var(--text-muted); font-size: 14px; line-height: 1.8; }
 
-/* =====================
-   FOOTER
-   ===================== */
+/* =====================================================================
+   Sayfa altındaki footer. 3 sütunlu grid ile mağaza, yardım ve
+   kurumsal linkleri yan yana yerleştirilir. Arka plan rengi her
+   temada sabit koyu kalır (--footer-bg).
+   ===================================================================== */
 .footer {
   margin-top: 100px;
   padding: 60px 40px 20px;
@@ -653,6 +780,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .footer-col h4 { font-size: 12px; margin-bottom: 15px; letter-spacing: 2px; color: #f5ede0; }
 .footer-col a { display: block; text-decoration: none; color: #c4a882; font-size: 12px; margin-bottom: 8px; }
 .footer-col a:hover { color: #f5ede0; }
+
+/* =====================================================================
+   Footer'ın alt satırındaki telif hakkı yazısı. grid-column: 1 / -1
+   ile 3 sütunun tamamını kaplar ve ortaya hizalanır.
+   ===================================================================== */
 .footer-bottom {
   grid-column: 1 / -1;
   text-align: center;
@@ -663,9 +795,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   border-top: 1px solid var(--border);
 }
 
-/* =====================
-   RESPONSIVE — TABLET (max 1024px)
-   ===================== */
+/* =====================================================================
+   Tablet görünümü (1024px ve altı). Header padding'i azalır,
+   arama kutusu daralır, ürün gridi 4'lü yerine 3'lü olur.
+   ===================================================================== */
 @media (max-width: 1024px) {
   .header { padding: 16px 24px; }
   .search-box input { width: 130px; }
@@ -674,9 +807,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   .about-section { padding: 60px 60px; }
 }
 
-/* =====================
-   RESPONSIVE — TABLET (max 900px)
-   ===================== */
+/* =====================================================================
+   Küçük tablet (900px ve altı). Ürün gridi 2 sütuna iner,
+   ürün detay sayfası yan yana değil alt alta dizilir (flex-direction: column).
+   ===================================================================== */
 @media (max-width: 900px) {
   .category-page #products { grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 20px; }
   #favorites-list { grid-template-columns: repeat(2, 1fr); gap: 20px; }
@@ -686,9 +820,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   .hero-img { height: 400px; }
 }
 
-/* =====================
-   RESPONSIVE — MOBİL (max 768px)
-   ===================== */
+/* =====================================================================
+   Mobil görünümü (768px ve altı). Hamburger butonu görünür hale gelir,
+   nav gizlenir. Hamburger tıklanınca JS .open class'ı ekler ve nav açılır.
+   Mega menu position: static olur, absolute kalınca mobilde taşar.
+   ===================================================================== */
 @media (max-width: 768px) {
 
   body { padding-top: 64px; }
@@ -855,9 +991,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   .profile-header { padding: 14px 16px; }
 }
 
-/* =====================
-   RESPONSIVE — KÜÇÜK MOBİL (max 480px)
-   ===================== */
+/* =====================================================================
+   Çok küçük telefon ekranları (480px ve altı). Kartlar ve hero
+   görsel daha da küçülür, ok butonları daraltılır.
+   ===================================================================== */
 @media (max-width: 480px) {
   body { padding-top: 60px; }
   .logo { font-size: 16px; letter-spacing: 1.5px; }
@@ -877,9 +1014,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   .cart-price { min-width: 60px; font-size: 13px; }
 }
 
-/* =====================
-   PROFIL SAYFASI HEADER
-   ===================== */
+/* =====================================================================
+   Profil, sepet ve favoriler sayfalarının sabit header'ı.
+   Ana header'dan ayrı sayfalar için aynı sabit konum davranışı
+   buraya kopyalanmıştır. position: fixed, z-index: 1000 ile sabit kalır.
+   ===================================================================== */
 .profile-header {
   position: fixed;
   top: 0; left: 0;
@@ -901,6 +1040,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   text-decoration: none;
 }
 
+/* =====================================================================
+   Profil/Sepet/Favoriler header'larındaki "Geri Dön" butonu.
+   Border ile çerçeveli, hover'da arka plan değişir. Soluk ok ikonu
+   hover'da sola kayar (translateX(-3px)).
+   ===================================================================== */
 .back-home {
   display: flex;
   align-items: center;
@@ -921,9 +1065,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .back-home svg { transition: transform 0.25s; }
 .back-home:hover svg { transform: translateX(-3px); }
 
-/* =====================
-   AUTH KUTUSU
-   ===================== */
+/* =====================================================================
+   Kayıt/Giriş formunu ekranın tam ortasında konumlandıran wrapper.
+   min-height: 100vh ile sayfa boyunca uzanır, flexbox ile içeriği
+   dikey ve yatayda ortalar.
+   ===================================================================== */
 .auth-wrapper {
   min-height: 100vh;
   display: flex;
@@ -932,6 +1078,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   padding: 120px 20px 60px;
 }
 
+/* =====================================================================
+   Kayıt/Giriş form kutusu. max-width: 440px ile çok geniş ekranlarda
+   sınırlandırılır. border ile çerçevelenir, dark modda arka plan
+   CSS değişkeni ile güncellenir.
+   ===================================================================== */
 .auth-box {
   width: 100%;
   max-width: 440px;
@@ -959,6 +1110,9 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   margin-bottom: 36px;
 }
 
+/* =====================================================================
+   Başlık ile form arasındaki ince yatay ayırıcı çizgi.
+   ===================================================================== */
 .auth-divider {
   width: 40px;
   height: 1px;
@@ -966,6 +1120,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   margin: 0 auto 32px;
 }
 
+/* =====================================================================
+   Her form alanı (label + input) grubu. margin-bottom ile
+   alanlar arasında nefes alacak boşluk bırakılır.
+   ===================================================================== */
 .form-group { margin-bottom: 20px; }
 .form-group label {
   display: block;
@@ -991,6 +1149,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   border-color: var(--text);
   background: var(--bg);
 }
+
+/* =====================================================================
+   Form doğrulama hatası olduğunda input'un kenarlığı kırmızıya döner,
+   hata mesajı görünür. JavaScript .has-error class'ını ekler.
+   ===================================================================== */
 .form-group input.error { border-color: #cc0000; }
 .form-group .error-msg {
   font-size: 11px;
@@ -1001,6 +1164,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .form-group.has-error .error-msg { display: block; }
 .form-group.has-error input { border-color: #cc0000; }
 
+/* =====================================================================
+   Auth formundaki ana aksiyon butonu. Hover'da renk kararır,
+   disabled durumda gri olur ve tıklanamaz.
+   ===================================================================== */
 .auth-btn {
   width: 100%;
   padding: 15px;
@@ -1022,6 +1189,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .auth-btn:active { transform: scale(0.98); }
 .auth-btn:disabled { background: #999; border-color: #999; cursor: not-allowed; }
 
+/* =====================================================================
+   Formun altındaki "Hesabın var mı? / Yok mu?" geçiş metni.
+   span tıklanınca JavaScript ilgili bölümü gösterir.
+   ===================================================================== */
 .switch-text {
   text-align: center;
   margin-top: 22px;
@@ -1038,6 +1209,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 }
 .switch-text span:hover { opacity: 0.6; }
 
+/* =====================================================================
+   E-posta doğrulama ekranındaki 4 haneli kod giriş alanları.
+   Her biri tek karakter (maxlength="1") alır; JavaScript birinden
+   diğerine otomatik odaklanır.
+   ===================================================================== */
 .code-input-wrap {
   display: flex;
   gap: 12px;
@@ -1068,7 +1244,11 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 }
 .verify-hint strong { color: var(--text); font-weight: 600; }
 
-/* Toast */
+/* =====================================================================
+   Ekranın alt ortasından çıkan kısa bildirim mesajı.
+   JavaScript .show class'ını ekleyince opacity: 1 olur ve yukarı kayar.
+   Hata için kırmızı, başarı için yeşil varyantları vardır.
+   ===================================================================== */
 .toast {
   position: fixed;
   bottom: 30px;
@@ -1092,8 +1272,16 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .toast.error { background: #cc0000; color: #fff; }
 .toast.success { background: #2a7a2a; color: #fff; }
 
-/* Profil kartı */
+/* =====================================================================
+   Profil sayfasındaki kullanıcı bilgi kartı. Avatar, isim, e-posta
+   ve bilgi satırlarını barındırır.
+   ===================================================================== */
 .profile-card { text-align: center; }
+
+/* =====================================================================
+   Kullanıcının baş harflerini gösteren yuvarlak avatar dairesi.
+   Arka plan ve yazı rengi CSS değişkeniyle dark modda tersine döner.
+   ===================================================================== */
 .profile-avatar {
   width: 80px;
   height: 80px;
@@ -1121,6 +1309,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   margin-bottom: 36px;
 }
 
+/* =====================================================================
+   Profil bilgi satırı (Ad Soyad, E-posta, Şifre). Her satır
+   border-bottom ile bir sonrakinden ayrılır.
+   ===================================================================== */
 .profile-info-row {
   display: flex;
   align-items: flex-start;
@@ -1149,6 +1341,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   flex-wrap: wrap;
 }
 
+/* =====================================================================
+   Profil sayfasındaki kırmızı çıkış yap butonu. Hover'da arka planı
+   kırmızıya döner, yazı beyaza geçer.
+   ===================================================================== */
 .logout-btn {
   width: 100%;
   padding: 14px;
@@ -1166,9 +1362,16 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 }
 .logout-btn:hover { background: #cc0000; color: #fff; }
 
+/* =====================================================================
+   JavaScript tarafından elementleri gizlemek için kullanılan yardımcı
+   class. !important ile diğer display kurallarını ezer.
+   ===================================================================== */
 .hidden { display: none !important; }
 
-/* Geri sayım */
+/* =====================================================================
+   Doğrulama kodunu yeniden gönder bağlantısı ve geri sayım metni.
+   Geri sayım aktifken .counting class'ı eklenir, tıklanamaz olur.
+   ===================================================================== */
 .resend-row {
   text-align: center;
   font-size: 12px;
@@ -1188,7 +1391,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   text-decoration: none;
 }
 
-/* Profil ikonu */
+/* =====================================================================
+   Header'daki profil ikonu. Giriş yapılmamışsa SVG kullanıcı ikonu,
+   giriş yapılmışsa .logged-in class ile kullanıcının baş harfleri gösterilir.
+   ===================================================================== */
 .profile-icon {
   display: flex;
   align-items: center;
@@ -1216,40 +1422,46 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 }
 .profile-icon svg { width: 18px; height: 18px; }
 
-/* =====================
-   ANİMASYONLAR
-   ===================== */
+/* =====================================================================
+   Tüm sayfa bileşenlerine uygulanan CSS animasyonları.
+   Her @keyframes bir hareket tarifi tanımlar; bileşen stillerinde
+   animation: isim süre zamanlama mod şeklinde kullanılır.
+   ===================================================================== */
 
+/* Aşağıdan yukarı kayarak beliren animasyon — başlıklar, formlar */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Sadece beliren animasyon — hero, footer */
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
+/* Soldan gelen animasyon — header, sepet satırları, ürün detay görseli */
 @keyframes slideInLeft {
   from { opacity: 0; transform: translateX(-30px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
+/* Sağdan gelen animasyon — ürün detay bilgi kutusu */
 @keyframes slideInRight {
   from { opacity: 0; transform: translateX(30px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
+/* Küçükten büyüyerek beliren animasyon — ürün kartları, auth kutusu */
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.92); }
   to   { opacity: 1; transform: scale(1); }
 }
 
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
-}
-
+/* =====================================================================
+   Slider içindeki her kart sırayla beliriyor.
+   :nth-child ile her kart 50ms gecikmeli başlar; dalga etkisi verir.
+   ===================================================================== */
 .header, .cart-header, .fav-header, .profile-header {
   animation: slideInLeft 0.5s ease both;
 }
@@ -1286,6 +1498,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 .product-slider .product-card:nth-child(5)  { animation-delay: 0.25s; }
 .product-slider .product-card:nth-child(6)  { animation-delay: 0.30s; }
 
+/* =====================================================================
+   Kategori grid'inde tek numaralı kartlar soldan, çift numaralılar
+   sağdan gelerek beliriyor. Her kart 50ms gecikmeli başlar.
+   ===================================================================== */
 #products .product-card:nth-child(odd)  { animation: slideInLeft  0.45s ease both; }
 #products .product-card:nth-child(even) { animation: slideInRight 0.45s ease both; }
 #products .product-card:nth-child(1)  { animation-delay: 0.05s; }
@@ -1304,6 +1520,10 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   transform: scale(1.08);
 }
 
+/* =====================================================================
+   Favori yıldızı hover'da büyür ve hafifçe döner, dikkat çekici bir
+   mikro-etkileşim sağlar.
+   ===================================================================== */
 .product-card__fav {
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
@@ -1424,12 +1644,21 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
 }
 .back-home:hover { transform: translateX(-3px); }
 
+/* =====================================================================
+   Tüm elementlere arka plan, kenarlık ve yazı rengi geçişi eklenir.
+   Dark/Light mod geçişinde her şey anlık değil yavaşça değişir.
+   ===================================================================== */
 body, body * {
   transition-property: background-color, border-color, color;
   transition-duration: 0.3s;
   transition-timing-function: ease;
 }
 
+/* =====================================================================
+   Erişilebilirlik kuralı. İşletim sisteminde "animasyonları azalt"
+   ayarı açık olan kullanıcılar için tüm animasyon ve geçişler
+   neredeyse sıfırlanır (0.01ms ≈ anlık).
+   ===================================================================== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1437,9 +1666,11 @@ body, body * {
   }
 }
 
-/* =====================
-   MOBİL — FAV / CART / PROFİL HEADER DÜZELTMESİ
-   ===================== */
+/* =====================================================================
+   Küçük ekranlarda sepet, favoriler ve profil header'larının
+   düzeltilmesi. Butonlar daire şeklinde küçülür, metin gizlenir,
+   öğeler dikey ortada hizalanır.
+   ===================================================================== */
 @media (max-width: 768px) {
 
   .fav-header,
@@ -1556,9 +1787,10 @@ body, body * {
   }
 }
 
-/* =====================
-   CART / FAV / PROFİL HEADER — TAŞINAN STİLLER
-   ===================== */
+/* =====================================================================
+   Sepet ve Favoriler sayfası header'ları için ortak stiller.
+   position: fixed ile her sayfada sabit kalır.
+   ===================================================================== */
 .cart-header,
 .fav-header {
   position: fixed;
@@ -1583,6 +1815,10 @@ body, body * {
   text-decoration: none;
 }
 
+/* =====================================================================
+   Header sağ tarafındaki öğe sayısı metni (ör. "3 ürün").
+   Küçük ekranlarda display: none ile gizlenir.
+   ===================================================================== */
 .cart-header-right,
 .fav-header-right {
   display: flex;
@@ -1672,9 +1908,10 @@ body, body * {
   }
 }
 
-/* =====================
-   BENZER ÜRÜNLER
-   ===================== */
+/* =====================================================================
+   Ürün detay sayfasının altındaki "Benzer Ürünler" bölümü.
+   2 sütunlu grid ile gösterilir, max-width ile çok genişlemez.
+   ===================================================================== */
 .similar-products { padding: 40px 24px; max-width: 900px; margin: 0 auto; }
 .similar-title { font-size: 18px; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
 .similar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -1685,9 +1922,12 @@ body, body * {
   .similar-grid .product-card__img-wrap img { height: 180px; }
 }
 
-/* =====================
-   SCROLL REVEAL
-   ===================== */
+/* =====================================================================
+   Hakkımızda bölümünde scroll ile görünür olan animasyon sistemi.
+   Başlangıçta elementler opacity: 0 ve yanda bekler. JavaScript
+   Intersection Observer ile ekrana girince .revealed class eklenir
+   ve element yerine kayar.
+   ===================================================================== */
 .about-reveal-left,
 .about-reveal-right {
   opacity: 0;
@@ -1702,8 +1942,11 @@ body, body * {
   transform: translateX(0);
 }
 
-/* ─── KUPON BÖLÜMÜ ─────────────────────────────────────────────────────────── */
-
+/* =====================================================================
+   Sepet sayfasındaki kupon kodu bölümü. Input ve "Uygula" butonu
+   yan yana (flex) dizilir. Başarı/hata mesajı renkleriyle birlikte
+   JavaScript tarafından .success veya .error class'ı ile açılır.
+   ===================================================================== */
 .coupon-section {
   border: 1px solid #e0e0e0;
   border-radius: 12px;
@@ -1835,8 +2078,11 @@ body.dark .coupon-msg.success { background: #1a3b1a; color: #69bb69; }
 body.dark .coupon-applied   { color: #69bb69; }
 body.dark .totals-row       { color: #aaa; }
 
-/* ─── CHECKBOX (Beni Hatırla & Sözleşme) ──────────────────────────────────── */
-
+/* =====================================================================
+   Özel tasarımlı checkbox bileşeni. Varsayılan input[type="checkbox"]
+   display: none ile gizlenir, yerine .checkbox-custom span'ı kullanılır.
+   Seçilince JavaScript değil CSS :checked seçicisiyle arka plan değişir.
+   ===================================================================== */
 .checkbox-group {
   margin: 12px 0 16px;
 }
@@ -1871,6 +2117,11 @@ body.dark .totals-row       { color: #aaa; }
   background: transparent;
 }
 
+/* =====================================================================
+   Checkbox seçildiğinde arka plan koyu olur ve CSS ile tik işareti
+   çizilir. ::after pseudo elementi döndürülmüş bir border köşesiyle
+   tik görünümü oluşturur.
+   ===================================================================== */
 .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
   background: #111;
   border-color: #111;
@@ -1912,8 +2163,11 @@ body.dark .totals-row       { color: #aaa; }
 .checkbox-group.has-error .error-msg  { display: block; }
 .checkbox-group.has-error .checkbox-custom { border-color: #c0392b; }
 
-/* ─── SÖZLEŞME MODALİ ──────────────────────────────────────────────────── */
-
+/* =====================================================================
+   Kullanım şartları ve KVKK gibi belgeleri göstermek için açılan modal.
+   .active class eklendikçe display: flex ile görünür olur.
+   position: fixed, inset: 0 ile tüm ekranı kaplar.
+   ===================================================================== */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -1929,6 +2183,10 @@ body.dark .totals-row       { color: #aaa; }
   display: flex;
 }
 
+/* =====================================================================
+   Modal içeriğinin beyaz kutusu. max-height ve overflow: hidden ile
+   uzun belgeler taşmaz; içerideki .modal-body kendi scrollunu yönetir.
+   ===================================================================== */
 .modal-box {
   background: #fff;
   border-radius: 14px;
@@ -1963,6 +2221,10 @@ body.dark .totals-row       { color: #aaa; }
 
 .modal-close:hover { color: #111; }
 
+/* =====================================================================
+   Modal içeriğinin kaydırılabilir alanı. flex: 1 ile mevcut alanı
+   doldurur; overflow-y: auto ile uzun belgeler bu alanda kayar.
+   ===================================================================== */
 .modal-body {
   padding: 1.25rem;
   overflow-y: auto;
@@ -2006,10 +2268,10 @@ body.dark .modal-footer              { border-color: #333; }
 body.dark .modal-close               { color: #666; }
 body.dark .modal-close:hover         { color: #eee; }
 
-/* =====================
-   ŞİFRE ALANI — password-wrap
-   ===================== */
-
+/* =====================================================================
+   Şifre input'larının sağ tarafındaki göz ikonu butonu için wrapper.
+   position: relative ile buton input içine konumlandırılabilir.
+   ===================================================================== */
 .password-wrap {
   position: relative;
   display: flex;
@@ -2021,6 +2283,10 @@ body.dark .modal-close:hover         { color: #eee; }
   padding-right: 44px;
 }
 
+/* =====================================================================
+   Şifreyi göster/gizle butonu. position: absolute ve transform ile
+   input'un tam sağ ortasına sabitlenir.
+   ===================================================================== */
 .toggle-pw {
   position: absolute;
   right: 12px;
@@ -2040,10 +2306,11 @@ body.dark .modal-close:hover         { color: #eee; }
 
 .toggle-pw:hover { color: var(--text); }
 
-/* =====================
-   ŞİFRE GÜÇ ÇUBUĞU
-   ===================== */
-
+/* =====================================================================
+   Şifre gücünü görsel olarak gösteren yatay çubuk. JavaScript
+   şifreyi analiz ederek fill'in genişliğini ve rengini günceller.
+   4 seviye: zayıf (kırmızı) → orta → iyi → güçlü (yeşil-mavi).
+   ===================================================================== */
 .pw-strength-bar {
   width: 100%;
   height: 4px;
@@ -2065,10 +2332,11 @@ body.dark .modal-close:hover         { color: #eee; }
 .pw-good   { background: #43a047; }
 .pw-strong { background: #00897b; }
 
-/* =====================
-   ŞİFRE KURALLARI LİSTESİ
-   ===================== */
-
+/* =====================================================================
+   Şifre kurallarını listeleyen kısım. JavaScript her kural sağlandığında
+   .rule-ok, sağlanmadığında .rule-fail class'ını ekler.
+   Dark modda renk tonları yumuşatılmıştır.
+   ===================================================================== */
 .pw-rules {
   margin-top: 10px;
   display: flex;
@@ -2089,10 +2357,10 @@ body.dark .modal-close:hover         { color: #eee; }
 body.dark .rule-ok   { color: #69bb69 !important; }
 body.dark .rule-fail { color: #ff6b6b !important; }
 
-/* =====================
-   PROFİL — ŞİFRE DEĞİŞTİR BUTONU
-   ===================== */
-
+/* =====================================================================
+   Profil sayfasındaki "Şifreyi Değiştir" bağlantısı. Tıklanınca
+   JavaScript şifre değiştirme formunu gösterir/gizler.
+   ===================================================================== */
 .pw-dots {
   color: var(--text-light);
   letter-spacing: 3px;
@@ -2117,10 +2385,11 @@ body.dark .rule-fail { color: #ff6b6b !important; }
 }
 .pw-change-toggle:hover { opacity: 0.55; }
 
-/* =====================
-   PROFİL — ŞİFRE DEĞİŞTİR FORMU
-   ===================== */
-
+/* =====================================================================
+   Şifre değiştirme formu. Başlangıçta .hidden ile gizlidir.
+   Toggle butonu tıklandığında JavaScript .hidden'ı kaldırır,
+   form fadeInUp animasyonuyla açılır.
+   ===================================================================== */
 .pw-change-form {
   border-top: 1px solid var(--border);
   padding-top: 20px;
@@ -2145,6 +2414,10 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   margin: 0;
 }
 
+/* =====================================================================
+   Şifre değiştirme formundaki "İptal" butonu. Şeffaf arka plan,
+   sadece kenarlık; hover'da kenarlık ve yazı koyulaşır.
+   ===================================================================== */
 .pw-cancel-btn {
   width: 100%;
   padding: 13px;
@@ -2161,7 +2434,12 @@ body.dark .rule-fail { color: #ff6b6b !important; }
 }
 .pw-cancel-btn:hover { border-color: var(--text); color: var(--text); }
 
-/* ── Merkezi Sepet Bildirimi ── */
+/* =====================================================================
+   Ürün sepete eklendiğinde ekranın tam ortasında çıkan lüks bildirim.
+   position: fixed + transform: translate(-50%,-50%) ile tam ortaya
+   yerleştirilir. JavaScript .show class'ını ekleyince opacity: 1 olur.
+   Altın bordür ve serif başlık fontu marka kimliğini yansıtır.
+   ===================================================================== */
 .center-toast {
   position: fixed;
   top: 50%;
