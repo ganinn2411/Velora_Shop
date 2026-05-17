@@ -1199,7 +1199,10 @@ function handleLogout() {
   if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
     localStorage.removeItem("activeUser");
     localStorage.removeItem("velora_remember");
+    localStorage.removeItem("cart");
     sessionStorage.removeItem("activeUser");
+    cart = [];
+    updateCartCount();
     showToast("Çıkış yapıldı.", "");
     setTimeout(function() { showSection("login-section"); }, 600);
   }
