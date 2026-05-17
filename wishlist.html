@@ -17,8 +17,7 @@
     <span class="fav-count" id="fav-count-label"></span>
     <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
     <a href="index.html" class="back-home">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="15 18 9 12 15 6"/>
       </svg>
       <span class="back-home-text">Ana Sayfa</span>
@@ -31,16 +30,18 @@
   <div id="favorites-list"></div>
 </div>
 
-<!-- velora-data.js ÖNCE yüklenmeli — products dizisini localStorage'dan alır -->
+<div id="toast" class="toast"></div>
+
+<!-- velora-data.js ÖNCE yüklenmeli -->
 <script src="velora-data.js"></script>
 <script src="script.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
-    const validCount = saved.filter(function(id) {
+  document.addEventListener("DOMContentLoaded", function() {
+    var saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
+    var validCount = saved.filter(function(id) {
       return products.find(function(p) { return p.id === id; });
     }).length;
-    const el = document.getElementById("fav-count-label");
+    var el = document.getElementById("fav-count-label");
     if (el) el.textContent = validCount > 0 ? validCount + " ürün" : "";
   });
 </script>
