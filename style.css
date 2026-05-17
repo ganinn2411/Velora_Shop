@@ -2160,3 +2160,45 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   transition: border-color 0.2s, color 0.2s;
 }
 .pw-cancel-btn:hover { border-color: var(--text); color: var(--text); }
+/* ── Merkezi Sepet Bildirimi ── */
+.center-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  background: #1a1714;
+  color: #f5f0e8;
+  border: 1px solid #c9b97a;
+  border-radius: 4px;
+  padding: 28px 40px;
+  text-align: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  min-width: 260px;
+}
+.center-toast.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.center-toast-icon { font-size: 28px; margin-bottom: 10px; }
+.center-toast-title {
+  font-family: 'Cormorant Garamond', 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: #c9b97a;
+  margin-bottom: 6px;
+}
+.center-toast-msg {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a8178;
+}
+body.dark .center-toast {
+  background: #0f0f0f;
+  border-color: #c9b97a;
+}
