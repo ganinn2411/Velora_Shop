@@ -1,28 +1,10 @@
 // ============================================================
 //  VELORA — velora-data.js
-//  AÇIKLAMA: Bu dosya, sitenin "veri katmanı"dır.
-//  Admin paneli ile müşteri sayfaları arasında köprü görevi görür.
-//  Tüm HTML sayfalarında script.js'den ÖNCE yüklenmelidir,
-//  çünkü script.js buradaki fonksiyonlara bağımlıdır.
 // ============================================================
-
-// IIFE (Immediately Invoked Function Expression) kalıbı kullanılmıştır.
-// Böylece içindeki değişkenler global namespace'i kirletmez,
-// yani başka dosyalardaki değişkenlerle çakışma olmaz.
 (function () {
 
-  // CDN (Content Delivery Network) URL'si.
-  // Tüm ürün görselleri Cloudinary'de saklanmaktadır.
-  // Bu değişken sayesinde her URL'yi baştan yazmak zorunda kalmayız.
   var CDN = "https://res.cloudinary.com/dy2dvpbit/image/upload";
 
-  // ── VARSAYILAN ÜRÜN LİSTESİ ──────────────────────────────────────────
-  // Site ilk kez açıldığında localStorage henüz boştur.
-  // Bu dizi, o durumda otomatik olarak yüklenecek olan
-  // hazır/varsayılan ürünleri tutar.
-  // Her ürünün: id (benzersiz numara), name (ad), price (TL fiyatı),
-  //             image (görsel URL), category (erkek/kadın/çocuk),
-  //             type (tişört/pantolon/ceket/şapka) alanları vardır.
   var VELORA_DEFAULT_PRODUCTS = [
     { id:1,  name:"Erkek Tişört",   price:1200, image:CDN+"/haryo-setyadi-acn5ERAeSb4-unsplash_svhjqz.jpg",               category:"erkek", type:"tisort"   },
     { id:2,  name:"Erkek Tişört",   price:300,  image:CDN+"/pexels-david-fowora-2160297192-36801391_hfunqe.jpg",           category:"erkek", type:"tisort"   },
@@ -110,79 +92,50 @@
     { id:85, name:"Çocuk Ceket",    price:800,  image:CDN+"/WhatsApp_Image_2026-05-16_at_14.23.44_1_lvqfgm.jpg",          category:"cocuk", type:"ceket"    }
   ];
 
-  // ── VARSAYILAN KUPON LİSTESİ ───────────────────────────────────────────
-  // Site ilk açıldığında bu kuponlar otomatik olarak tanımlanır.
-  // Her kuponun: code (büyük harfli kod), discount (indirim yüzdesi),
-  //              status (active/inactive), uses (kaç kez kullanıldı) alanları var.
   var VELORA_DEFAULT_COUPONS = [
-    var VELORA_DEFAULT_COUPONS = [
-  { code:"VELORA10",  discount:10, status:"active", uses:0 },
-  { code:"VELORA20",  discount:20, status:"active", uses:0 },
-  { code:"HOSGELDIN", discount:15, status:"active", uses:0 },
-  { code:"GG2",       discount:50, status:"active", uses:0 },
-  { code:"AA",        discount:40, status:"active", uses:0 },
-  { code:"MM",        discount:20, status:"active", uses:0 }
-];
+    { code:"VELORA10",  discount:10, status:"active", uses:0 },
+    { code:"VELORA20",  discount:20, status:"active", uses:0 },
+    { code:"HOSGELDIN", discount:15, status:"active", uses:0 },
+    { code:"GG2",       discount:50, status:"active", uses:0 },
+    { code:"AA",        discount:40, status:"active", uses:0 },
+    { code:"MM",        discount:20, status:"active", uses:0 }
   ];
 
-  // ── İLK AÇILIŞ TOHUM FONKSİYONU ──────────────────────────────────────
-  // IIFE içinde hemen çalışır. localStorage'da veri yoksa
-  // yukarıdaki varsayılanları kaydeder. Böylece site boş başlamaz.
-  // try/catch: localStorage erişimi bazen tarayıcı ayarları yüzünden
-  // hata verebilir; uygulama çökmemesi için yakalanır.
   (function seedDefaults() {
     try {
-      // "velora_products" anahtarı yoksa varsayılan ürünleri kaydet
       if (!localStorage.getItem("velora_products")) {
         localStorage.setItem("velora_products", JSON.stringify(VELORA_DEFAULT_PRODUCTS));
       }
-      // "velora_coupons" anahtarı yoksa varsayılan kuponları kaydet
       if (!localStorage.getItem("velora_coupons")) {
         localStorage.setItem("velora_coupons", JSON.stringify(VELORA_DEFAULT_COUPONS));
       }
     } catch(e) {}
   })();
 
-  // ── window.vGetProducts ───────────────────────────────────────────────
-  // Genel kullanım: var products = vGetProducts();
-  // localStorage'dan ürün listesini okur.
-  // Eğer veri yoksa veya bozuksa varsayılanları döndürür.
-  // window. ile tanımlandığı için diğer tüm JS dosyalarından erişilebilir.
   window.vGetProducts = function () {
     try {
       var raw = localStorage.getItem("velora_products");
       if (raw) {
         var arr = JSON.parse(raw);
-        // Dizi geçerliyse ve en az 1 eleman varsa döndür
         if (Array.isArray(arr) && arr.length > 0) return arr;
       }
     } catch(e) { console.warn("velora-data: ürünler okunamadı", e); }
-    // Sorun varsa varsayılanları tekrar kaydet ve döndür
     localStorage.setItem("velora_products", JSON.stringify(VELORA_DEFAULT_PRODUCTS));
-    return VELORA_DEFAULT_PRODUCTS.slice(); // .slice() → orijinal diziyi korur
+    return VELORA_DEFAULT_PRODUCTS.slice();
   };
 
-  // ── window.vValidateCoupon ────────────────────────────────────────────
-  // Kullanıcının girdiği kupon kodunu doğrular.
-  // Geçerliyse: uses sayacını 1 artırır ve localStorage'a kaydeder.
-  // Döndürdüğü obje: { valid: bool, discount: sayı, message: string }
-  // Bu objeyi script.js'deki sepet fonksiyonu kullanarak indirim uygular.
   window.vValidateCoupon = function (code) {
-    // Boş girişi erkenden reddet
     if (!code || !code.trim()) return { valid:false, discount:0, message:"Lütfen kupon kodu girin." };
-    // Büyük harfe çevir: "velora10" → "VELORA10"
     var norm = code.trim().toUpperCase();
     try {
       var raw = localStorage.getItem("velora_coupons");
       var coupons = raw ? JSON.parse(raw) : VELORA_DEFAULT_COUPONS.slice();
-      // Kodla eşleşen kuponu bul
       var coupon = null;
       for (var i = 0; i < coupons.length; i++) {
         if (coupons[i].code === norm) { coupon = coupons[i]; break; }
       }
       if (!coupon)                    return { valid:false, discount:0, message:"Geçersiz kupon kodu." };
       if (coupon.status !== "active") return { valid:false, discount:0, message:"Bu kupon artık aktif değil." };
-      // Kullanım sayısını artır ve güncelle
       coupon.uses = (coupon.uses || 0) + 1;
       localStorage.setItem("velora_coupons", JSON.stringify(coupons));
       return { valid:true, discount:coupon.discount, message:"%" + coupon.discount + " indirim uygulandı! 🎉" };
@@ -191,26 +144,9 @@
     }
   };
 
-  // ── Yardımcı Okuma Fonksiyonları ──────────────────────────────────────
-  // Bu üç fonksiyon, admin panelinde kaydedilen ayarları
-  // müşteri tarafındaki sayfalar için okunabilir hale getirir.
-  // JSON.parse başarısız olursa boş obje ({}) döner, uygulama çökmez.
-
-  // Site genel ayarları (mağaza adı, para birimi vb.)
   window.vGetSettings   = function () { try { return JSON.parse(localStorage.getItem("velora_settings")   || "{}"); } catch(e) { return {}; } };
-
-  // İletişim ve WhatsApp bilgileri
   window.vGetContact    = function () { try { return JSON.parse(localStorage.getItem("velora_contact")    || "{}"); } catch(e) { return {}; } };
-
-  // Görünüm ayarları (banner, renkler, fontlar)
   window.vGetAppearance = function () { try { return JSON.parse(localStorage.getItem("velora_appearance") || "{}"); } catch(e) { return {}; } };
-
-  // ── window.vSyncProducts ─────────────────────────────────────────────
-  // Admin paneli ürün eklediğinde veya sildiğinde bu fonksiyon çağrılır.
-  // _vProductsCache'i sıfırlar; böylece bir sonraki vGetProducts() çağrısı
-  // güncel veriyi localStorage'dan yeniden okur.
-  window.vSyncProducts = function() {
-    window._vProductsCache = null;
-  };
+  window.vSyncProducts  = function () { window._vProductsCache = null; };
 
 })();
