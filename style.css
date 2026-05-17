@@ -2164,6 +2164,9 @@ body.dark .rule-fail { color: #ff6b6b !important; }
 /* ── Merkezi Sepet Bildirimi ── */
 .center-toast {
   position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #1a1714;
   color: #f5f0e8;
   border: 1px solid #c9b97a;
@@ -2175,6 +2178,8 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   pointer-events: none;
   box-sizing: border-box;
   transition: opacity 0.3s ease;
+  width: 80vw;
+  max-width: 300px;
 }
 .center-toast.show {
   opacity: 1;
