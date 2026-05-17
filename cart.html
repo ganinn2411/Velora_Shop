@@ -477,6 +477,12 @@ function vcDel(idx) {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
       cart.splice(idx, 1);
       localStorage.setItem('cart', JSON.stringify(cart));
+
+      // Sepet boşaldıysa kuponu da sıfırla
+      if (cart.length === 0) {
+        vcRemoveCoupon();
+      }
+
       vcRender();
       vcHeaderCount();
     }, 350);
