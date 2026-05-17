@@ -167,18 +167,37 @@
   if (s.features && s.features.maintenance) {
     var isAdmin = window.location.pathname.indexOf('admin') !== -1;
     if (!isAdmin) {
-      var block = function() {
-        document.body.innerHTML =
-          '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-          'min-height:100vh;background:#f5ede0;color:#1a1008;font-family:Montserrat,sans-serif;text-align:center;gap:20px">' +
-          '<div style="font-size:52px">🔧</div>' +
-          '<h1 style="font-size:24px;letter-spacing:4px;font-weight:300">BAKIM MODU</h1>' +
-          '<p style="color:#6b5744;font-size:13px;max-width:400px;line-height:1.8">' +
-          'Sitemiz kısa süreliğine bakımda.<br>En kısa sürede geri döneceğiz.</p>' +
-          '</div>';
+      var maintenanceHTML =
+        '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+        'min-height:100vh;background:#f5ede0;color:#1a1008;font-family:Montserrat,sans-serif;text-align:center;gap:20px;padding:20px">' +
+        '<div style="font-size:52px">🔧</div>' +
+        '<h1 style="font-size:24px;letter-spacing:4px;font-weight:300">BAKIM MODU</h1>' +
+        '<p style="color:#6b5744;font-size:13px;max-width:400px;line-height:1.8">' +
+        'Sitemiz kısa süreliğine bakımda.<br>En kısa sürede geri döneceğiz.</p>' +
+        '</div>';
+
+      var showMaintenance = function() {
+        // Tüm sayfa içeriğini gizle, bakım ekranı göster
+        document.body.innerHTML = maintenanceHTML;
+        // Scroll'u devre dışı bırak
+        document.documentElement.style.overflow = 'hidden';
       };
-      document.readyState === 'loading'
-        ? document.addEventListener('DOMContentLoaded', block) : block();
+
+      // Script <head>'de yüklendiğinde body henüz hazır olmayabilir
+      if (document.body) {
+        showMaintenance();
+      } else {
+        // Body hazır olur olmaz çalıştır — DOMContentLoaded beklemeden
+        document.addEventListener('DOMContentLoaded', showMaintenance);
+        // Alternatif: body parse edilir edilmez yakala
+        var observer = new MutationObserver(function() {
+          if (document.body) {
+            observer.disconnect();
+            showMaintenance();
+          }
+        });
+        observer.observe(document.documentElement, { childList: true });
+      }
     }
   }
 
