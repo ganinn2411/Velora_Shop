@@ -8,6 +8,8 @@
 //   velora_contact    → iletişim/whatsapp
 //   velora_appearance → görünüm
 //   velora_users      → kullanıcılar
+// sessionStorage KEY:
+//   velora_admin_session → sayfa yenilemede oturumu koru
 
 // ========== VARSAYILAN ÜRÜNLER ==========
 const CDN = "https://res.cloudinary.com/dy2dvpbit/image/upload";
@@ -111,8 +113,6 @@ function loadProducts() {
 
 function saveProducts() {
   localStorage.setItem('velora_products', JSON.stringify(products));
-  // Diğer sekmelerdeki siteyi güncelle (storage event)
-  // Not: storage event yalnızca diğer sekmeler için tetiklenir; aynı sekme kendi tetiklemesini almaz
 }
 
 let products = loadProducts();
@@ -143,13 +143,15 @@ const perPage     = 15;
 let editingId     = null;
 
 // ========== AUTH ==========
-const ADMIN_PW_KEY = 'velora_admin_pw';
-const DEFAULT_PW   = 'admin123';
+const ADMIN_PW_KEY      = 'velora_admin_pw';
+const ADMIN_SESSION_KEY = 'velora_admin_session';
+const DEFAULT_PW        = 'admin123';
 
 function checkAdmin() {
   const storedPw = localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW;
   const input    = document.getElementById('adminPwInput').value;
   if (input === storedPw) {
+    sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display  = 'flex';
     initDashboard();
@@ -161,6 +163,7 @@ function checkAdmin() {
 }
 
 function adminLogout() {
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('adminPanel').style.display  = 'none';
   document.getElementById('adminPwInput').value = '';
@@ -578,6 +581,14 @@ function showToast(msg, type='') {
 
 // ========== INIT ==========
 window.addEventListener('load', function() {
+
+  // ── Sayfa yenilemede oturum kontrolü ──
+  if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display  = 'flex';
+    initDashboard();
+  }
+
   // Eski key'den taşı
   const oldStored = localStorage.getItem('velora_admin_products');
   if (oldStored) {
