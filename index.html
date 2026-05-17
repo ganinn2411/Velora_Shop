@@ -16,13 +16,11 @@
 <header class="header">
   <div class="logo">VELORA</div>
 
-  <!-- Hamburger (mobilde görünür) -->
   <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menü">
     <span></span><span></span><span></span>
   </button>
 
   <nav class="nav" id="navMenu">
-
     <div class="nav-item">
       <a href="#" class="nav-link">KADIN</a>
       <div class="mega-menu">
@@ -35,7 +33,6 @@
         </div>
       </div>
     </div>
-
     <div class="nav-item">
       <a href="#" class="nav-link">ERKEK</a>
       <div class="mega-menu">
@@ -48,7 +45,6 @@
         </div>
       </div>
     </div>
-
     <div class="nav-item">
       <a href="#" class="nav-link">ÇOCUK</a>
       <div class="mega-menu">
@@ -61,22 +57,18 @@
         </div>
       </div>
     </div>
-
     <a href="wishlist.html" class="fav-link">FAVORİLER</a>
-
   </nav>
 
-  <!-- Sağ ikonlar grubu -->
   <div class="header-actions">
     <a href="profile.html" class="profile-icon" id="profile-icon" title="Hesabım">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
         <circle cx="12" cy="7" r="4"/>
       </svg>
     </a>
     <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
-    <a href="cart.html" target="_blank" class="cart">
+    <a href="cart.html" class="cart">
       🛒 <span class="cart-badge" id="cart-count">0</span>
     </a>
   </div>
@@ -89,7 +81,7 @@
 
 <!-- ÜST SLIDER -->
 <div class="slider-wrapper">
-  <button class="arrow left"  onclick="slideLeft()">‹</button>
+  <button class="arrow left" onclick="slideLeft()">‹</button>
   <div id="products" class="product-slider"></div>
   <button class="arrow right" onclick="slideRight()">›</button>
 </div>
@@ -103,12 +95,12 @@
 
 <!-- BANNER -->
 <section class="hero">
-  <img src="https://res.cloudinary.com/dy2dvpbit/image/upload/ChatGPT_Image_29_أبريل_2026_06_15_52_م_kwb1qk.png" alt="Banner" class="hero-img">
+  <img src="https://res.cloudinary.com/dy2dvpbit/image/upload/ChatGPT_Image_29_%D8%A3%D8%A8%D8%B1%D9%8A%D9%84_2026_06_15_52_%D9%85_kwb1qk.png" alt="Banner" class="hero-img">
 </section>
 
 <!-- ALT SLIDER -->
 <div class="slider-wrapper">
-  <button class="arrow left"  onclick="scrollBottom(-1)">‹</button>
+  <button class="arrow left" onclick="scrollBottom(-1)">‹</button>
   <div class="product-slider" id="products-bottom"></div>
   <button class="arrow right" onclick="scrollBottom(1)">›</button>
 </div>
@@ -117,9 +109,9 @@
 <footer class="footer">
   <div class="footer-col">
     <h4>MAĞAZA</h4>
-    <a href="#">Kadın</a>
-    <a href="#">Erkek</a>
-    <a href="#">Çocuk</a>
+    <a href="category.html?category=kadin&type=tisort">Kadın</a>
+    <a href="category.html?category=erkek&type=tisort">Erkek</a>
+    <a href="category.html?category=cocuk&type=tisort">Çocuk</a>
   </div>
   <div class="footer-col">
     <h4>YARDIM</h4>
@@ -135,13 +127,10 @@
   <div class="footer-bottom">© 2026 VELORA – Tüm Hakları Saklıdır</div>
 </footer>
 
-<!--
-  ✅ velora-data.js → script.js'den ÖNCE yüklenmeli.
-     Admin panelinden eklenen ürünleri ve kuponları localStorage'dan okur.
-     script.js içinde:  let products = vGetProducts();  şeklinde kullanın.
--->
+<div id="toast" class="toast"></div>
+
+<!-- velora-data.js ÖNCE, script.js SONRA -->
 <script src="velora-data.js"></script>
 <script src="script.js"></script>
-
 </body>
 </html>
