@@ -247,19 +247,23 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
     <div class="admin-modal-title">Yönetici Girişi</div>
 
     <div class="admin-pw-group">
-      <label class="admin-pw-label">Admin Şifresi</label>
-      <input type="password" class="admin-pw-input" id="adminModalPw"
-             placeholder="Şifrenizi girin"
-             onkeydown="if(event.key==='Enter') checkAdminEntry()">
-      <button class="admin-pw-toggle" onclick="toggleAdminPw()" tabindex="-1" id="adminPwToggle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-             stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      </button>
-      <div class="admin-pw-error" id="adminPwError">Hatalı şifre! Tekrar deneyin.</div>
-    </div>
+  <label class="admin-pw-label">Admin Şifresi</label>
+  <div style="position:relative;">
+    <input type="password" class="admin-pw-input" id="adminModalPw"
+           placeholder="Şifrenizi girin"
+           style="padding-right:42px;"
+           onkeydown="if(event.key==='Enter') checkAdminEntry()">
+    <button class="admin-pw-toggle" onclick="toggleAdminPw()" tabindex="-1" id="adminPwToggle"
+            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;padding:2px;line-height:1;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+    </button>
+  </div>
+  <div class="admin-pw-error" id="adminPwError">Hatalı şifre! Tekrar deneyin.</div>
+</div>
 
     <button class="admin-modal-btn" onclick="checkAdminEntry()">Admin Paneline Gir</button>
   </div>
