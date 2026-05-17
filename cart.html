@@ -373,15 +373,11 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
 
 <script>
 /* ═══════════════════════════════════════════════
-   VELORA CART – JS
+   VELORA CART – JS  (temizlenmiş versiyon)
+   VC_COUPONS sabit objesi KALDIRILDI.
+   Tüm kupon doğrulama velora-data.js → vValidateCoupon() üzerinden.
    ═══════════════════════════════════════════════ */
 
-const VC_COUPONS = {
-  'VELORA10': 10,
-  'VELORA20': 20,
-  'HOSGELDIN': 15,
-  'YAZ25'   : 25
-};
 let vcDiscountPct = 0;
 
 const vcFmt = n => n.toLocaleString('tr-TR') + ' TL';
@@ -484,29 +480,19 @@ function vcDel(idx) {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
       cart.splice(idx, 1);
       localStorage.setItem('cart', JSON.stringify(cart));
-
-      // Sepet boşaldıysa kuponu da sıfırla
-      if (cart.length === 0) {
-        vcRemoveCoupon();
-      }
-
+      if (cart.length === 0) vcRemoveCoupon();
       vcRender();
       vcHeaderCount();
     }, 350);
   }
 }
 
-/* ── Kupon uygula ── */
-/* ── Kupon uygula ── */
-/* Bu fonksiyon sepet.html içindeki <script> bloğundaki
-   vcApplyCoupon() fonksiyonunun YERİNE geçecek.
-   VC_COUPONS sabit objesine gerek kalmıyor, silebilirsin. */
-
+/* ── Kupon uygula — velora-data.js → vValidateCoupon() kullanır ── */
 function vcApplyCoupon() {
   const input = document.getElementById('vc-coupon-input');
   const btn   = document.getElementById('vc-coupon-btn');
   const msg   = document.getElementById('vc-coupon-msg');
-  const code  = (input.value || '').trim().toUpperCase();
+  const code  = (input.value || '').trim();
 
   msg.className = 'vc-coupon-msg';
   msg.innerHTML = '';
@@ -517,48 +503,41 @@ function vcApplyCoupon() {
     return;
   }
 
-  // Admin panelinin kaydettiği kuponları localStorage'dan oku
-  let coupons = [];
-  try {
-    coupons = JSON.parse(localStorage.getItem('velora_coupons') || '[]');
-  } catch(e) { coupons = []; }
+  /* velora-data.js içindeki merkezi fonksiyon:
+     - localStorage'dan velora_coupons okur
+     - aktif/pasif kontrolü yapar
+     - uses sayacını artırır ve kaydeder
+     - { valid, discount, message } döndürür */
+  const result = window.vValidateCoupon(code);
 
-  const coupon = coupons.find(c => c.code === code && c.status === 'active');
-
-  if (!coupon) {
+  if (!result.valid) {
     vcDiscountPct = 0;
-    msg.innerHTML = 'Geçersiz veya pasif kupon kodu.';
+    msg.innerHTML = result.message;
     msg.classList.add('err');
     return;
   }
 
-  // Kullanım sayısını artır ve kaydet
-  coupon.uses = (coupon.uses || 0) + 1;
-  localStorage.setItem('velora_coupons', JSON.stringify(coupons));
-
-  vcDiscountPct  = coupon.discount;
+  vcDiscountPct  = result.discount;
   input.disabled = true;
   btn.disabled   = true;
   msg.classList.add('ok');
   msg.innerHTML = `
-    <span>%${vcDiscountPct} indirim uygulandı ✓</span>
+    <span>${result.message}</span>
     <button class="vc-remove-coupon" onclick="vcRemoveCoupon()">Kaldır</button>
   `;
 
   vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
 }
+
 /* ── Kuponu kaldır ── */
 function vcRemoveCoupon() {
   vcDiscountPct = 0;
-
   const input = document.getElementById('vc-coupon-input');
   const btn   = document.getElementById('vc-coupon-btn');
   const msg   = document.getElementById('vc-coupon-msg');
-
   if (input) { input.value = ''; input.disabled = false; }
-  if (btn)   { btn.disabled = false; }
+  if (btn)   btn.disabled = false;
   if (msg)   { msg.innerHTML = ''; msg.className = 'vc-coupon-msg'; }
-
   vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
 }
 
