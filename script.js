@@ -76,20 +76,28 @@ function addToCart(id) {
 }
 
 function showCenterToast(productName) {
-  const el  = document.getElementById('centerToast');
-  const msg = document.getElementById('centerToastMsg');
-  if (!el) return;
-  if (msg) msg.textContent = productName;
+  // Varsa eski toast'u sil
+  var old = document.getElementById('centerToast');
+  if (old) old.remove();
 
-  el.style.width      = '';
-  el.style.left       = '';
-  el.style.top        = '';
-  el.style.marginLeft = '';
-  el.style.marginTop  = '';
+  // Yeni toast oluştur ve doğrudan body'e ekle
+  var el = document.createElement('div');
+  el.id = 'centerToast';
+  el.innerHTML =
+    '<div class="center-toast-icon">🛒</div>' +
+    '<div class="center-toast-title">Sepete Eklendi</div>' +
+    '<div class="center-toast-msg">' + productName + '</div>';
 
-  el.classList.add('show');
+  document.body.appendChild(el);
+
+  // Bir tick sonra show ekle (animasyon için)
+  setTimeout(function() { el.classList.add('show'); }, 10);
+
   clearTimeout(el._timer);
-  el._timer = setTimeout(() => { el.classList.remove('show'); }, 2200);
+  el._timer = setTimeout(function() {
+    el.classList.remove('show');
+    setTimeout(function() { el.remove(); }, 300);
+  }, 2200);
 }
 
 function updateCartCount() {
