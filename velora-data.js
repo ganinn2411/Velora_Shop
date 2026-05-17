@@ -133,7 +133,9 @@
   (function seedDefaults() {
     try {
       // "velora_products" anahtarı yoksa varsayılan ürünleri kaydet
-      localStorage.setItem("velora_coupons", JSON.stringify(VELORA_DEFAULT_COUPONS));
+      if (!localStorage.getItem("velora_products")) {
+        localStorage.setItem("velora_products", JSON.stringify(VELORA_DEFAULT_PRODUCTS));
+      }
       // "velora_coupons" anahtarı yoksa varsayılan kuponları kaydet
       if (!localStorage.getItem("velora_coupons")) {
         localStorage.setItem("velora_coupons", JSON.stringify(VELORA_DEFAULT_COUPONS));
