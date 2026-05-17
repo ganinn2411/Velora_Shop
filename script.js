@@ -81,15 +81,11 @@ function showCenterToast(productName) {
   if (!el) return;
   if (msg) msg.textContent = productName;
 
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const w  = Math.min(vw - 32, 300);
-
-  el.style.width      = w + 'px';
-  el.style.left       = (vw / 2 - w / 2) + 'px';
-  el.style.top        = (vh / 2 - 90) + 'px';
-  el.style.marginLeft = '0';
-  el.style.marginTop  = '0';
+  el.style.width      = '';
+  el.style.left       = '';
+  el.style.top        = '';
+  el.style.marginLeft = '';
+  el.style.marginTop  = '';
 
   el.classList.add('show');
   clearTimeout(el._timer);
