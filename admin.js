@@ -199,11 +199,18 @@ function navTo(page, el) {
   if (bnavEl) bnavEl.classList.add('active');
   const titles = { products:'Ürün Listesi', addProduct:'Yeni Ürün Ekle', coupons:'Kupon Yönetimi', users:'Kullanıcılar', siteSettings:'Site Ayarları', whatsapp:'WhatsApp & İletişim', appearance:'Görünüm', activity:'Aktivite Logu' };
   document.getElementById('topbarTitle').textContent = titles[page] || page;
-  if (page === 'products')   { currentPage = 1; renderProductTable(); }
-  if (page === 'coupons')    renderCoupons();
-  if (page === 'users')      renderUsers();
-  if (page === 'activity')   renderFullLog();
-  if (page === 'addProduct') { clearProductForm(); editingId = null; document.getElementById('addProductTitle').textContent = 'Yeni Ürün Ekle'; }
+  if (page === 'products')     { currentPage = 1; renderProductTable(); }
+  if (page === 'coupons')      renderCoupons();
+  if (page === 'users')        renderUsers();
+  if (page === 'activity')     renderFullLog();
+  if (page === 'siteSettings') loadSiteSettingsForm();   // ← YENİ
+  if (page === 'whatsapp')     loadContactForm();         // ← YENİ
+  if (page === 'appearance')   loadAppearanceForm();      // ← YENİ
+  if (page === 'addProduct') {
+    clearProductForm();
+    editingId = null;
+    document.getElementById('addProductTitle').textContent = 'Yeni Ürün Ekle';
+  }
   closeSidebar();
 }
 
@@ -480,7 +487,32 @@ function clearAllUsers() {
   showToast('Tüm kullanıcılar silindi','error'); renderUsers();
 }
 
-// ========== SETTINGS ==========
+// ========== SİTE AYARLARI — FORM YÜKLE ==========
+function loadSiteSettingsForm() {
+  const saved = JSON.parse(localStorage.getItem('velora_settings') || 'null');
+  if (!saved) return;
+
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined && val !== null) el.value = val; };
+  const setChk = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.checked = val; };
+
+  setVal('set-storeName', saved.storeName);
+  setVal('set-slogan',    saved.slogan);
+  setVal('set-currency',  saved.currency);
+  setVal('set-title',     saved.title);
+  setVal('set-metaDesc',  saved.metaDesc);
+  setVal('set-keywords',  saved.keywords);
+
+  if (saved.features) {
+    setChk('feat-search',      saved.features.search);
+    setChk('feat-favorites',   saved.features.favorites);
+    setChk('feat-darkmode',    saved.features.darkmode);
+    setChk('feat-coupon',      saved.features.coupon);
+    setChk('feat-auth',        saved.features.auth);
+    setChk('feat-maintenance', saved.features.maintenance);
+  }
+}
+
+// ========== SİTE AYARLARI — KAYDET ==========
 function saveSiteSettings() {
   const settings = {
     storeName: document.getElementById('set-storeName').value,
@@ -499,10 +531,34 @@ function saveSiteSettings() {
     }
   };
   localStorage.setItem('velora_settings', JSON.stringify(settings));
-  addLog('settings','Site ayarları güncellendi');
-  showToast('Ayarlar kaydedildi ✅','success');
+  addLog('settings', 'Site ayarları güncellendi');
+  showToast('Ayarlar kaydedildi ✅', 'success');
 }
 
+// ========== İLETİŞİM / WHATSAPP — FORM YÜKLE ==========
+function loadContactForm() {
+  const contact = JSON.parse(localStorage.getItem('velora_contact') || 'null');
+  if (!contact) return;
+
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined && val !== null) el.value = val; };
+  const setChk = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.checked = val; };
+
+  setVal('wa-number',          contact.waNumber);
+  setVal('wa-greeting',        contact.waGreeting);
+  setChk('wa-active',          contact.waActive);
+  setVal('contact-email',      contact.email);
+  setVal('contact-phone',      contact.phone);
+  setVal('contact-address',    contact.address);
+  setVal('contact-instagram',  contact.instagram);
+
+  if (contact.emailjs) {
+    setVal('ejs-service',  contact.emailjs.service);
+    setVal('ejs-template', contact.emailjs.template);
+    setVal('ejs-pubkey',   contact.emailjs.pubkey);
+  }
+}
+
+// ========== İLETİŞİM / WHATSAPP — KAYDET ==========
 function saveContact() {
   const contact = {
     waNumber:   document.getElementById('wa-number').value,
@@ -512,28 +568,61 @@ function saveContact() {
     phone:      document.getElementById('contact-phone').value,
     address:    document.getElementById('contact-address').value,
     instagram:  document.getElementById('contact-instagram').value,
-    emailjs: { service:document.getElementById('ejs-service').value, template:document.getElementById('ejs-template').value, pubkey:document.getElementById('ejs-pubkey').value }
+    emailjs: {
+      service:  document.getElementById('ejs-service').value,
+      template: document.getElementById('ejs-template').value,
+      pubkey:   document.getElementById('ejs-pubkey').value
+    }
   };
   localStorage.setItem('velora_contact', JSON.stringify(contact));
-  addLog('settings','İletişim / WhatsApp ayarları güncellendi');
-  showToast('İletişim ayarları kaydedildi ✅','success');
+  addLog('settings', 'İletişim / WhatsApp ayarları güncellendi');
+  showToast('İletişim ayarları kaydedildi ✅', 'success');
 }
 
+// ========== GÖRÜNÜM — FORM YÜKLE ==========
+function loadAppearanceForm() {
+  const app = JSON.parse(localStorage.getItem('velora_appearance') || 'null');
+  if (!app) return;
+
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined && val !== null) el.value = val; };
+  const setChk = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.checked = val; };
+
+  setVal('app-banner',        app.banner);
+  setVal('app-logo',          app.logo);
+  setVal('app-favicon',       app.favicon);
+  setVal('app-headfont',      app.headfont);
+  setVal('app-bodyfont',      app.bodyfont);
+  setVal('app-announcetext',  app.announcetext);
+  setVal('app-announcecolor', app.announcecolor);
+  setChk('app-announcebar',   app.announcebar);
+
+  if (app.colors) {
+    setVal('color-primary', app.colors.primary);
+    setVal('color-bg',      app.colors.bg);
+    setVal('color-text',    app.colors.text);
+  }
+}
+
+// ========== GÖRÜNÜM — KAYDET ==========
 function saveAppearance() {
   const app = {
-    banner:  document.getElementById('app-banner').value,
-    logo:    document.getElementById('app-logo').value,
-    favicon: document.getElementById('app-favicon').value,
-    colors:  { primary:document.getElementById('color-primary').value, bg:document.getElementById('color-bg').value, text:document.getElementById('color-text').value },
-    headfont:     document.getElementById('app-headfont').value,
-    bodyfont:     document.getElementById('app-bodyfont').value,
-    announcebar:  document.getElementById('app-announcebar').checked,
-    announcetext: document.getElementById('app-announcetext').value,
-    announcecolor:document.getElementById('app-announcecolor').value,
+    banner:        document.getElementById('app-banner').value,
+    logo:          document.getElementById('app-logo').value,
+    favicon:       document.getElementById('app-favicon').value,
+    colors: {
+      primary: document.getElementById('color-primary').value,
+      bg:      document.getElementById('color-bg').value,
+      text:    document.getElementById('color-text').value
+    },
+    headfont:      document.getElementById('app-headfont').value,
+    bodyfont:      document.getElementById('app-bodyfont').value,
+    announcebar:   document.getElementById('app-announcebar').checked,
+    announcetext:  document.getElementById('app-announcetext').value,
+    announcecolor: document.getElementById('app-announcecolor').value,
   };
   localStorage.setItem('velora_appearance', JSON.stringify(app));
-  addLog('settings','Görünüm ayarları güncellendi');
-  showToast('Görünüm ayarları kaydedildi ✅','success');
+  addLog('settings', 'Görünüm ayarları güncellendi');
+  showToast('Görünüm ayarları kaydedildi ✅', 'success');
 }
 
 // ========== EXPORT ==========
@@ -545,7 +634,7 @@ function exportProducts() {
   const a      = document.createElement('a');
   a.href=url; a.download='velora_urunler.csv'; a.click();
   URL.revokeObjectURL(url);
-  addLog('settings','Ürün listesi CSV indirildi');
+  addLog('settings', 'Ürün listesi CSV indirildi');
 }
 
 // ========== LOG ==========
@@ -582,7 +671,7 @@ function showToast(msg, type='') {
 // ========== INIT ==========
 window.addEventListener('load', function() {
 
-  // ── Sayfa yenilemede oturum kontrolü ──
+  // Sayfa yenilemede oturum kontrolü
   if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display  = 'flex';
@@ -607,21 +696,6 @@ window.addEventListener('load', function() {
     prev.src=this.value; prev.style.display=this.value?'block':'none';
   });
   document.getElementById('adminPwInput')?.addEventListener('keydown', function(e) { if(e.key==='Enter') checkAdmin(); });
-
-  // Kayıtlı ayarları yükle
-  const saved = JSON.parse(localStorage.getItem('velora_settings') || 'null');
-  if (saved) {
-    if (saved.storeName) document.getElementById('set-storeName').value = saved.storeName;
-    if (saved.slogan)    document.getElementById('set-slogan').value    = saved.slogan;
-    if (saved.title)     document.getElementById('set-title').value     = saved.title;
-    if (saved.features)  Object.entries(saved.features).forEach(([k,v]) => { const el=document.getElementById('feat-'+k); if(el) el.checked=v; });
-  }
-
-  const contact = JSON.parse(localStorage.getItem('velora_contact') || 'null');
-  if (contact) {
-    if (contact.waNumber)  document.getElementById('wa-number').value         = contact.waNumber;
-    if (contact.instagram) document.getElementById('contact-instagram').value = contact.instagram;
-  }
 
   document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   updateStats();
