@@ -1,59 +1,158 @@
 <!DOCTYPE html>
+<!--
+  ============================================================
+  VELORA — wishlist.html (Favorilerim Sayfası)
+  ============================================================
+  AÇIKLAMA: Kullanıcının yıldızladığı ürünlerin listelendiği sayfa.
+  Favori id'leri localStorage'da "saved" anahtarı altında tutulur.
+  Sayfanın kendisi hiçbir veri içermez; tüm içerik script.js
+  tarafından dinamik olarak oluşturulur.
+  ============================================================
+-->
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <!-- Responsive: mobil cihazlarda ekranı tam genişlikte göster -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VELORA – Favorilerim</title>
+
+  <!-- Google Fonts: Montserrat yüklenir. font-display:swap → font gelene kadar
+       sistem fontu kullanılır, sayfa donmaz. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <!-- Favicon: altın V ikonu -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23111'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23c9b97a'>V</text></svg>">
-<!-- Sekme başlığı -->
-<title>VELORA – Hesabım</title>
+  <!-- Tarayıcı sertifika doğrulamasını önceden yapar → hız kazanımı -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Favicon: SVG data URI olarak tanımlanmış, harici dosya gerekmez.
+       Altın V harfi, VELORA marka kimliğini yansıtır. -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23111'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23c9b97a'>V</text></svg>">
+
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+  <!-- Tüm stil dosyası: CSS değişkenleri, dark mode, header, kart tasarımı,
+       animasyonlar ve tüm responsive kurallar style.css'de toplu tutulur.
+       Bu yaklaşım: bakım kolaylığı, tek yerden değişiklik. -->
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header class="fav-header">
-  <a href="index.html" class="logo">VELORA</a>
-  <div class="fav-header-right">
-    <span class="fav-count" id="fav-count-label"></span>
-    <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
-    <a href="index.html" class="back-home">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-      <span class="back-home-text">Ana Sayfa</span>
-    </a>
+  <!-- ══════════════════════════════════════════════════════════
+       FAVORİLER BAŞLIĞI (HEADER)
+       ══════════════════════════════════════════════════════════
+       .fav-header: style.css'de tanımlı, position:fixed, tam genişlik.
+       Ana sayfa header'ından farklıdır; nav menü içermez,
+       sadece logo, ürün sayısı, tema butonu ve geri linki barındırır.
+       Böylece favoriler sayfası daha sade görünür.
+  -->
+  <header class="fav-header">
+    <!-- Logo: tıklanınca ana sayfaya döner -->
+    <a href="index.html" class="logo">VELORA</a>
+
+    <!-- Sağ taraftaki ikonlar grubu -->
+    <div class="fav-header-right">
+
+      <!-- Favori ürün adedi: "3 ürün" gibi. Mobilde CSS ile gizlenir.
+           İçerik aşağıdaki <script> bloğunda dinamik olarak doldurulur. -->
+      <span class="fav-count" id="fav-count-label"></span>
+
+      <!-- Karanlık/Aydınlık mod geçiş butonu.
+           onclick="toggleTheme()" → script.js'de tanımlı.
+           Tema seçimi localStorage'a kaydedilir, sayfa yenilenince korunur. -->
+      <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
+
+      <!-- Ana sayfaya geri dön linki.
+           SVG ok ikonu CSS animasyonuyla hover'da sola kayar.
+           .back-home-text span'ı mobilde CSS ile display:none yapılır. -->
+      <a href="index.html" class="back-home">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        <span class="back-home-text">Ana Sayfa</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SEPETE EKLENDİ BİLDİRİMİ (CENTER TOAST)
+       ══════════════════════════════════════════════════════════
+       Kullanıcı favorilerden bir ürünü sepete eklediğinde
+       ekranın ortasında beliren lüks bildirim kutusu.
+       position:fixed, opacity:0 ile başlar.
+       showCenterToast() fonksiyonu .show sınıfı ekleyerek görünür kılar.
+       2.2 saniye sonra otomatik olarak kaybolur.
+  -->
+  <div class="center-toast" id="centerToast">
+    <div class="center-toast-icon">🛒</div>
+    <div class="center-toast-title">Sepete Eklendi</div>
+    <!-- Ürün adı buraya JavaScript tarafından yazılır -->
+    <div class="center-toast-msg" id="centerToastMsg"></div>
   </div>
-</header>
-  
-<div class="center-toast" id="centerToast">
-  <div class="center-toast-icon">🛒</div>
-  <div class="center-toast-title">Sepete Eklendi</div>
-  <div class="center-toast-msg" id="centerToastMsg"></div>
-</div>
-  
-<div class="favorites-container">
-  <h2>Favorilerim</h2>
-  <div id="favorites-list"></div>
-</div>
 
-<div id="toast" class="toast"></div>
+  <!-- ══════════════════════════════════════════════════════════
+       ANA İÇERİK ALANI
+       ══════════════════════════════════════════════════════════
+       .favorites-container: padding ve düzen için sarmalayıcı div.
+       Başlık ve ürün grid'i buradadır.
+  -->
+  <div class="favorites-container">
+    <h2>Favorilerim</h2>
 
-<!-- velora-data.js ÖNCE yüklenmeli -->
-<script src="velora-data.js"></script>
-<script src="script.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
-    var validCount = saved.filter(function(id) {
-      return products.find(function(p) { return p.id === id; });
-    }).length;
-    var el = document.getElementById("fav-count-label");
-    if (el) el.textContent = validCount > 0 ? validCount + " ürün" : "";
-  });
-</script>
+    <!-- #favorites-list: script.js'deki renderFavoritesPage() bu elementi bulur
+         ve içini dinamik olarak ürün kartlarıyla doldurur.
+         Boş liste durumunda ise "Henüz favori eklemediniz." mesajı yazar.
+         CSS'de: display:grid, 4 sütun (mobilde 2). -->
+    <div id="favorites-list"></div>
+  </div>
+
+  <!-- Toast bildirimi (küçük, alt köşede çıkan mesajlar için)
+       showToast() fonksiyonu bu elementi kullanır.
+       Sepete ekleme, favoriye ekleme gibi anlık bildirimlerde görünür. -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SCRIPT YÜKLEMESİ — SIRA ÖNEMLİ!
+       ══════════════════════════════════════════════════════════
+       1) velora-data.js ÖNCE yüklenmeli:
+          → vGetProducts(), vValidateCoupon() gibi global fonksiyonları tanımlar.
+          → localStorage'ı varsayılan verilerle tohum atar.
+       
+       2) script.js SONRA yüklenmeli:
+          → vGetProducts()'ı çağırarak ürün listesini okur.
+          → DOM elementleri hazır olduğundan güvenle manipüle edebilir.
+          
+       <body> kapanışından önce yerleştirme: HTML parse edilip DOM hazır
+       olduktan sonra JS çalışır → "null element" hatası olmaz.
+  -->
+  <script src="velora-data.js"></script>
+  <script src="script.js"></script>
+
+  <!-- ══════════════════════════════════════════════════════════
+       FAVORİ SAYACI — SAYFA ÖZEL SCRIPT
+       ══════════════════════════════════════════════════════════
+       Bu küçük script bloğu yalnızca bu sayfaya özgüdür.
+       Header'daki "X ürün" etiketini doldurur.
+       
+       Neden ayrı script? script.js genel amaçlıdır ve bu
+       kadar sayfa-özel bir işlemi içermesi gerekmez.
+       DOMContentLoaded: DOM hazır olduktan sonra çalışır.
+  -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // localStorage'dan favori id listesini oku, sayıya çevir
+      var saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
+      
+      // Hâlâ mevcut olan ürünlerin sayısını bul
+      // (Silinmiş ürünlerin id'leri listede kalabilir; bunları say ama gösterme)
+      var validCount = saved.filter(function(id) {
+        return products.find(function(p) { return p.id === id; });
+      }).length;
+      
+      // Header'daki span'ı güncelle
+      var el = document.getElementById("fav-count-label");
+      if (el) el.textContent = validCount > 0 ? validCount + " ürün" : "";
+    });
+  </script>
+
 </body>
 </html>
