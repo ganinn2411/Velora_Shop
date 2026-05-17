@@ -2160,6 +2160,7 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   transition: border-color 0.2s, color 0.2s;
 }
 .pw-cancel-btn:hover { border-color: var(--text); color: var(--text); }
+
 /* ── Merkezi Sepet Bildirimi ── */
 .center-toast {
   position: fixed;
@@ -2167,22 +2168,22 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   color: #f5f0e8;
   border: 1px solid #c9b97a;
   border-radius: 4px;
-  padding: 28px 32px;
+  padding: 24px 20px;
   text-align: center;
   z-index: 99999;
   opacity: 0;
   pointer-events: none;
   box-sizing: border-box;
-  transition: opacity 0.3s cubic-bezier(.4,0,.2,1);
+  transition: opacity 0.3s ease;
 }
 .center-toast.show {
   opacity: 1;
   pointer-events: auto;
 }
-.center-toast-icon { font-size: 28px; margin-bottom: 10px; }
+.center-toast-icon { font-size: 26px; margin-bottom: 8px; }
 .center-toast-title {
   font-family: 'Cormorant Garamond', 'Cinzel', serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
   font-style: italic;
   letter-spacing: 0.04em;
@@ -2190,11 +2191,12 @@ body.dark .rule-fail { color: #ff6b6b !important; }
   margin-bottom: 6px;
 }
 .center-toast-msg {
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-size: 10px;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: #8a8178;
   word-break: break-word;
+  overflow-wrap: break-word;
 }
 body.dark .center-toast {
   background: #0f0f0f;
