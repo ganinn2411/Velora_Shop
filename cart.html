@@ -480,14 +480,19 @@ function vcDel(idx) {
 }
 
 /* ── Kupon uygula ── */
+/* ── Kupon uygula ── */
+/* Bu fonksiyon sepet.html içindeki <script> bloğundaki
+   vcApplyCoupon() fonksiyonunun YERİNE geçecek.
+   VC_COUPONS sabit objesine gerek kalmıyor, silebilirsin. */
+
 function vcApplyCoupon() {
   const input = document.getElementById('vc-coupon-input');
   const btn   = document.getElementById('vc-coupon-btn');
   const msg   = document.getElementById('vc-coupon-msg');
   const code  = (input.value || '').trim().toUpperCase();
 
-  msg.className   = 'vc-coupon-msg';
-  msg.innerHTML   = '';
+  msg.className = 'vc-coupon-msg';
+  msg.innerHTML = '';
 
   if (!code) {
     msg.innerHTML = 'Lütfen bir kupon kodu girin.';
@@ -495,25 +500,36 @@ function vcApplyCoupon() {
     return;
   }
 
-  if (VC_COUPONS[code] !== undefined) {
-    vcDiscountPct  = VC_COUPONS[code];
-    input.disabled = true;
-    btn.disabled   = true;
-    msg.classList.add('ok');
-    // Başarı mesajı + KALDIR butonu yan yana
-    msg.innerHTML = `
-      <span>%${vcDiscountPct} indirim uygulandı ✓</span>
-      <button class="vc-remove-coupon" onclick="vcRemoveCoupon()">Kaldır</button>
-    `;
-  } else {
-    vcDiscountPct  = 0;
-    msg.innerHTML  = 'Geçersiz kupon kodu.';
+  // Admin panelinin kaydettiği kuponları localStorage'dan oku
+  let coupons = [];
+  try {
+    coupons = JSON.parse(localStorage.getItem('velora_coupons') || '[]');
+  } catch(e) { coupons = []; }
+
+  const coupon = coupons.find(c => c.code === code && c.status === 'active');
+
+  if (!coupon) {
+    vcDiscountPct = 0;
+    msg.innerHTML = 'Geçersiz veya pasif kupon kodu.';
     msg.classList.add('err');
+    return;
   }
+
+  // Kullanım sayısını artır ve kaydet
+  coupon.uses = (coupon.uses || 0) + 1;
+  localStorage.setItem('velora_coupons', JSON.stringify(coupons));
+
+  vcDiscountPct  = coupon.discount;
+  input.disabled = true;
+  btn.disabled   = true;
+  msg.classList.add('ok');
+  msg.innerHTML = `
+    <span>%${vcDiscountPct} indirim uygulandı ✓</span>
+    <button class="vc-remove-coupon" onclick="vcRemoveCoupon()">Kaldır</button>
+  `;
 
   vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
 }
-
 /* ── Kuponu kaldır ── */
 function vcRemoveCoupon() {
   vcDiscountPct = 0;
