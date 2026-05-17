@@ -530,6 +530,8 @@ function toggleAdminPw() {
   const btn   = document.getElementById('adminPwToggle');
   const isText = input.type === 'text';
   input.type = isText ? 'password' : 'text';
+  input.classList.remove('error');
+  document.getElementById('adminPwError').classList.remove('show');
   // Göz ikonunu değiştir
   btn.innerHTML = isText
     ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -551,8 +553,11 @@ function checkAdminEntry() {
   const pw       = input.value;
   const storedPw = localStorage.getItem('velora_admin_pw') || 'admin123';
 
+  // Her denemede önce hata mesajını temizle
+  input.classList.remove('error');
+  errorEl.classList.remove('show');
+
   if (pw === storedPw) {
-    // Oturumu kaydet, admin.html tekrar şifre sormaz
     sessionStorage.setItem('velora_admin_session', '1');
     window.location.href = 'admin.html';
   } else {
