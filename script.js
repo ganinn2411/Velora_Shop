@@ -1,106 +1,41 @@
-const CDN = "https://res.cloudinary.com/dy2dvpbit/image/upload";
+// ============================================================
+//  VELORA — script.js
+//  velora-data.js'den SONRA yüklenmelidir.
+// ============================================================
 
-const products = [
-  { id: 1,  name: "Erkek Tişört",    price: 1200, image: `${CDN}/haryo-setyadi-acn5ERAeSb4-unsplash_svhjqz.jpg`,               category: "erkek", type: "tisort"   },
-  { id: 2,  name: "Erkek Tişört",    price: 300,  image: `${CDN}/pexels-david-fowora-2160297192-36801391_hfunqe.jpg`,           category: "erkek", type: "tisort"   },
-  { id: 3,  name: "Erkek Tişört",    price: 800,  image: `${CDN}/sven-ciupka-x8Vg7Up6TUc-unsplash_fyrbqs.jpg`,                 category: "erkek", type: "tisort"   },
-  { id: 4,  name: "Erkek Tişört",    price: 950,  image: `${CDN}/faith-yarn-Wr0TpKqf26s-unsplash_j2qqmb.jpg`,                  category: "erkek", type: "tisort"   },
-  { id: 5,  name: "Erkek Pantolon",  price: 800,  image: `${CDN}/tuananh-blue-fB9Ex6Q5L_g-unsplash_ogcpzj.jpg`,                category: "erkek", type: "pantalon" },
-  { id: 6,  name: "Erkek Pantolon",  price: 300,  image: `${CDN}/tuananh-blue-j_3IlDX-6uQ-unsplash_i2sbm4.jpg`,                category: "erkek", type: "pantalon" },
-  { id: 7,  name: "Erkek Pantolon",  price: 150,  image: `${CDN}/tuananh-blue-rJQCoHb8XxA-unsplash_tgtnxn.jpg`,                category: "erkek", type: "pantalon" },
-  { id: 8,  name: "Erkek Pantolon",  price: 1500, image: `${CDN}/tuananh-blue-XdXk39Bj3B0-unsplash_s1pu8m.jpg`,                category: "erkek", type: "pantalon" },
-  { id: 9,  name: "Erkek Şapka",     price: 1500, image: `${CDN}/fatmanur-simsek-yILrYgG322s-unsplash_r4bhpq.jpg`,             category: "erkek", type: "sapka"    },
-  { id: 10, name: "Erkek Şapka",     price: 1500, image: `${CDN}/mateus-jud-s-gRaxKXUio-unsplash_om2buz.jpg`,                  category: "erkek", type: "sapka"    },
-  { id: 11, name: "Erkek Şapka",     price: 1500, image: `${CDN}/mathias-reding-dWFaMnAX49Q-unsplash_zulbnu.jpg`,              category: "erkek", type: "sapka"    },
-  { id: 12, name: "Erkek Şapka",     price: 1500, image: `${CDN}/soroush-alavi-PVvoEQH6cOI-unsplash_zu7zmz.jpg`,               category: "erkek", type: "sapka"    },
-  { id: 13, name: "Erkek Ceket",     price: 1500, image: `${CDN}/adrian-ordonez-P0W27GRvyww-unsplash_jsodmg.jpg`,              category: "erkek", type: "ceket"    },
-  { id: 14, name: "Erkek Ceket",     price: 1500, image: `${CDN}/caio-coelho-QRN47la37gw-unsplash_fh7biy.jpg`,                 category: "erkek", type: "ceket"    },
-  { id: 15, name: "Erkek Ceket",     price: 1500, image: `${CDN}/colton-sturgeon-oB7lLU9dwLc-unsplash_meuzv2.jpg`,             category: "erkek", type: "ceket"    },
-  { id: 16, name: "Erkek Ceket",     price: 1500, image: `${CDN}/mike-montgomery-JNizejfX4B8-unsplash_d0pql3.jpg`,             category: "erkek", type: "ceket"    },
-  { id: 17, name: "Kadın Tişört",    price: 1200, image: `${CDN}/charlesdeluvio-kPKFdPQTz9Y-unsplash_ulpc0v.jpg`,              category: "kadin", type: "tisort"   },
-  { id: 18, name: "Kadın Tişört",    price: 300,  image: `${CDN}/feey-3fM186uPnZQ-unsplash_yrpqo0.jpg`,                        category: "kadin", type: "tisort"   },
-  { id: 19, name: "Kadın Tişört",    price: 800,  image: `${CDN}/ronan-furuta-tt9hFR4aEKY-unsplash_lcdnvc.jpg`,                category: "kadin", type: "tisort"   },
-  { id: 20, name: "Kadın Tişört",    price: 950,  image: `${CDN}/tuananh-blue-PvI3uWqDfTo-unsplash_gi8ei4.jpg`,                category: "kadin", type: "tisort"   },
-  { id: 21, name: "Kadın Pantolon",  price: 800,  image: `${CDN}/tamara-bellis-zDyJOj8ZXG0-unsplash_iuvn83.jpg`,               category: "kadin", type: "pantalon" },
-  { id: 22, name: "Kadın Pantolon",  price: 300,  image: `${CDN}/tuananh-blue-XdXk39Bj3B0-unsplash_mh2ook.jpg`,                category: "kadin", type: "pantalon" },
-  { id: 24, name: "Kadın Pantolon",  price: 1500, image: `${CDN}/tuananh-blue-XdXk39Bj3B0-unsplash_s1pu8m.jpg`,                category: "kadin", type: "pantalon" },
-  { id: 49, name: "Kadın Pantolon",  price: 950,  image: `${CDN}/tuananh-blue-2QSK4kFoVZE-unsplash_ivazfe.jpg`,                category: "kadin", type: "pantalon" },
-  { id: 25, name: "Kadın Şapka",     price: 1500, image: `${CDN}/omar-sabra-V5yIyQ2m-bo-unsplash_cmq5g7.jpg`,                  category: "kadin", type: "sapka"    },
-  { id: 26, name: "Kadın Şapka",     price: 1500, image: `${CDN}/nathan-dumlao-Y8hAxuKgP8g-unsplash_rr4mzr.jpg`,               category: "kadin", type: "sapka"    },
-  { id: 27, name: "Kadın Şapka",     price: 1500, image: `${CDN}/kajetan-sumila-U8CyGLw2-ek-unsplash_xewyl5.jpg`,              category: "kadin", type: "sapka"    },
-  { id: 28, name: "Kadın Şapka",     price: 1500, image: `${CDN}/elena-golubeva-rISh07SbuV4-unsplash_a4clvj.jpg`,              category: "kadin", type: "sapka"    },
-  { id: 29, name: "Kadın Ceket",     price: 1500, image: `${CDN}/anna-evans-eELIrBJXBPk-unsplash_rtml0f.jpg`,                  category: "kadin", type: "ceket"    },
-  { id: 30, name: "Kadın Ceket",     price: 1500, image: `${CDN}/donald-teel--J7OdbfiZ1o-unsplash_sr2e7y.jpg`,                 category: "kadin", type: "ceket"    },
-  { id: 31, name: "Kadın Ceket",     price: 1500, image: `${CDN}/lea-ochel-nsRBbE6-YLs-unsplash_eklemz.jpg`,                   category: "kadin", type: "ceket"    },
-  { id: 32, name: "Kadın Ceket",     price: 1500, image: `${CDN}/noelle-rebekah-PNCXp2Uh6WM-unsplash_mqx4v8.jpg`,              category: "kadin", type: "ceket"    },
-  { id: 33, name: "Çocuk Tişört",    price: 1200, image: `${CDN}/fabio-alves-eAUE_FmclYE-unsplash_nt2rlg.jpg`,                 category: "cocuk", type: "tisort"   },
-  { id: 34, name: "Çocuk Tişört",    price: 300,  image: `${CDN}/md-salman-tWOz2_EK5EQ-unsplash_tzznsh.jpg`,                   category: "cocuk", type: "tisort"   },
-  { id: 35, name: "Çocuk Tişört",    price: 800,  image: `${CDN}/ryan-hoffman-u6n1HrW0sdQ-unsplash_xfyvkg.jpg`,                category: "cocuk", type: "tisort"   },
-  { id: 36, name: "Çocuk Tişört",    price: 950,  image: `${CDN}/tuananh-blue-20wx7IY7Ggk-unsplash_dulwe5.jpg`,                category: "cocuk", type: "tisort"   },
-  { id: 37, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/christopher-luther-gwOLhTqWcaA-unsplash_kgfzef.jpg`,          category: "cocuk", type: "pantalon" },
-  { id: 38, name: "Çocuk Pantolon",  price: 300,  image: `${CDN}/pexels-amina-filkins-5560028_ib5oqv.jpg`,                     category: "cocuk", type: "pantalon" },
-  { id: 39, name: "Çocuk Pantolon",  price: 150,  image: `${CDN}/pexels-dmitriy-steinke-559643503-30683064_gmi9fs.jpg`,         category: "cocuk", type: "pantalon" },
-  { id: 40, name: "Çocuk Pantolon",  price: 1500, image: `${CDN}/pexels-dmitriy-steinke-559643503-30683099_eeqlgb.jpg`,         category: "cocuk", type: "pantalon" },
-  { id: 41, name: "Çocuk Şapka",     price: 1500, image: `${CDN}/ahmed-syed-6NVrH0HB_DE-unsplash_eow23i.jpg`,                  category: "cocuk", type: "sapka"    },
-  { id: 42, name: "Çocuk Şapka",     price: 1500, image: `${CDN}/angel-monsanto-iii-0wzyDMY8gCo-unsplash_gi7yc2.jpg`,          category: "cocuk", type: "sapka"    },
-  { id: 43, name: "Çocuk Şapka",     price: 1500, image: `${CDN}/markus-spiske--rlShVn1_U8-unsplash_ybzneb.jpg`,               category: "cocuk", type: "sapka"    },
-  { id: 44, name: "Çocuk Şapka",     price: 1500, image: `${CDN}/yang-deng-2loKxdi6Hmo-unsplash_sqvn1x.jpg`,                   category: "cocuk", type: "sapka"    },
-  { id: 45, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/2-bro-s-media-LV_ZrBEGupE-unsplash_ovmfbe.jpg`,               category: "cocuk", type: "ceket"    },
-  { id: 46, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/christopher-campbell--h_cufTEtcg-unsplash_cehfnl.jpg`,        category: "cocuk", type: "ceket"    },
-  { id: 47, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/nathan-dumlao-QqLuSb0sypY-unsplash_gs4zul.jpg`,               category: "cocuk", type: "ceket"    },
-  { id: 48, name: "Çocuk Ceket",     price: 1500, image: `${CDN}/phat-tr-ng-UbJ2Q_HInuU-unsplash_sbwzvv.jpg`,                  category: "cocuk", type: "ceket"    },
-  { id: 50, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_9_mqf5za.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 51, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.27_4_rawlcg.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 52, name: "Erkek Pantolon",  price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.24_sp3epo.jpg`,            category: "erkek", type: "pantalon" },
-  { id: 53, name: "Erkek Pantolon",  price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.24_1_yc6cwo.jpg`,          category: "erkek", type: "pantalon" },
-  { id: 54, name: "Erkek Pantolon",  price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.25_hh47wc.jpg`,            category: "erkek", type: "pantalon" },
-  { id: 55, name: "Erkek Pantolon",  price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.25_1_xwrwcp.jpg`,          category: "erkek", type: "pantalon" },
-  { id: 56, name: "Erkek Pantolon",  price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.27_3_m5guz6.jpg`,          category: "erkek", type: "pantalon" },
-  { id: 57, name: "Kadın Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_2_ldvaix.jpg`,          category: "kadin", type: "tisort"   },
-  { id: 58, name: "Kadın Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_5_oq4aof.jpg`,          category: "kadin", type: "tisort"   },
-  { id: 59, name: "Kadın Pantolon",  price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_4_rufgco.jpg`,          category: "kadin", type: "pantalon" },
-  { id: 60, name: "Kadın Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_3_ebs2mm.jpg`,          category: "kadin", type: "tisort"   },
-  { id: 61, name: "Kadın Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_7_tulz7e.jpg`,          category: "kadin", type: "ceket"    },
-  { id: 62, name: "Kadın Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_8_apnfjd.jpg`,          category: "kadin", type: "ceket"    },
-  { id: 63, name: "Kadın Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_12.49.26_6_m5xtbh.jpg`,          category: "kadin", type: "ceket"    },
+// =====================
+// ÜRÜNLER — admin panelinden localStorage'a kaydedilen ürünleri oku
+// =====================
+var products = (typeof vGetProducts === "function") ? vGetProducts() : [];
 
-  // ── YENİ ÜRÜNLER 2 ──
-  { id: 64, name: "Erkek Tişört",    price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_5_otfdbd.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 65, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_4_njzedf.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 66, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_ht6gbg.jpg`,            category: "erkek", type: "tisort"   },
-  { id: 67, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_1_vwhdwk.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 68, name: "Kadın Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_5_bqgwxm.jpg`,          category: "kadin", type: "ceket"    },
-  { id: 69, name: "Kadın Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_4_nz0ryf.jpg`,          category: "kadin", type: "ceket"    },
-  { id: 70, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_2_cpdvlf.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 71, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_3_oy9e4t.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 72, name: "Kadın Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_7_ybynva.jpg`,          category: "kadin", type: "tisort"   },
-  { id: 73, name: "Kadın Pantolon",  price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.46_6_nenaz9.jpg`,          category: "kadin", type: "pantalon" },
-  { id: 74, name: "Erkek Ceket",     price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_rnoweq.jpg`,            category: "erkek", type: "ceket"    },
-  { id: 75, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_1_sp0k6g.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 76, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_3_yv7jdx.jpg`,          category: "erkek", type: "tisort"   },
-  { id: 77, name: "Erkek Tişört",    price: 1200, image: `${CDN}/WhatsApp_Image_2026-05-16_at_13.59.45_2_k9kdyj.jpg`,          category: "erkek", type: "tisort"   },
-
-  // ── YENİ ÜRÜNLER 3 ──
-  { id: 78, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_2_qcgbca.jpg`,          category: "cocuk", type: "pantalon" },
-  { id: 79, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_4_b4ffsp.jpg`,          category: "cocuk", type: "pantalon" },
-  { id: 80, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_5_ap0xia.jpg`,          category: "cocuk", type: "pantalon" },
-  { id: 81, name: "Çocuk Pantolon",  price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_3_zk99uj.jpg`,          category: "cocuk", type: "pantalon" },
-  { id: 82, name: "Çocuk Tişört",    price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.45_eeq1dc.jpg`,            category: "cocuk", type: "tisort"   },
-  { id: 83, name: "Çocuk Tişört",    price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.45_1_cnld7p.jpg`,          category: "cocuk", type: "tisort"   },
-  { id: 84, name: "Çocuk Tişört",    price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.45_2_rayugx.jpg`,          category: "cocuk", type: "tisort"   },
-  { id: 85, name: "Çocuk Ceket",     price: 800,  image: `${CDN}/WhatsApp_Image_2026-05-16_at_14.23.44_1_lvqfgm.jpg`,          category: "cocuk", type: "ceket"    },
-];
-
+// localStorage değiştiğinde (admin panelinde ürün eklenince) sayfayı güncelle
+window.addEventListener("storage", function(e) {
+  if (e.key === "velora_products") {
+    products = (typeof vGetProducts === "function") ? vGetProducts() : [];
+    if (document.getElementById("products") && !document.getElementById("category-title")) {
+      renderTopProducts(getNewCollection(products));
+    }
+    if (document.getElementById("products-bottom")) {
+      renderBottomProducts(getRandomCollection(products));
+    }
+    if (document.getElementById("category-title")) {
+      loadCategoryPage();
+    }
+    if (document.getElementById("favorites-list")) {
+      renderFavoritesPage();
+    }
+  }
+});
 
 // =====================
 // SEPET
 // =====================
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let selectedSize = "";
-let selectedColor = "";
+var cart = JSON.parse(localStorage.getItem("cart")) || [];
+var selectedSize = "";
+var selectedColor = "";
 
 function requireLogin() {
-  const user = JSON.parse(localStorage.getItem("activeUser"));
+  var user = JSON.parse(localStorage.getItem("activeUser"));
   if (!user) {
     if (confirm("Bu işlem için giriş yapmanız gerekiyor.\nGiriş sayfasına gitmek ister misiniz?")) {
       window.location.href = "profile.html";
@@ -112,15 +47,14 @@ function requireLogin() {
 
 function addToCart(id) {
   if (!requireLogin()) return;
-  const product = products.find(p => p.id === id);
+  var product = products.find(function(p) { return p.id === id; });
   if (!product) return;
-
-  if (!selectedSize) { alert("Lütfen beden seçiniz!"); return; }
+  if (!selectedSize)  { alert("Lütfen beden seçiniz!"); return; }
   if (!selectedColor) { alert("Lütfen renk seçiniz!"); return; }
 
-  const existingItem = cart.find(item =>
-    item.id === id && item.size === selectedSize && item.color === selectedColor
-  );
+  var existingItem = cart.find(function(item) {
+    return item.id === id && item.size === selectedSize && item.color === selectedColor;
+  });
 
   if (existingItem) {
     existingItem.quantity += 1;
@@ -138,33 +72,33 @@ function addToCart(id) {
 
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
-  alert("Ürün sepete eklendi ✅");
+  showToast("Ürün sepete eklendi ✅", "success");
 }
 
 function updateCartCount() {
-  const el = document.getElementById("cart-count");
+  var el = document.getElementById("cart-count");
   if (el) {
-    const total = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
+    var total = cart.reduce(function(sum, i) { return sum + (i.quantity || 0); }, 0);
     el.innerText = total;
   }
 }
 
 function updateHeaderCount() {
-  const cartData = JSON.parse(localStorage.getItem("cart")) || [];
-  const total = cartData.reduce((s, i) => s + (i.quantity || 0), 0);
-  const el = document.getElementById("header-item-count");
-  if (el) el.textContent = total > 0 ? `${total} ürün` : "";
+  var cartData = JSON.parse(localStorage.getItem("cart")) || [];
+  var total = cartData.reduce(function(s, i) { return s + (i.quantity || 0); }, 0);
+  var el = document.getElementById("header-item-count");
+  if (el) el.textContent = total > 0 ? total + " ürün" : "";
 }
 
 function checkCouponVisibility() {
-  const cartData = JSON.parse(localStorage.getItem("cart")) || [];
-  const box = document.getElementById("coupon-box");
+  var cartData = JSON.parse(localStorage.getItem("cart")) || [];
+  var box = document.getElementById("coupon-box");
   if (box) box.style.display = cartData.length > 0 ? "block" : "none";
 }
 
 updateCartCount();
 
-window.addEventListener("load", function () {
+window.addEventListener("load", function() {
   updateHeaderCount();
   checkCouponVisibility();
 });
@@ -173,103 +107,101 @@ window.addEventListener("load", function () {
 // ÜRÜN KARTI
 // =====================
 function productCard(p) {
-  return `
-    <div class="product-card" onclick="goToProduct(${p.id})">
-      <div class="product-card__img-wrap">
-        <img src="${p.image}" alt="${p.name}" loading="lazy">
-        <span class="product-card__fav save-icon" data-id="${p.id}" onclick="toggleFavorite(event, ${p.id})">☆</span>
-      </div>
-      <div class="product-card__info">
-        <h3>${p.name}</h3>
-        <p>${p.price.toLocaleString("tr-TR")} TL</p>
-        <button onclick="event.stopPropagation(); goToProduct(${p.id})">SEPETE EKLE</button>
-      </div>
-    </div>
-  `;
+  return '<div class="product-card" onclick="goToProduct(' + p.id + ')">' +
+    '<div class="product-card__img-wrap">' +
+      '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'https://placehold.co/300x400/f0f0f0/aaa?text=Görsel+Yok\'">' +
+      '<span class="product-card__fav save-icon" data-id="' + p.id + '" onclick="toggleFavorite(event,' + p.id + ')">☆</span>' +
+    '</div>' +
+    '<div class="product-card__info">' +
+      '<h3>' + p.name + '</h3>' +
+      '<p>' + p.price.toLocaleString("tr-TR") + ' TL</p>' +
+      '<button onclick="event.stopPropagation();goToProduct(' + p.id + ')">SEPETE EKLE</button>' +
+    '</div>' +
+  '</div>';
 }
 
 function goToProduct(id) {
-  window.location.href = `product.html?id=${id}`;
+  window.location.href = "product.html?id=" + id;
 }
 
 // =====================
-// ANA SAYFA ÜRÜNLERİ (SLIDER)
+// ANA SAYFA SLIDER'LARI
 // =====================
 function renderTopProducts(list) {
-  const container = document.getElementById("products");
+  var container = document.getElementById("products");
   if (!container) return;
-  const shuffled = [...list].sort(() => 0.5 - Math.random());
-  container.innerHTML = shuffled.map(productCard).join("");
+  container.innerHTML = list.map(productCard).join("");
   updateSaveIcons();
 }
 
 function renderBottomProducts(list) {
-  const container = document.getElementById("products-bottom");
+  var container = document.getElementById("products-bottom");
   if (!container) return;
-  const shuffled = [...list].sort(() => 0.5 - Math.random());
-  container.innerHTML = shuffled.map(productCard).join("");
+  container.innerHTML = list.map(productCard).join("");
   updateSaveIcons();
 }
 
 function getNewCollection(list) {
-  return [...list].sort((a, b) => b.id - a.id).slice(0, 12);
+  return list.slice().sort(function(a,b) { return b.id - a.id; }).slice(0, 12);
 }
 
 function getRandomCollection(list) {
-  return [...list].sort(() => 0.5 - Math.random()).slice(0, 12);
+  return list.slice().sort(function() { return 0.5 - Math.random(); }).slice(0, 12);
 }
 
 // =====================
 // KATEGORİ SAYFASI
 // =====================
 function renderProducts(list) {
-  const container = document.getElementById("products");
+  var container = document.getElementById("products");
   if (!container) return;
   container.innerHTML = list.map(productCard).join("");
   updateSaveIcons();
 }
 
 function loadCategoryPage() {
-  if (!document.getElementById("category-title")) return;
+  var titleEl = document.getElementById("category-title");
+  if (!titleEl) return;
 
-  const params = new URLSearchParams(window.location.search);
-  const main = params.get("category");
-  const sub  = params.get("type");
+  var params   = new URLSearchParams(window.location.search);
+  var main     = params.get("category");
+  var sub      = params.get("type");
   if (!main || !sub) return;
 
-  const filtered = products.filter(p => p.category === main && p.type === sub);
-  document.getElementById("category-title").innerText =
-    main.toUpperCase() + " / " + sub.toUpperCase();
+  var filtered = products.filter(function(p) { return p.category === main && p.type === sub; });
+
+  var catLabel  = { erkek:"Erkek", kadin:"Kadın", cocuk:"Çocuk" };
+  var typeLabel = { tisort:"Tişört", pantalon:"Pantolon", ceket:"Ceket", sapka:"Şapka" };
+
+  titleEl.innerText = (catLabel[main] || main) + " / " + (typeLabel[sub] || sub);
   renderProducts(filtered);
 }
-
-loadCategoryPage();
 
 // =====================
 // ARAMA & FİLTRE
 // =====================
-const searchInput  = document.getElementById("searchInput");
-const filterSelect = document.getElementById("filterSelect");
+var searchInput  = document.getElementById("searchInput");
+var filterSelect = document.getElementById("filterSelect");
 
 function applyFilters() {
-  const params = new URLSearchParams(window.location.search);
-  const main = params.get("category");
-  const sub  = params.get("type");
+  var params = new URLSearchParams(window.location.search);
+  var main   = params.get("category");
+  var sub    = params.get("type");
 
-  let filtered = (main && sub)
-    ? products.filter(p => p.category === main && p.type === sub)
-    : [...products];
+  var filtered = (main && sub)
+    ? products.filter(function(p) { return p.category === main && p.type === sub; })
+    : products.slice();
 
-  const searchValue = searchInput  ? searchInput.value.toLowerCase()  : "";
-  const filterValue = filterSelect ? filterSelect.value               : "all";
+  var searchValue = searchInput  ? searchInput.value.toLowerCase()  : "";
+  var filterValue = filterSelect ? filterSelect.value               : "all";
 
   if (searchValue) {
-    filtered = filtered.filter(p => p.name.toLowerCase().includes(searchValue));
+    filtered = filtered.filter(function(p) { return p.name.toLowerCase().includes(searchValue); });
   }
   if (filterValue === "cheapest") {
-    filtered = filtered.sort((a, b) => a.price - b.price);
+    filtered = filtered.sort(function(a,b) { return a.price - b.price; });
   } else if (filterValue === "expensive") {
-    filtered = filtered.sort((a, b) => b.price - a.price);
+    filtered = filtered.sort(function(a,b) { return b.price - a.price; });
   }
 
   if (document.getElementById("category-title")) {
@@ -285,209 +217,185 @@ if (filterSelect) filterSelect.addEventListener("change", applyFilters);
 // =====================
 // ÜRÜN DETAY SAYFASI
 // =====================
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("productDetail");
+document.addEventListener("DOMContentLoaded", function() {
+  var container = document.getElementById("productDetail");
   if (!container) return;
 
-  const id      = Number(new URLSearchParams(window.location.search).get("id"));
-  const product = products.find(p => p.id === id);
+  var id      = Number(new URLSearchParams(window.location.search).get("id"));
+  var product = products.find(function(p) { return p.id === id; });
 
   if (!product) {
-    container.innerHTML = "<h2>Ürün bulunamadı</h2>";
+    container.innerHTML = "<h2 style='padding:40px'>Ürün bulunamadı</h2>";
     return;
   }
 
-  container.innerHTML = `
-    <div class="product-image">
-      <img src="${product.image}" alt="${product.name}">
-    </div>
-    <div class="product-info">
-      <h1>${product.name}</h1>
-      <p class="price">${product.price.toLocaleString("tr-TR")} TL</p>
-      <p class="desc">
-        Bu ürün modern tasarım, yüksek kalite kumaş ile üretilmiştir.
-        Günlük kullanım için uygundur ve rahat kesime sahiptir.
-      </p>
-      <label>Beden</label>
-      <div class="sizes">
-        <button onclick="selectSize(this)">S</button>
-        <button onclick="selectSize(this)">M</button>
-        <button onclick="selectSize(this)">L</button>
-        <button onclick="selectSize(this)">XL</button>
-      </div>
-      <label>Renk</label>
-      <div class="colors">
-        <div class="color black" onclick="selectColor('Siyah', this)"></div>
-        <div class="color white" onclick="selectColor('Beyaz', this)"></div>
-        <div class="color blue"  onclick="selectColor('Mavi',  this)"></div>
-      </div>
-      <button class="btn-add-to-cart" onclick="addToCart(${product.id})">
-        <span><span class="btn-icon">🛒</span> SEPETE EKLE</span>
-      </button>
-    </div>
-  `;
+  container.innerHTML =
+    '<div class="product-image">' +
+      '<img src="' + product.image + '" alt="' + product.name + '" onerror="this.src=\'https://placehold.co/450x560/f0f0f0/aaa?text=Görsel+Yok\'">' +
+    '</div>' +
+    '<div class="product-info">' +
+      '<h1>' + product.name + '</h1>' +
+      '<p class="price">' + product.price.toLocaleString("tr-TR") + ' TL</p>' +
+      '<p class="desc">Bu ürün modern tasarım, yüksek kalite kumaş ile üretilmiştir. Günlük kullanım için uygundur ve rahat kesime sahiptir.</p>' +
+      '<label>Beden</label>' +
+      '<div class="sizes">' +
+        '<button onclick="selectSize(this)">S</button>' +
+        '<button onclick="selectSize(this)">M</button>' +
+        '<button onclick="selectSize(this)">L</button>' +
+        '<button onclick="selectSize(this)">XL</button>' +
+      '</div>' +
+      '<label>Renk</label>' +
+      '<div class="colors">' +
+        '<div class="color black" onclick="selectColor(\'Siyah\',this)"></div>' +
+        '<div class="color white" onclick="selectColor(\'Beyaz\',this)"></div>' +
+        '<div class="color blue"  onclick="selectColor(\'Mavi\',this)"></div>' +
+      '</div>' +
+      '<button class="btn-add-to-cart" onclick="addToCart(' + product.id + ')">' +
+        '<span><span class="btn-icon">🛒</span> SEPETE EKLE</span>' +
+      '</button>' +
+    '</div>';
 
-  const similar = products
-    .filter(p => p.id !== product.id)
-    .sort(() => 0.5 - Math.random())
+  // Benzer ürünler
+  var similar = products
+    .filter(function(p) { return p.id !== product.id; })
+    .sort(function() { return 0.5 - Math.random(); })
     .slice(0, 4);
 
   if (similar.length > 0) {
-    const sec = document.createElement("section");
+    var sec = document.createElement("section");
     sec.className = "similar-products";
-    sec.innerHTML = `
-      <h2 class="similar-title">Benzer Ürünler</h2>
-      <div class="similar-grid">
-        ${similar.map(p => `
-          <div class="product-card" onclick="goToProduct(${p.id})">
-            <div class="product-card__img-wrap">
-              <img src="${p.image}" alt="${p.name}" loading="lazy">
-              <span class="product-card__fav save-icon" data-id="${p.id}" onclick="toggleFavorite(event,${p.id})">☆</span>
-            </div>
-            <div class="product-card__info">
-              <h3>${p.name}</h3>
-              <p>${p.price.toLocaleString("tr-TR")} TL</p>
-              <button onclick="event.stopPropagation();goToProduct(${p.id})">İNCELE</button>
-            </div>
-          </div>
-        `).join("")}
-      </div>
-    `;
-    document.querySelector(".product-page").insertAdjacentElement("afterend", sec);
+    sec.innerHTML =
+      '<h2 class="similar-title">Benzer Ürünler</h2>' +
+      '<div class="similar-grid">' +
+        similar.map(function(p) {
+          return '<div class="product-card" onclick="goToProduct(' + p.id + ')">' +
+            '<div class="product-card__img-wrap">' +
+              '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy">' +
+              '<span class="product-card__fav save-icon" data-id="' + p.id + '" onclick="toggleFavorite(event,' + p.id + ')">☆</span>' +
+            '</div>' +
+            '<div class="product-card__info">' +
+              '<h3>' + p.name + '</h3>' +
+              '<p>' + p.price.toLocaleString("tr-TR") + ' TL</p>' +
+              '<button onclick="event.stopPropagation();goToProduct(' + p.id + ')">İNCELE</button>' +
+            '</div>' +
+          '</div>';
+        }).join("") +
+      '</div>';
+    var productPage = document.querySelector(".product-page");
+    if (productPage) productPage.insertAdjacentElement("afterend", sec);
     updateSaveIcons();
   }
 });
 
 function selectSize(btn) {
-  document.querySelectorAll(".sizes button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".sizes button").forEach(function(b) { b.classList.remove("active"); });
   btn.classList.add("active");
   selectedSize = btn.innerText;
 }
 
 function selectColor(color, el) {
   selectedColor = color;
-  document.querySelectorAll(".color").forEach(c => c.classList.remove("active"));
+  document.querySelectorAll(".color").forEach(function(c) { c.classList.remove("active"); });
   el.classList.add("active");
 }
 
 // =====================
-// KUPON SİSTEMİ
+// KUPON SİSTEMİ (vValidateCoupon kullanır)
 // =====================
-const KUPONLAR = {
-  "VELORA10":  10,
-  "VELORA20":  20,
-  "HOSGELDIN": 15
-};
-
-let aktifKupon = null;
+var aktifKupon = null;
 
 function applyCoupon() {
-  const input = document.getElementById("couponInput");
-  const msg   = document.getElementById("couponMsg");
-  const kod   = input ? input.value.trim().toUpperCase() : "";
+  var input = document.getElementById("couponInput");
+  var msg   = document.getElementById("couponMsg");
+  var kod   = input ? input.value.trim() : "";
 
-  if (msg) {
-    msg.className = "coupon-msg";
-    msg.textContent = "";
-  }
-
-  if (!kod) {
-    if (msg) { msg.textContent = "Lütfen bir kupon kodu girin."; msg.className = "coupon-msg error"; }
-    return;
-  }
+  if (msg) { msg.className = "coupon-msg"; msg.textContent = ""; }
   if (aktifKupon) {
     if (msg) { msg.textContent = "Zaten bir kupon uygulandı. Önce kaldırın."; msg.className = "coupon-msg error"; }
     return;
   }
-  if (!KUPONLAR[kod]) {
-    if (msg) { msg.textContent = "Geçersiz kupon kodu."; msg.className = "coupon-msg error"; }
+
+  // vValidateCoupon kullan (admin panelinden eklenen kuponları destekler)
+  var result = (typeof vValidateCoupon === "function")
+    ? vValidateCoupon(kod)
+    : { valid:false, discount:0, message:"Geçersiz kupon." };
+
+  if (!result.valid) {
+    if (msg) { msg.textContent = result.message; msg.className = "coupon-msg error"; }
     return;
   }
 
-  aktifKupon = { kod: kod, yuzde: KUPONLAR[kod] };
+  aktifKupon = { kod: kod.trim().toUpperCase(), yuzde: result.discount };
   if (input) input.disabled = true;
 
-  const appliedCodeText = document.getElementById("appliedCodeText");
-  const couponApplied   = document.getElementById("couponApplied");
-
-  if (appliedCodeText) appliedCodeText.textContent = `${kod} (%${KUPONLAR[kod]} indirim)`;
+  var appliedCodeText = document.getElementById("appliedCodeText");
+  var couponApplied   = document.getElementById("couponApplied");
+  if (appliedCodeText) appliedCodeText.textContent = aktifKupon.kod + " (%" + aktifKupon.yuzde + " indirim)";
   if (couponApplied)   couponApplied.style.display  = "flex";
-  if (msg)             msg.className                = "coupon-msg";
+  if (msg) { msg.textContent = result.message; msg.className = "coupon-msg success"; }
 
   renderCart();
 }
 
 function removeCoupon() {
   aktifKupon = null;
-
-  const input = document.getElementById("couponInput");
-  if (input) {
-    input.value    = "";
-    input.disabled = false;
-  }
-
-  const couponApplied = document.getElementById("couponApplied");
+  var input = document.getElementById("couponInput");
+  if (input) { input.value = ""; input.disabled = false; }
+  var couponApplied = document.getElementById("couponApplied");
   if (couponApplied) couponApplied.style.display = "none";
-
-  const discountRow = document.getElementById("discountRow");
+  var discountRow = document.getElementById("discountRow");
   if (discountRow) discountRow.style.display = "none";
-
-  const couponMsg = document.getElementById("couponMsg");
+  var couponMsg = document.getElementById("couponMsg");
   if (couponMsg) couponMsg.className = "coupon-msg";
-
   renderCart();
 }
 
 // =====================
 // SEPET SAYFASI
 // =====================
-if (document.getElementById("cart-items")) {
-  renderCart();
-}
+if (document.getElementById("cart-items")) { renderCart(); }
 
 function renderCart() {
-  const container = document.getElementById("cart-items");
+  var container = document.getElementById("cart-items");
   if (!container) return;
   container.innerHTML = "";
-  let araToplamTL = 0;
+  var araToplamTL = 0;
 
-  const couponBox = document.getElementById("coupon-box");
+  var couponBox = document.getElementById("coupon-box");
   if (couponBox) couponBox.style.display = cart.length > 0 ? "block" : "none";
   updateHeaderCount();
 
-  cart.forEach(item => {
-    const itemTotal = item.price * item.quantity;
+  cart.forEach(function(item) {
+    var itemTotal = item.price * item.quantity;
     araToplamTL += itemTotal;
-
-    container.innerHTML += `
-      <div class="cart-item">
-        <a href="product.html?id=${item.id}">
-          <img src="${item.image}" class="product-img" alt="${item.name}">
-        </a>
-        <div>
-          <h4><a href="product.html?id=${item.id}" class="product-link">${item.name}</a></h4>
-          <p>Beden: <strong>${item.size}</strong></p>
-          <p>Renk: <strong>${item.color}</strong></p>
-        </div>
-        <div class="cart-price">${item.price.toLocaleString("tr-TR")} TL</div>
-        <div class="quantity">
-          <button onclick="changeQty(${item.id}, '${item.size}', '${item.color}', -1)">−</button>
-          <span>${item.quantity}</span>
-          <button onclick="changeQty(${item.id}, '${item.size}', '${item.color}', 1)">+</button>
-        </div>
-        <div class="remove" onclick="removeItem(${item.id}, '${item.size}', '${item.color}')">❌</div>
-      </div>
-    `;
+    container.innerHTML +=
+      '<div class="cart-item">' +
+        '<a href="product.html?id=' + item.id + '">' +
+          '<img src="' + item.image + '" class="product-img" alt="' + item.name + '">' +
+        '</a>' +
+        '<div>' +
+          '<h4><a href="product.html?id=' + item.id + '" class="product-link">' + item.name + '</a></h4>' +
+          '<p>Beden: <strong>' + item.size + '</strong></p>' +
+          '<p>Renk: <strong>' + item.color + '</strong></p>' +
+        '</div>' +
+        '<div class="cart-price">' + item.price.toLocaleString("tr-TR") + ' TL</div>' +
+        '<div class="quantity">' +
+          '<button onclick="changeQty(' + item.id + ',\'' + item.size + '\',\'' + item.color + '\',-1)">−</button>' +
+          '<span>' + item.quantity + '</span>' +
+          '<button onclick="changeQty(' + item.id + ',\'' + item.size + '\',\'' + item.color + '\',1)">+</button>' +
+        '</div>' +
+        '<div class="remove" onclick="removeItem(' + item.id + ',\'' + item.size + '\',\'' + item.color + '\')">❌</div>' +
+      '</div>';
   });
 
-  const discountRow     = document.getElementById("discountRow");
-  const discountDisplay = document.getElementById("discountDisplay");
-  const totalEl         = document.getElementById("total");
+  var discountRow     = document.getElementById("discountRow");
+  var discountDisplay = document.getElementById("discountDisplay");
+  var totalEl         = document.getElementById("total");
 
   if (aktifKupon && araToplamTL > 0) {
-    const indirimMiktar = Math.round(araToplamTL * aktifKupon.yuzde / 100);
-    const sonToplamTL   = araToplamTL - indirimMiktar;
-    if (discountDisplay) discountDisplay.textContent = `-${indirimMiktar.toLocaleString("tr-TR")} TL`;
+    var indirimMiktar = Math.round(araToplamTL * aktifKupon.yuzde / 100);
+    var sonToplamTL   = araToplamTL - indirimMiktar;
+    if (discountDisplay) discountDisplay.textContent = "-" + indirimMiktar.toLocaleString("tr-TR") + " TL";
     if (discountRow)     discountRow.style.display   = "flex";
     if (totalEl)         totalEl.innerText           = sonToplamTL.toLocaleString("tr-TR");
   } else {
@@ -497,11 +405,11 @@ function renderCart() {
 }
 
 function changeQty(id, size, color, delta) {
-  const item = cart.find(i => i.id === id && i.size === size && i.color === color);
+  var item = cart.find(function(i) { return i.id === id && i.size === size && i.color === color; });
   if (!item) return;
   item.quantity += delta;
   if (item.quantity <= 0) {
-    cart = cart.filter(i => !(i.id === id && i.size === size && i.color === color));
+    cart = cart.filter(function(i) { return !(i.id === id && i.size === size && i.color === color); });
   }
   localStorage.setItem("cart", JSON.stringify(cart));
   renderCart();
@@ -509,7 +417,7 @@ function changeQty(id, size, color, delta) {
 }
 
 function removeItem(id, size, color) {
-  cart = cart.filter(i => !(i.id === id && i.size === size && i.color === color));
+  cart = cart.filter(function(i) { return !(i.id === id && i.size === size && i.color === color); });
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
   renderCart();
@@ -521,25 +429,29 @@ function removeItem(id, size, color) {
 function toggleFavorite(e, id) {
   e.stopPropagation();
   if (!requireLogin()) return;
-  let saved = JSON.parse(localStorage.getItem("saved")) || [];
-  saved = saved.includes(id) ? saved.filter(s => s !== id) : [...saved, id];
+  var saved = JSON.parse(localStorage.getItem("saved")) || [];
+  if (saved.includes(id)) {
+    saved = saved.filter(function(s) { return s !== id; });
+  } else {
+    saved.push(id);
+  }
   localStorage.setItem("saved", JSON.stringify(saved));
   updateSaveIcons();
 }
 
 function updateSaveIcons() {
-  const saved = JSON.parse(localStorage.getItem("saved")) || [];
-  document.querySelectorAll(".save-icon").forEach(icon => {
+  var saved = JSON.parse(localStorage.getItem("saved")) || [];
+  document.querySelectorAll(".save-icon").forEach(function(icon) {
     icon.innerText = saved.includes(Number(icon.dataset.id)) ? "★" : "☆";
   });
 }
 
 setTimeout(updateSaveIcons, 100);
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function() {
   if (document.getElementById("favorites-list")) {
-    let saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
-    const valid = saved.filter(id => products.find(p => p.id === id));
+    var saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
+    var valid = saved.filter(function(id) { return products.find(function(p) { return p.id === id; }); });
     if (valid.length !== saved.length) {
       localStorage.setItem("saved", JSON.stringify(valid));
     }
@@ -548,38 +460,37 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderFavoritesPage() {
-  const container = document.getElementById("favorites-list");
+  var container = document.getElementById("favorites-list");
   if (!container) return;
   container.innerHTML = "";
 
-  const saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
+  var saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
 
   if (saved.length === 0) {
     container.innerHTML = "<p style='color:#999;font-size:14px;letter-spacing:1px;'>Henüz favori ürün eklemediniz.</p>";
     return;
   }
 
-  saved.forEach(id => {
-    const product = products.find(p => p.id === id);
+  saved.forEach(function(id) {
+    var product = products.find(function(p) { return p.id === id; });
     if (!product) return;
-    container.innerHTML += `
-      <div class="product-card" style="position:relative">
-        <div class="remove-btn" onclick="removeSaved(${product.id})">✕</div>
-        <div class="product-card__img-wrap">
-          <img src="${product.image}" onclick="goToProduct(${product.id})" style="cursor:pointer" alt="${product.name}">
-        </div>
-        <div class="product-card__info">
-          <h3 onclick="goToProduct(${product.id})" style="cursor:pointer">${product.name}</h3>
-          <p>${product.price.toLocaleString("tr-TR")} TL</p>
-          <button onclick="goToProduct(${product.id})">ÜRÜNE GİT</button>
-        </div>
-      </div>
-    `;
+    container.innerHTML +=
+      '<div class="product-card" style="position:relative">' +
+        '<div class="remove-btn" onclick="removeSaved(' + product.id + ')">✕</div>' +
+        '<div class="product-card__img-wrap">' +
+          '<img src="' + product.image + '" onclick="goToProduct(' + product.id + ')" style="cursor:pointer" alt="' + product.name + '">' +
+        '</div>' +
+        '<div class="product-card__info">' +
+          '<h3 onclick="goToProduct(' + product.id + ')" style="cursor:pointer">' + product.name + '</h3>' +
+          '<p>' + product.price.toLocaleString("tr-TR") + ' TL</p>' +
+          '<button onclick="goToProduct(' + product.id + ')">ÜRÜNE GİT</button>' +
+        '</div>' +
+      '</div>';
   });
 }
 
 function removeSaved(id) {
-  let saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number).filter(i => i !== Number(id));
+  var saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number).filter(function(i) { return i !== Number(id); });
   localStorage.setItem("saved", JSON.stringify(saved));
   renderFavoritesPage();
 }
@@ -588,31 +499,26 @@ function removeSaved(id) {
 // SLIDER OKLAR
 // =====================
 function slideRight() {
-  document.getElementById("products").scrollBy({ left: 280, behavior: "smooth" });
+  var el = document.getElementById("products");
+  if (el) el.scrollBy({ left:280, behavior:"smooth" });
 }
 function slideLeft() {
-  document.getElementById("products").scrollBy({ left: -280, behavior: "smooth" });
+  var el = document.getElementById("products");
+  if (el) el.scrollBy({ left:-280, behavior:"smooth" });
 }
 function scrollBottom(dir) {
-  document.getElementById("products-bottom").scrollBy({ left: dir * 280, behavior: "smooth" });
+  var el = document.getElementById("products-bottom");
+  if (el) el.scrollBy({ left:dir*280, behavior:"smooth" });
 }
 
-const topSlider = document.getElementById("products");
-const topLeft   = document.querySelectorAll(".arrow.left")[0];
-const topRight  = document.querySelectorAll(".arrow.right")[0];
+var topSlider = document.getElementById("products");
+var topLeft   = document.querySelectorAll(".arrow.left")[0];
+var topRight  = document.querySelectorAll(".arrow.right")[0];
 
 function updateTopButtons() {
   if (!topSlider) return;
-  if (topSlider.scrollLeft <= 10) {
-    if (topLeft) topLeft.style.display = "none";
-  } else {
-    if (topLeft) topLeft.style.display = "flex";
-  }
-  if (topSlider.scrollLeft + topSlider.clientWidth >= topSlider.scrollWidth - 10) {
-    if (topRight) topRight.style.display = "none";
-  } else {
-    if (topRight) topRight.style.display = "flex";
-  }
+  if (topLeft)  topLeft.style.display  = topSlider.scrollLeft <= 10 ? "none" : "flex";
+  if (topRight) topRight.style.display = (topSlider.scrollLeft + topSlider.clientWidth >= topSlider.scrollWidth - 10) ? "none" : "flex";
 }
 
 if (topSlider) {
@@ -620,22 +526,14 @@ if (topSlider) {
   window.addEventListener("load", updateTopButtons);
 }
 
-const bottomSlider = document.getElementById("products-bottom");
-const bottomLeft   = document.querySelectorAll(".arrow.left")[1];
-const bottomRight  = document.querySelectorAll(".arrow.right")[1];
+var bottomSlider = document.getElementById("products-bottom");
+var bottomLeft   = document.querySelectorAll(".arrow.left")[1];
+var bottomRight  = document.querySelectorAll(".arrow.right")[1];
 
 function updateBottomButtons() {
   if (!bottomSlider) return;
-  if (bottomSlider.scrollLeft <= 10) {
-    if (bottomLeft) bottomLeft.style.display = "none";
-  } else {
-    if (bottomLeft) bottomLeft.style.display = "flex";
-  }
-  if (bottomSlider.scrollLeft + bottomSlider.clientWidth >= bottomSlider.scrollWidth - 10) {
-    if (bottomRight) bottomRight.style.display = "none";
-  } else {
-    if (bottomRight) bottomRight.style.display = "flex";
-  }
+  if (bottomLeft)  bottomLeft.style.display  = bottomSlider.scrollLeft <= 10 ? "none" : "flex";
+  if (bottomRight) bottomRight.style.display = (bottomSlider.scrollLeft + bottomSlider.clientWidth >= bottomSlider.scrollWidth - 10) ? "none" : "flex";
 }
 
 if (bottomSlider) {
@@ -644,10 +542,119 @@ if (bottomSlider) {
 }
 
 // =====================
+// WHATSAPP ÖDEME
+// =====================
+function sendWhatsApp() {
+  if (cart.length === 0) { alert("Sepetiniz boş!"); return; }
+
+  var message = "🛒 Sipariş Detayı:%0A%0A";
+  var araToplamTL = 0;
+
+  cart.forEach(function(item) {
+    var itemTL = item.price * item.quantity;
+    araToplamTL += itemTL;
+    message += "Ürün: " + item.name + "%0A";
+    message += "Beden: " + item.size + "%0A";
+    message += "Renk: " + item.color + "%0A";
+    message += "Adet: " + item.quantity + "%0A";
+    message += "Fiyat: " + itemTL.toLocaleString("tr-TR") + " TL%0A%0A";
+  });
+
+  var sonToplamTL = araToplamTL;
+  if (aktifKupon && araToplamTL > 0) {
+    var indirimMiktar = Math.round(araToplamTL * aktifKupon.yuzde / 100);
+    sonToplamTL = araToplamTL - indirimMiktar;
+    message += "🏷️ Kupon: " + aktifKupon.kod + " (-%" + aktifKupon.yuzde + ")%0A";
+    message += "İndirim: -" + indirimMiktar.toLocaleString("tr-TR") + " TL%0A";
+  }
+
+  // WhatsApp numarasını ayarlardan al
+  var contact = (typeof vGetContact === "function") ? vGetContact() : {};
+  var waNumber = contact.waNumber || "905550066123";
+  if (contact.waActive === false) { alert("WhatsApp ile sipariş şu an aktif değil."); return; }
+
+  message += "💰 TOPLAM: " + sonToplamTL.toLocaleString("tr-TR") + " TL";
+  window.open("https://wa.me/" + waNumber + "?text=" + message, "_blank");
+}
+
+// =====================
+// NAV MEGA MENU (mobil toggle)
+// =====================
+document.querySelectorAll(".nav-item").forEach(function(item) {
+  item.addEventListener("click", function() { item.classList.toggle("active"); });
+});
+
+// =====================
+// TOAST
+// =====================
+function showToast(msg, type) {
+  type = type || "";
+  var t = document.getElementById("toast");
+  if (!t) return;
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.className = "toast"; }, 3000);
+}
+
+// =====================
+// ANA SAYFA BAŞLAT
+// =====================
+(function init() {
+  if (document.getElementById("products") && !document.getElementById("category-title")) {
+    renderTopProducts(getNewCollection(products));
+  }
+  if (document.getElementById("products-bottom")) {
+    renderBottomProducts(getRandomCollection(products));
+  }
+  if (document.getElementById("category-title")) {
+    loadCategoryPage();
+  }
+})();
+
+// =====================
+// DARK MODE
+// =====================
+(function initTheme() {
+  var saved = localStorage.getItem("theme");
+  var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (saved === "dark" || (!saved && prefersDark)) {
+    document.body.classList.add("dark");
+  }
+  updateThemeBtn();
+})();
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  var isDark = document.body.classList.contains("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  updateThemeBtn();
+}
+
+function updateThemeBtn() {
+  var isDark = document.body.classList.contains("dark");
+  document.querySelectorAll(".theme-toggle").forEach(function(btn) {
+    btn.textContent = isDark ? "☀️" : "🌙";
+    btn.title = isDark ? "Aydınlık Mod" : "Karanlık Mod";
+  });
+}
+
+// =====================
+// HAMBURGer MENÜ
+// =====================
+function toggleMenu() {
+  var nav    = document.getElementById("navMenu");
+  var search = document.querySelector(".search-box");
+  if (!nav) return;
+  nav.classList.toggle("open");
+  if (search) search.classList.toggle("open");
+}
+
+// =====================
 // BANNER ANİMASYON
 // =====================
 function animateBanner() {
-  const banner = document.querySelector(".mero");
+  var banner = document.querySelector(".mero");
   if (!banner) return;
   if (banner.getBoundingClientRect().top < window.innerHeight - 100) {
     banner.classList.add("show");
@@ -657,100 +664,71 @@ window.addEventListener("scroll", animateBanner);
 window.addEventListener("load", animateBanner);
 
 // =====================
-// WHATSAPP ÖDEME
+// SCROLL REVEAL
 // =====================
-function sendWhatsApp() {
-  if (cart.length === 0) { alert("Sepetiniz boş!"); return; }
-
-  let message = "🛒 Sipariş Detayı:%0A%0A";
-  let araToplamTL = 0;
-
-  cart.forEach(item => {
-    const itemTL = item.price * item.quantity;
-    araToplamTL += itemTL;
-    message += `Ürün: ${item.name}%0A`;
-    message += `Beden: ${item.size}%0A`;
-    message += `Renk: ${item.color}%0A`;
-    message += `Adet: ${item.quantity}%0A`;
-    message += `Fiyat: ${itemTL.toLocaleString("tr-TR")} TL%0A%0A`;
-  });
-
-  let sonToplamTL = araToplamTL;
-  if (aktifKupon && araToplamTL > 0) {
-    const indirimMiktar = Math.round(araToplamTL * aktifKupon.yuzde / 100);
-    sonToplamTL = araToplamTL - indirimMiktar;
-    message += `🏷️ Kupon: ${aktifKupon.kod} (-%${aktifKupon.yuzde})%0A`;
-    message += `İndirim: -${indirimMiktar.toLocaleString("tr-TR")} TL%0A`;
+document.addEventListener("DOMContentLoaded", function() {
+  function revealOnScroll() {
+    document.querySelectorAll(".about-reveal-left, .about-reveal-right").forEach(function(el) {
+      if (el.getBoundingClientRect().top < window.innerHeight - 60) {
+        el.classList.add("revealed");
+      }
+    });
   }
-
-  message += `💰 TOPLAM: ${sonToplamTL.toLocaleString("tr-TR")} TL`;
-  window.open(`https://wa.me/905550066123?text=${message}`, "_blank");
-}
-
-// =====================
-// NAV MEGA MENU (mobil toggle)
-// =====================
-document.querySelectorAll(".nav-item").forEach(item => {
-  item.addEventListener("click", () => item.classList.toggle("active"));
+  window.addEventListener("scroll", revealOnScroll);
+  revealOnScroll();
 });
 
 // =====================
-// ANA SAYFA BAŞLAT
+// PROFİL İKONU GÜNCELLE
 // =====================
-if (document.getElementById("products") && !document.getElementById("category-title")) {
-  renderTopProducts(getNewCollection(products));
-}
-if (document.getElementById("products-bottom")) {
-  renderBottomProducts(getRandomCollection(products));
-}
+(function updateProfileIcon() {
+  var user = JSON.parse(localStorage.getItem("activeUser"));
+  var icon = document.getElementById("profile-icon");
+  if (!icon) return;
+  if (user) {
+    var initials = user.name.split(" ").map(function(n) { return n[0]; }).join("").slice(0, 2).toUpperCase();
+    icon.innerHTML = initials;
+    icon.classList.add("logged-in");
+    icon.title = user.name;
+  }
+})();
 
-// ── Yardımcı: Toast göster ──
-function showToast(msg, type = "") {
-  const t = document.getElementById("toast");
-  if (!t) return;
-  t.textContent = msg;
-  t.className = "toast show " + type;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.className = "toast", 3000);
-}
-
-// ── Bölüm geçişi ──
+// =====================
+// AUTH FONKSİYONLARI
+// =====================
 function showSection(id) {
-  ["register-section","verify-section","login-section","profile-section"].forEach(s => {
-    const el = document.getElementById(s);
+  ["register-section","verify-section","login-section","profile-section"].forEach(function(s) {
+    var el = document.getElementById(s);
     if (el) el.classList.add("hidden");
   });
-  const target = document.getElementById(id);
+  var target = document.getElementById(id);
   if (target) target.classList.remove("hidden");
 }
 
 function showLogin()    { showSection("login-section"); }
 function showRegister() { showSection("register-section"); }
 
-// ── Validasyon yardımcıları ──
 function setError(fgId, show) {
-  const fg = document.getElementById(fgId);
+  var fg = document.getElementById(fgId);
   if (!fg) return;
   show ? fg.classList.add("has-error") : fg.classList.remove("has-error");
 }
+
 function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
-// =====================
-// ŞİFRE VALİDASYONU
-// =====================
-const PW_RULES = {
-  length:  { regex: /.{8,}/,          ruleId: "rule-length"  },
-  upper:   { regex: /[A-Z]/,          ruleId: "rule-upper"   },
-  number:  { regex: /[0-9]/,          ruleId: "rule-number"  },
-  special: { regex: /[^a-zA-Z0-9]/,   ruleId: "rule-special" }
+var PW_RULES = {
+  length:  { regex:/.{8,}/,         ruleId:"rule-length"  },
+  upper:   { regex:/[A-Z]/,         ruleId:"rule-upper"   },
+  number:  { regex:/[0-9]/,         ruleId:"rule-number"  },
+  special: { regex:/[^a-zA-Z0-9]/, ruleId:"rule-special" }
 };
 
 function checkPasswordStrength(value) {
-  let passed = 0;
-  Object.keys(PW_RULES).forEach(key => {
-    const rule    = PW_RULES[key];
-    const ok      = rule.regex.test(value);
-    const el      = document.getElementById(rule.ruleId);
+  var passed = 0;
+  Object.keys(PW_RULES).forEach(function(key) {
+    var rule = PW_RULES[key];
+    var ok   = rule.regex.test(value);
+    var el   = document.getElementById(rule.ruleId);
     if (el) {
       el.classList.toggle("rule-ok",   ok);
       el.classList.toggle("rule-fail", !ok && value.length > 0);
@@ -758,338 +736,237 @@ function checkPasswordStrength(value) {
     }
     if (ok) passed++;
   });
-
-  const fill = document.getElementById("pw-strength-fill");
+  var fill = document.getElementById("pw-strength-fill");
   if (!fill) return;
-  const pct = (passed / 4) * 100;
-  fill.style.width = pct + "%";
+  fill.style.width = (passed / 4 * 100) + "%";
   fill.className = "pw-strength-fill";
-  if      (passed <= 1) fill.classList.add("pw-weak");
+  if (passed <= 1)      fill.classList.add("pw-weak");
   else if (passed === 2) fill.classList.add("pw-fair");
   else if (passed === 3) fill.classList.add("pw-good");
   else                   fill.classList.add("pw-strong");
 }
 
 function isPasswordValid(value) {
-  return Object.values(PW_RULES).every(r => r.regex.test(value));
+  return Object.values(PW_RULES).every(function(r) { return r.regex.test(value); });
 }
 
 function togglePw(inputId, btn) {
-  const inp = document.getElementById(inputId);
+  var inp = document.getElementById(inputId);
   if (!inp) return;
-  const isText = inp.type === "text";
+  var isText = inp.type === "text";
   inp.type = isText ? "password" : "text";
   btn.innerHTML = isText
-    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-         <circle cx="12" cy="12" r="3"/>
-       </svg>`
-    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-         <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-         <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-         <line x1="1" y1="1" x2="23" y2="23"/>
-       </svg>`;
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 }
 
 async function hashPassword(password) {
-  const msgBuffer = new TextEncoder().encode(password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  var msgBuffer  = new TextEncoder().encode(password);
+  var hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  return Array.from(new Uint8Array(hashBuffer)).map(function(b) { return b.toString(16).padStart(2,"0"); }).join("");
 }
 
-let tempUser = {};
+var tempUser = {};
 
 async function handleRegister() {
-  const name      = document.getElementById("reg-name").value.trim();
-  const email     = document.getElementById("reg-email").value.trim();
-  const password  = document.getElementById("reg-password").value;
-  const password2 = document.getElementById("reg-password2").value;
-  const termsCheck = document.getElementById("termsCheck");
-  let ok = true;
+  var name      = document.getElementById("reg-name").value.trim();
+  var email     = document.getElementById("reg-email").value.trim();
+  var password  = document.getElementById("reg-password").value;
+  var password2 = document.getElementById("reg-password2").value;
+  var termsCheck = document.getElementById("termsCheck");
+  var ok = true;
 
-  if (!name) { setError("fg-name", true);  ok = false; } else { setError("fg-name", false); }
-
-  if (!email || !isValidEmail(email)) {
-    document.getElementById("email-error-msg").textContent =
-      !email ? "E-posta adresi zorunludur." : "Geçerli bir e-posta adresi giriniz.";
-    setError("fg-email", true);
-    ok = false;
-  } else { setError("fg-email", false); }
-
-  if (!isPasswordValid(password)) {
-    document.getElementById("password-error-msg").textContent = "Şifre gereksinimleri karşılanmıyor.";
-    setError("fg-password", true);
-    ok = false;
-  } else { setError("fg-password", false); }
-
-  if (password !== password2) {
-    document.getElementById("password2-error-msg").textContent = "Şifreler eşleşmiyor.";
-    setError("fg-password2", true);
-    ok = false;
-  } else { setError("fg-password2", false); }
-
-  if (termsCheck && !termsCheck.checked) {
-    setError("fg-terms", true);
-    ok = false;
-  } else {
-    setError("fg-terms", false);
-  }
-
+  if (!name)                              { setError("fg-name",  true);  ok = false; } else { setError("fg-name",  false); }
+  if (!email || !isValidEmail(email))     { setError("fg-email", true);  ok = false; document.getElementById("email-error-msg").textContent = !email ? "E-posta zorunludur." : "Geçerli e-posta girin."; } else { setError("fg-email", false); }
+  if (!isPasswordValid(password))         { setError("fg-password",  true);  ok = false; document.getElementById("password-error-msg").textContent = "Şifre gereksinimleri karşılanmıyor."; } else { setError("fg-password",  false); }
+  if (password !== password2)             { setError("fg-password2", true);  ok = false; document.getElementById("password2-error-msg").textContent = "Şifreler eşleşmiyor."; } else { setError("fg-password2", false); }
+  if (termsCheck && !termsCheck.checked)  { setError("fg-terms",    true);  ok = false; } else { setError("fg-terms", false); }
   if (!ok) return;
 
-  const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
-  if (allUsers.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-    document.getElementById("email-error-msg").textContent = "Bu e-posta zaten kayıtlı. Giriş yapın.";
-    setError("fg-email", true);
-    return;
+  var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
+  if (allUsers.find(function(u) { return u.email.toLowerCase() === email.toLowerCase(); })) {
+    document.getElementById("email-error-msg").textContent = "Bu e-posta zaten kayıtlı.";
+    setError("fg-email", true); return;
   }
 
-  const hashedPw = await hashPassword(password);
-  tempUser = { name, email, passwordHash: hashedPw };
-  document.getElementById("verify-email-label").textContent = email;
+  var hashedPw = await hashPassword(password);
+  tempUser = { name:name, email:email, passwordHash:hashedPw };
+  var labelEl = document.getElementById("verify-email-label");
+  if (labelEl) labelEl.textContent = email;
 
-  const verifyCode = String(Math.floor(1000 + Math.random() * 9000));
+  var verifyCode = String(Math.floor(1000 + Math.random() * 9000));
   tempUser.code = verifyCode;
 
-  const btn = document.getElementById("register-btn");
-  btn.disabled = true;
-  btn.textContent = "Gönderiliyor...";
+  var btn = document.getElementById("register-btn");
+  if (btn) { btn.disabled = true; btn.textContent = "Gönderiliyor..."; }
 
-  emailjs.send("service_u871hgw", "template_nnfkcc3", {
-    to_email: email,
-    to_name: name,
-    code: verifyCode
-  }).then(() => {
-    showToast("Doğrulama kodu e-postanıza gönderildi!", "success");
+  if (typeof emailjs !== "undefined") {
+    emailjs.send("service_u871hgw", "template_nnfkcc3", { to_email:email, to_name:name, code:verifyCode })
+      .then(function() {
+        showToast("Doğrulama kodu gönderildi!", "success");
+        startCountdown();
+        showSection("verify-section");
+        var d1 = document.getElementById("d1");
+        if (d1) setTimeout(function() { d1.focus(); }, 100);
+      })
+      .catch(function(err) { console.error(err); showToast("Mail gönderilemedi.", "error"); })
+      .finally(function() { if (btn) { btn.disabled = false; btn.textContent = "Üye Ol ve Doğrulama Kodu Gönder"; } });
+  } else {
+    // EmailJS yüklü değilse kodu console'a yaz (geliştirme)
+    console.log("Doğrulama kodu:", verifyCode);
+    showToast("Kod: " + verifyCode + " (EmailJS yüklü değil)", "");
     startCountdown();
     showSection("verify-section");
-    setTimeout(() => document.getElementById("d1").focus(), 100);
-  }).catch((err) => {
-    console.error("EmailJS hatası:", err);
-    showToast("Mail gönderilemedi. Lütfen tekrar deneyin.", "error");
-  }).finally(() => {
-    btn.disabled = false;
-    btn.textContent = "Üye Ol ve Doğrulama Kodu Gönder";
-  });
+    if (btn) { btn.disabled = false; btn.textContent = "Üye Ol ve Doğrulama Kodu Gönder"; }
+  }
 }
 
-["d1","d2","d3","d4"].forEach((id, i, arr) => {
-  const input = document.getElementById(id);
+["d1","d2","d3","d4"].forEach(function(id, i, arr) {
+  var input = document.getElementById(id);
   if (!input) return;
-  input.addEventListener("input", (e) => {
-    const val = e.target.value.replace(/\D/g, "");
+  input.addEventListener("input", function(e) {
+    var val = e.target.value.replace(/\D/g, "");
     e.target.value = val;
     if (val && i < arr.length - 1) {
-      document.getElementById(arr[i + 1]).focus();
+      var next = document.getElementById(arr[i+1]);
+      if (next) next.focus();
     }
     e.target.classList.toggle("filled", !!val);
-    const full = arr.map(a => document.getElementById(a).value).join("");
+    var full = arr.map(function(a) { var el = document.getElementById(a); return el ? el.value : ""; }).join("");
     if (full.length === 4) setTimeout(handleVerify, 200);
   });
-  input.addEventListener("keydown", (e) => {
+  input.addEventListener("keydown", function(e) {
     if (e.key === "Backspace" && !input.value && i > 0) {
-      document.getElementById(arr[i - 1]).focus();
+      var prev = document.getElementById(arr[i-1]);
+      if (prev) prev.focus();
     }
   });
-  input.addEventListener("paste", (e) => {
+  input.addEventListener("paste", function(e) {
     e.preventDefault();
-    const text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 4);
-    arr.forEach((a, j) => {
-      const el = document.getElementById(a);
-      el.value = text[j] || "";
-      el.classList.toggle("filled", !!el.value);
+    var text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g,"").slice(0,4);
+    arr.forEach(function(a, j) {
+      var el = document.getElementById(a);
+      if (el) { el.value = text[j] || ""; el.classList.toggle("filled", !!el.value); }
     });
     if (text.length === 4) setTimeout(handleVerify, 200);
   });
 });
 
 function getCode() {
-  return ["d1","d2","d3","d4"].map(id => document.getElementById(id).value).join("");
+  return ["d1","d2","d3","d4"].map(function(id) { var el = document.getElementById(id); return el ? el.value : ""; }).join("");
 }
 
 function handleVerify() {
-  const code = getCode();
+  var code = getCode();
   if (code.length < 4) { showToast("Lütfen 4 haneli kodu girin.", "error"); return; }
-
   if (code === tempUser.code) {
-    const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
-    const saveUser = { name: tempUser.name, email: tempUser.email, passwordHash: tempUser.passwordHash };
-    if (!allUsers.find(u => u.email.toLowerCase() === tempUser.email.toLowerCase())) {
+    var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
+    var saveUser = { name:tempUser.name, email:tempUser.email, passwordHash:tempUser.passwordHash };
+    if (!allUsers.find(function(u) { return u.email.toLowerCase() === tempUser.email.toLowerCase(); })) {
       allUsers.push(saveUser);
       localStorage.setItem("velora_users", JSON.stringify(allUsers));
     }
-    localStorage.setItem("activeUser", JSON.stringify({ name: saveUser.name, email: saveUser.email }));
+    localStorage.setItem("activeUser", JSON.stringify({ name:saveUser.name, email:saveUser.email }));
     showToast("Üyeliğiniz tamamlandı! Hoş geldiniz 🎉", "success");
-    setTimeout(() => { window.location.href = "index.html"; }, 1200);
+    setTimeout(function() { window.location.href = "index.html"; }, 1200);
   } else {
-    showToast("Hatalı kod. Lütfen tekrar deneyin.", "error");
-    ["d1","d2","d3","d4"].forEach(id => {
-      const el = document.getElementById(id);
-      el.value = "";
-      el.classList.remove("filled");
+    showToast("Hatalı kod.", "error");
+    ["d1","d2","d3","d4"].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.value = ""; el.classList.remove("filled");
       el.style.borderColor = "#cc0000";
-      setTimeout(() => el.style.borderColor = "", 1500);
+      setTimeout(function() { el.style.borderColor = ""; }, 1500);
     });
-    document.getElementById("d1").focus();
+    var d1 = document.getElementById("d1");
+    if (d1) d1.focus();
   }
 }
 
 async function handleLogin() {
-  const email    = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value;
-  let ok = true;
+  var email    = document.getElementById("login-email").value.trim();
+  var password = document.getElementById("login-password").value;
+  var ok = true;
 
-  if (!email || !isValidEmail(email)) {
-    document.getElementById("login-email-error-msg").textContent = "Geçerli bir e-posta adresi giriniz.";
-    setError("fg-login-email", true);
-    ok = false;
-  } else { setError("fg-login-email", false); }
-
-  if (!password) {
-    document.getElementById("login-password-error-msg").textContent = "Şifre zorunludur.";
-    setError("fg-login-password", true);
-    ok = false;
-  } else { setError("fg-login-password", false); }
-
+  if (!email || !isValidEmail(email)) { document.getElementById("login-email-error-msg").textContent = "Geçerli e-posta girin."; setError("fg-login-email", true); ok = false; } else { setError("fg-login-email", false); }
+  if (!password)                      { document.getElementById("login-password-error-msg").textContent = "Şifre zorunludur."; setError("fg-login-password", true); ok = false; } else { setError("fg-login-password", false); }
   if (!ok) return;
 
-  const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
-  const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+  var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
+  var user = allUsers.find(function(u) { return u.email.toLowerCase() === email.toLowerCase(); });
 
-  if (!user) {
-    document.getElementById("login-email-error-msg").textContent = "Bu e-posta ile kayıtlı kullanıcı bulunamadı.";
-    setError("fg-login-email", true);
-    return;
-  }
+  if (!user) { document.getElementById("login-email-error-msg").textContent = "Bu e-posta kayıtlı değil."; setError("fg-login-email", true); return; }
 
-  const hashedPw = await hashPassword(password);
+  var hashedPw = await hashPassword(password);
   if (user.passwordHash && hashedPw !== user.passwordHash) {
     document.getElementById("login-password-error-msg").textContent = "Şifre hatalı.";
-    setError("fg-login-password", true);
-    return;
+    setError("fg-login-password", true); return;
   }
 
-  const rememberMe = document.getElementById("rememberMe");
-  const sessionUser = { name: user.name, email: user.email };
+  var rememberMe   = document.getElementById("rememberMe");
+  var sessionUser  = { name:user.name, email:user.email };
+  localStorage.setItem("activeUser", JSON.stringify(sessionUser));
+  if (rememberMe && rememberMe.checked) { localStorage.setItem("velora_remember", "true"); }
+  else { localStorage.removeItem("velora_remember"); }
 
-  if (rememberMe && rememberMe.checked) {
-    localStorage.setItem("activeUser", JSON.stringify(sessionUser));
-    localStorage.setItem("velora_remember", "true");
-  } else {
-    localStorage.removeItem("velora_remember");
-    sessionStorage.setItem("activeUser", JSON.stringify(sessionUser));
-    localStorage.setItem("activeUser", JSON.stringify(sessionUser));
-  }
-
-  setError("fg-login-email",    false);
+  setError("fg-login-email", false);
   setError("fg-login-password", false);
   showToast("Hoş geldiniz, " + user.name + "!", "success");
-  setTimeout(() => { window.location.href = "index.html"; }, 1200);
+  setTimeout(function() { window.location.href = "index.html"; }, 1200);
 }
 
-// =====================
-// ŞİFRE DEĞİŞTİRME (Profil)
-// =====================
-function togglePwChangeForm() {
-  const form   = document.getElementById("pw-change-form");
-  const toggle = document.getElementById("pw-change-toggle");
-  if (!form) return;
-  const isHidden = form.classList.contains("hidden");
-  form.classList.toggle("hidden");
-  if (toggle) toggle.textContent = isHidden ? "İptal" : "Değiştir";
-  if (!isHidden) {
-    ["current-pw","new-pw","new-pw2"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
-    });
-    ["fg-current-pw","fg-new-pw","fg-new-pw2"].forEach(id => setError(id, false));
-    const fill2 = document.getElementById("pw-strength-fill2");
-    if (fill2) { fill2.style.width = "0%"; fill2.className = "pw-strength-fill"; }
-    ["rule2-length","rule2-upper","rule2-number","rule2-special"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.classList.remove("rule-ok","rule-fail"); el.textContent = "✗ " + el.textContent.slice(2); }
-    });
-  }
-}
-
-const PW_RULES2 = {
-  length:  { regex: /.{8,}/,        ruleId: "rule2-length"  },
-  upper:   { regex: /[A-Z]/,        ruleId: "rule2-upper"   },
-  number:  { regex: /[0-9]/,        ruleId: "rule2-number"  },
-  special: { regex: /[^a-zA-Z0-9]/, ruleId: "rule2-special" }
+var PW_RULES2 = {
+  length:  { regex:/.{8,}/,         ruleId:"rule2-length"  },
+  upper:   { regex:/[A-Z]/,         ruleId:"rule2-upper"   },
+  number:  { regex:/[0-9]/,         ruleId:"rule2-number"  },
+  special: { regex:/[^a-zA-Z0-9]/, ruleId:"rule2-special" }
 };
 
 function checkPasswordStrength2(value) {
-  let passed = 0;
-  Object.keys(PW_RULES2).forEach(key => {
-    const rule = PW_RULES2[key];
-    const ok   = rule.regex.test(value);
-    const el   = document.getElementById(rule.ruleId);
-    if (el) {
-      el.classList.toggle("rule-ok",   ok);
-      el.classList.toggle("rule-fail", !ok && value.length > 0);
-      el.textContent = (ok ? "✓ " : "✗ ") + el.textContent.slice(2);
-    }
+  var passed = 0;
+  Object.keys(PW_RULES2).forEach(function(key) {
+    var rule = PW_RULES2[key]; var ok = rule.regex.test(value);
+    var el = document.getElementById(rule.ruleId);
+    if (el) { el.classList.toggle("rule-ok",ok); el.classList.toggle("rule-fail",!ok&&value.length>0); el.textContent=(ok?"✓ ":"✗ ")+el.textContent.slice(2); }
     if (ok) passed++;
   });
-  const fill = document.getElementById("pw-strength-fill2");
+  var fill = document.getElementById("pw-strength-fill2");
   if (!fill) return;
-  const pct = (passed / 4) * 100;
-  fill.style.width = pct + "%";
-  fill.className = "pw-strength-fill";
-  if      (passed <= 1) fill.classList.add("pw-weak");
-  else if (passed === 2) fill.classList.add("pw-fair");
-  else if (passed === 3) fill.classList.add("pw-good");
-  else                   fill.classList.add("pw-strong");
+  fill.style.width = (passed/4*100)+"%"; fill.className="pw-strength-fill";
+  if (passed<=1) fill.classList.add("pw-weak"); else if(passed===2) fill.classList.add("pw-fair"); else if(passed===3) fill.classList.add("pw-good"); else fill.classList.add("pw-strong");
+}
+
+function togglePwChangeForm() {
+  var form   = document.getElementById("pw-change-form");
+  var toggle = document.getElementById("pw-change-toggle");
+  if (!form) return;
+  var isHidden = form.classList.contains("hidden");
+  form.classList.toggle("hidden");
+  if (toggle) toggle.textContent = isHidden ? "İptal" : "Değiştir";
 }
 
 async function handleChangePassword() {
-  const currentPw = document.getElementById("current-pw").value;
-  const newPw     = document.getElementById("new-pw").value;
-  const newPw2    = document.getElementById("new-pw2").value;
-  let ok = true;
-
-  if (!currentPw) {
-    document.getElementById("current-pw-error-msg").textContent = "Mevcut şifrenizi girin.";
-    setError("fg-current-pw", true); ok = false;
-  } else { setError("fg-current-pw", false); }
-
-  if (!isPasswordValid(newPw)) {
-    document.getElementById("new-pw-error-msg").textContent = "Şifre gereksinimleri karşılanmıyor.";
-    setError("fg-new-pw", true); ok = false;
-  } else { setError("fg-new-pw", false); }
-
-  if (newPw !== newPw2) {
-    document.getElementById("new-pw2-error-msg").textContent = "Şifreler eşleşmiyor.";
-    setError("fg-new-pw2", true); ok = false;
-  } else { setError("fg-new-pw2", false); }
-
+  var currentPw = document.getElementById("current-pw").value;
+  var newPw     = document.getElementById("new-pw").value;
+  var newPw2    = document.getElementById("new-pw2").value;
+  var ok = true;
+  if (!currentPw)           { document.getElementById("current-pw-error-msg").textContent="Mevcut şifrenizi girin."; setError("fg-current-pw",true); ok=false; } else { setError("fg-current-pw",false); }
+  if (!isPasswordValid(newPw)) { document.getElementById("new-pw-error-msg").textContent="Şifre gereksinimleri karşılanmıyor."; setError("fg-new-pw",true); ok=false; } else { setError("fg-new-pw",false); }
+  if (newPw !== newPw2)     { document.getElementById("new-pw2-error-msg").textContent="Şifreler eşleşmiyor."; setError("fg-new-pw2",true); ok=false; } else { setError("fg-new-pw2",false); }
   if (!ok) return;
-
-  const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+  var activeUser = JSON.parse(localStorage.getItem("activeUser"));
   if (!activeUser) { showToast("Oturum bulunamadı.", "error"); return; }
-
-  const allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
-  const userIdx  = allUsers.findIndex(u => u.email.toLowerCase() === activeUser.email.toLowerCase());
-
+  var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
+  var userIdx  = allUsers.findIndex(function(u) { return u.email.toLowerCase() === activeUser.email.toLowerCase(); });
   if (userIdx === -1) { showToast("Kullanıcı bulunamadı.", "error"); return; }
-
-  const currentHash = await hashPassword(currentPw);
-
+  var currentHash = await hashPassword(currentPw);
   if (allUsers[userIdx].passwordHash && currentHash !== allUsers[userIdx].passwordHash) {
     document.getElementById("current-pw-error-msg").textContent = "Mevcut şifre hatalı.";
-    setError("fg-current-pw", true);
-    return;
+    setError("fg-current-pw", true); return;
   }
-
-  const newHash = await hashPassword(newPw);
-  allUsers[userIdx].passwordHash = newHash;
+  allUsers[userIdx].passwordHash = await hashPassword(newPw);
   localStorage.setItem("velora_users", JSON.stringify(allUsers));
-
-  showToast("Şifreniz başarıyla güncellendi! ✅", "success");
+  showToast("Şifreniz güncellendi! ✅", "success");
   togglePwChangeForm();
 }
 
@@ -1099,160 +976,62 @@ function handleLogout() {
     localStorage.removeItem("velora_remember");
     sessionStorage.removeItem("activeUser");
     showToast("Çıkış yapıldı.", "");
-    setTimeout(() => { showSection("login-section"); }, 600);
+    setTimeout(function() { showSection("login-section"); }, 600);
   }
 }
 
-function openTermsModal(e) {
-  if (e) e.preventDefault();
-  document.getElementById("termsModal").classList.add("active");
-}
-function closeTermsModal(e) {
-  if (e.target === document.getElementById("termsModal")) {
-    document.getElementById("termsModal").classList.remove("active");
-  }
-}
-function acceptTerms() {
-  const cb = document.getElementById("termsCheck");
-  if (cb) { cb.checked = true; setError("fg-terms", false); }
-  document.getElementById("termsModal").classList.remove("active");
-}
+function openTermsModal(e) { if (e) e.preventDefault(); var m = document.getElementById("termsModal"); if (m) m.classList.add("active"); }
+function closeTermsModal(e) { if (e.target === document.getElementById("termsModal")) { document.getElementById("termsModal").classList.remove("active"); } }
+function acceptTerms() { var cb = document.getElementById("termsCheck"); if (cb) { cb.checked=true; setError("fg-terms",false); } var m = document.getElementById("termsModal"); if (m) m.classList.remove("active"); }
 
 function showProfile(user) {
-  const initials = user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
-  document.getElementById("profile-avatar").textContent = initials;
-  document.getElementById("profile-name").textContent = user.name;
-  document.getElementById("profile-email").textContent = user.email;
-  document.getElementById("profile-name-detail").textContent = user.name;
-  document.getElementById("profile-email-detail").textContent = user.email;
+  var initials = user.name.split(" ").map(function(n) { return n[0]; }).join("").slice(0,2).toUpperCase();
+  var av = document.getElementById("profile-avatar"); if (av) av.textContent = initials;
+  var pn = document.getElementById("profile-name"); if (pn) pn.textContent = user.name;
+  var pe = document.getElementById("profile-email"); if (pe) pe.textContent = user.email;
+  var pnd = document.getElementById("profile-name-detail"); if (pnd) pnd.textContent = user.name;
+  var ped = document.getElementById("profile-email-detail"); if (ped) ped.textContent = user.email;
   showSection("profile-section");
 }
 
-let countdownInterval;
+var countdownInterval;
 function startCountdown() {
-  const btn = document.getElementById("resend-btn");
-  const txt = document.getElementById("countdown-text");
-  let sec = 60;
-  btn.classList.add("counting");
-  txt.textContent = ` (${sec}s)`;
+  var btn = document.getElementById("resend-btn");
+  var txt = document.getElementById("countdown-text");
+  var sec = 60;
+  if (btn) btn.classList.add("counting");
+  if (txt) txt.textContent = " (" + sec + "s)";
   clearInterval(countdownInterval);
-  countdownInterval = setInterval(() => {
+  countdownInterval = setInterval(function() {
     sec--;
-    if (sec <= 0) {
-      clearInterval(countdownInterval);
-      btn.classList.remove("counting");
-      txt.textContent = "";
-    } else {
-      txt.textContent = ` (${sec}s)`;
-    }
+    if (sec <= 0) { clearInterval(countdownInterval); if (btn) btn.classList.remove("counting"); if (txt) txt.textContent = ""; }
+    else { if (txt) txt.textContent = " (" + sec + "s)"; }
   }, 1000);
 }
 
 function resendCode() {
-  const btn = document.getElementById("resend-btn");
-  if (btn.classList.contains("counting")) return;
-  const newCode = String(Math.floor(1000 + Math.random() * 9000));
+  var btn = document.getElementById("resend-btn");
+  if (btn && btn.classList.contains("counting")) return;
+  var newCode = String(Math.floor(1000 + Math.random() * 9000));
   tempUser.code = newCode;
-  emailjs.send("service_u871hgw", "template_nnfkcc3", {
-    to_email: tempUser.email,
-    to_name: tempUser.name,
-    code: newCode
-  }).then(() => {
-    showToast("Yeni kod e-postanıza gönderildi!", "success");
-  }).catch(() => {
-    showToast("Mail gönderilemedi. Tekrar deneyin.", "error");
-  });
+  if (typeof emailjs !== "undefined") {
+    emailjs.send("service_u871hgw","template_nnfkcc3",{to_email:tempUser.email,to_name:tempUser.name,code:newCode})
+      .then(function() { showToast("Yeni kod gönderildi!", "success"); })
+      .catch(function() { showToast("Mail gönderilemedi.", "error"); });
+  }
   startCountdown();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const user = JSON.parse(localStorage.getItem("activeUser"));
-  if (user && document.getElementById("profile-section")) {
-    showProfile(user);
-  }
-  const remember = localStorage.getItem("velora_remember");
-  const loginEmailEl = document.getElementById("login-email");
-  if (remember === "true" && user && loginEmailEl) {
-    loginEmailEl.value = user.email;
-    const rememberCb = document.getElementById("rememberMe");
-    if (rememberCb) rememberCb.checked = true;
-  }
-
-  const regEmail   = document.getElementById("reg-email");
-  const loginEmail = document.getElementById("login-email");
-  const loginPw    = document.getElementById("login-password");
-
-  if (regEmail)   regEmail.addEventListener("keydown",   e => { if (e.key === "Enter") handleRegister(); });
-  if (loginEmail) loginEmail.addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
-  if (loginPw)    loginPw.addEventListener("keydown",    e => { if (e.key === "Enter") handleLogin(); });
-});
-
-(function updateProfileIcon() {
-  const user = JSON.parse(localStorage.getItem("activeUser"));
-  const icon = document.getElementById("profile-icon");
-  if (!icon) return;
-  if (user) {
-    const initials = user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
-    icon.innerHTML = initials;
-    icon.classList.add("logged-in");
-    icon.title = user.name;
-  }
-})();
-
-// =====================
-// DARK MODE TOGGLE
-// =====================
-(function initTheme() {
-  const saved = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (saved === "dark" || (!saved && prefersDark)) {
-    document.body.classList.add("dark");
-  }
-  updateThemeBtn();
-})();
-
-function toggleTheme() {
-  document.body.classList.toggle("dark");
-  const isDark = document.body.classList.contains("dark");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  updateThemeBtn();
-}
-
-function updateThemeBtn() {
-  const isDark = document.body.classList.contains("dark");
-  document.querySelectorAll(".theme-toggle").forEach(btn => {
-    btn.textContent = isDark ? "☀️" : "🌙";
-    btn.title = isDark ? "Aydınlık Mod" : "Karanlık Mod";
-  });
-}
-
-// =====================
-// HAMBURGer MENÜ (MOBİL)
-// =====================
-function toggleMenu() {
-  const nav    = document.getElementById("navMenu");
-  const search = document.querySelector(".search-box");
-  if (!nav) return;
-  nav.classList.toggle("open");
-  if (search) search.classList.toggle("open");
-}
-
-(function initHamburger() {
-  const btn = document.getElementById("hamburgerBtn");
-  if (!btn) return;
-})();
-
-// =====================
-// SCROLL REVEAL ANİMASYONU
-// =====================
 document.addEventListener("DOMContentLoaded", function() {
-  function revealOnScroll() {
-    document.querySelectorAll(".about-reveal-left, .about-reveal-right").forEach(el => {
-      if (el.getBoundingClientRect().top < window.innerHeight - 60) {
-        el.classList.add("revealed");
-      }
-    });
-  }
-  window.addEventListener("scroll", revealOnScroll);
-  revealOnScroll();
+  var user = JSON.parse(localStorage.getItem("activeUser"));
+  if (user && document.getElementById("profile-section")) { showProfile(user); }
+  var remember = localStorage.getItem("velora_remember");
+  var loginEmailEl = document.getElementById("login-email");
+  if (remember === "true" && user && loginEmailEl) { loginEmailEl.value = user.email; var cb = document.getElementById("rememberMe"); if (cb) cb.checked = true; }
+  var regEmail   = document.getElementById("reg-email");
+  var loginEmail = document.getElementById("login-email");
+  var loginPw    = document.getElementById("login-password");
+  if (regEmail)   regEmail.addEventListener("keydown",   function(e) { if(e.key==="Enter") handleRegister(); });
+  if (loginEmail) loginEmail.addEventListener("keydown", function(e) { if(e.key==="Enter") handleLogin(); });
+  if (loginPw)    loginPw.addEventListener("keydown",    function(e) { if(e.key==="Enter") handleLogin(); });
 });
