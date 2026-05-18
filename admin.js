@@ -541,8 +541,12 @@ function saveContact() {
     }
   };
   localStorage.setItem('velora_contact', JSON.stringify(contact));
-  addLog('settings', 'İletişim / WhatsApp ayarları güncellendi');
-  showToast('İletişim ayarları kaydedildi ✅', 'success');
+  db().collection('settings').doc('contact').set(contact)
+    .then(() => {
+      addLog('settings', 'İletişim / WhatsApp ayarları güncellendi');
+      showToast('İletişim ayarları kaydedildi ✅', 'success');
+    })
+    .catch(() => showToast('Kayıt hatası!', 'error'));
 }
 
 // ── GÖRÜNÜM ───────────────────────────────────────────────────────────
@@ -583,8 +587,12 @@ function saveAppearance() {
     announcecolor: document.getElementById('app-announcecolor').value,
   };
   localStorage.setItem('velora_appearance', JSON.stringify(app));
-  addLog('settings', 'Görünüm ayarları güncellendi');
-  showToast('Görünüm ayarları kaydedildi ✅', 'success');
+  db().collection('settings').doc('appearance').set(app)
+    .then(() => {
+      addLog('settings', 'Görünüm ayarları güncellendi');
+      showToast('Görünüm ayarları kaydedildi ✅', 'success');
+    })
+    .catch(() => showToast('Kayıt hatası!', 'error'));
 }
 
 // ── EXPORT ────────────────────────────────────────────────────────────
