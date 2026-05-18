@@ -488,20 +488,7 @@ function vcDel(idx) {
 }
 
 /* ── Kupon uygula — velora-data.js → vValidateCoupon() kullanır ── */
-function vcApplyCoupon() {
-  const input = document.getElementById('vc-coupon-input');
-  const btn   = document.getElementById('vc-coupon-btn');
-  const msg   = document.getElementById('vc-coupon-msg');
-  const code  = (input.value || '').trim();
 
-  msg.className = 'vc-coupon-msg';
-  msg.innerHTML = '';
-
-  if (!code) {
-    msg.innerHTML = 'Lütfen bir kupon kodu girin.';
-    msg.classList.add('err');
-    return;
-  }
 
   // Firebase'den kupon oku
   function checkCoupon() {
