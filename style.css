@@ -2484,3 +2484,48 @@ body.dark .center-toast {
   background: #0f0f0f;
   border-color: #c9b97a;
 }
+/* =====================================================================
+   MOBİL BOŞLUK DÜZELTMESİ
+   Bu bloğu style.css'in EN ALTINA ekle
+   ===================================================================== */
+
+@media (max-width: 768px) {
+  .slider-wrapper {
+    margin: 0;
+  }
+
+  .about-section {
+    margin-top: 0;
+    padding: 40px 20px;
+  }
+
+  .footer {
+    margin-top: 0;
+  }
+
+  /* Hero görseller arası boşluk */
+  .hero {
+    margin: 0;
+    padding: 0;
+    display: block;
+  }
+
+  /* Sayfanın en altındaki gereksiz boşluk */
+  body {
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .slider-wrapper {
+    margin: 0;
+  }
+
+  .about-section {
+    margin-top: 0;
+  }
+
+  .footer {
+    margin-top: 0;
+  }
+}
