@@ -1071,13 +1071,23 @@ function handleVerify() {
     var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
     var saveUser = { name:tempUser.name, email:tempUser.email, passwordHash:tempUser.passwordHash };
     if (!allUsers.find(function(u) { return u.email.toLowerCase() === tempUser.email.toLowerCase(); })) {
-      allUsers.push(saveUser);
-      localStorage.setItem("velora_users", JSON.stringify(allUsers));
-    }
-    // Aktif oturum başlat
-    localStorage.setItem("activeUser", JSON.stringify({ name:saveUser.name, email:saveUser.email }));
-    showToast("Üyeliğiniz tamamlandı! Hoş geldiniz 🎉", "success");
-    setTimeout(function() { window.location.href = "index.html"; }, 1200);
+  allUsers.push(saveUser);
+  localStorage.setItem("velora_users", JSON.stringify(allUsers));
+  
+  // Firebase'e de kaydet
+  if (typeof vSaveUser === "function") {
+    vSaveUser({
+      name: saveUser.name,
+      email: saveUser.email,
+      password: saveUser.passwordHash,
+      createdAt: new Date().toISOString()
+    });
+  }
+}
+// Aktif oturum başlat
+localStorage.setItem("activeUser", JSON.stringify({ name:saveUser.name, email:saveUser.email }));
+showToast("Üyeliğiniz tamamlandı! Hoş geldiniz 🎉", "success");
+setTimeout(function() { window.location.href = "index.html"; }, 1200);
   } else {
     showToast("Hatalı kod.", "error");
     // Hatalı girişte kutuları temizle ve kırmızı yap
