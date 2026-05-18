@@ -215,12 +215,12 @@ function applyFilters() {
 if (searchInput)  searchInput.addEventListener("input",  applyFilters);
 if (filterSelect) filterSelect.addEventListener("change", applyFilters);
 
-document.addEventListener("DOMContentLoaded", function() {
+function renderProductDetail(productList) {
   var container = document.getElementById("productDetail");
   if (!container) return;
 
   var id      = Number(new URLSearchParams(window.location.search).get("id"));
-  var product = products.find(function(p) { return p.id === id; });
+  var product = productList.find(function(p) { return p.id === id; });
 
   if (!product) {
     container.innerHTML = "<h2 style='padding:40px'>Ürün bulunamadı</h2>";
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function() {
       '</button>' +
     '</div>';
 
-  var similar = products
+  var similar = productList
     .filter(function(p) { return p.id !== product.id; })
     .sort(function() { return 0.5 - Math.random(); })
     .slice(0, 4);
@@ -281,6 +281,39 @@ document.addEventListener("DOMContentLoaded", function() {
     var productPage = document.querySelector(".product-page");
     if (productPage) productPage.insertAdjacentElement("afterend", sec);
     updateSaveIcons();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  if (!document.getElementById("productDetail")) return;
+
+  // Önce localStorage'dan hızlıca göster (varsa)
+  if (products && products.length > 0) {
+    renderProductDetail(products);
+  }
+
+  // Firebase'den güncel listeyi çek, üzerine yaz
+  function doRender() {
+    if (typeof window.vGetProductsAsync === "function") {
+      window.vGetProductsAsync(function(arr) {
+        if (arr && arr.length > 0) {
+          products = arr;
+          renderProductDetail(arr);
+        }
+      });
+    }
+  }
+
+  if (window._veloraFirebaseReady) {
+    doRender();
+  } else {
+    document.addEventListener("veloraFirebaseReady", doRender, { once: true });
+    // Firebase 5 saniyede gelmezse localStorage ile devam et
+    setTimeout(function() {
+      if (!window._veloraFirebaseReady && products && products.length > 0) {
+        renderProductDetail(products);
+      }
+    }, 5000);
   }
 });
 
