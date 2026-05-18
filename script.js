@@ -1005,3 +1005,28 @@ document.addEventListener("DOMContentLoaded", function() {
   if (loginEmail) loginEmail.addEventListener("keydown", function(e) { if(e.key==="Enter") handleLogin(); });
   if (loginPw)    loginPw.addEventListener("keydown",    function(e) { if(e.key==="Enter") handleLogin(); });
 });
+// ── Firebase: Kullanıcı silinmiş mi kontrol et ──────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var activeUser = JSON.parse(localStorage.getItem('activeUser'));
+  if (!activeUser || !activeUser.email) return;
+
+  // Her 10 saniyede bir Firebase'de kullanıcı hala var mı kontrol et
+  function checkUserStillExists() {
+    if (typeof vFindUser !== 'function') return;
+    vFindUser(activeUser.email, function(user) {
+      if (!user) {
+        // Kullanıcı Firebase'den silinmiş — çıkış yaptır
+        localStorage.removeItem('activeUser');
+        localStorage.removeItem('velora_remember');
+        localStorage.removeItem('cart');
+        alert('Hesabınız silindi. Ana sayfaya yönlendiriliyorsunuz.');
+        window.location.href = 'index.html';
+      }
+    });
+  }
+
+  // Sayfa açılınca hemen bir kere kontrol et
+  setTimeout(checkUserStillExists, 2000);
+  // Sonra her 10 saniyede bir kontrol et
+  setInterval(checkUserStillExists, 10000);
+});
