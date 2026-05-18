@@ -1,5 +1,5 @@
 // ============================================================
-//  VELORA — velora-realtime.js  (v4)
+//  VELORA — velora-realtime.js  (v5)
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     db.collection('settings').doc('main').onSnapshot(function (doc) {
       if (!doc.exists) return;
-      if (doc.data().features && doc.data().features.maintenance) showMaintenance();
+      applyFeatures(doc.data().features);
     }, function(){});
 
     db.collection('settings').doc('appearance').onSnapshot(function (doc) {
@@ -29,6 +29,43 @@ document.addEventListener('DOMContentLoaded', function () {
   else document.addEventListener('veloraFirebaseReady', startSync, { once: true });
 });
 
+// ============================================================
+//  ÖZELLİK TOGGLE'LARI
+// ============================================================
+function applyFeatures(f) {
+  if (!f) return;
+
+  // BAKIM MODU — hepsinden önce kontrol et
+  if (f.maintenance) { showMaintenance(); return; }
+
+  // ARAMA ÇUBUĞU
+  var searchBox = document.querySelector('.search-box');
+  if (searchBox) searchBox.style.display = f.search === false ? 'none' : '';
+
+  // FAVORİLER — header link + ürün kartlarındaki yıldız
+  var favLink = document.querySelector('.fav-link');
+  if (favLink) favLink.style.display = f.favorites === false ? 'none' : '';
+
+  document.querySelectorAll('.product-card__fav').forEach(function(el) {
+    el.style.display = f.favorites === false ? 'none' : '';
+  });
+
+  // DARK MODE TOGGLE
+  var themeToggle = document.querySelector('.theme-toggle');
+  if (themeToggle) themeToggle.style.display = f.darkmode === false ? 'none' : '';
+
+  // KUPON SİSTEMİ — sepet sayfasındaki kupon alanı
+  var couponSection = document.querySelector('.coupon-section');
+  if (couponSection) couponSection.style.display = f.coupon === false ? 'none' : '';
+
+  // ÜYELİK SİSTEMİ — profil ikonu
+  var profileIcon = document.querySelector('.profile-icon');
+  if (profileIcon) profileIcon.style.display = f.auth === false ? 'none' : '';
+}
+
+// ============================================================
+//  GÖRÜNÜM
+// ============================================================
 function applyAppearance(a) {
   if (!a) return;
   var root = document.documentElement;
@@ -67,22 +104,19 @@ function applyAppearance(a) {
   applyBand(a);
 }
 
-// ── Duyuru Bandı — TEK band garantisi ────────────────────────
+// ── Duyuru Bandı ─────────────────────────────────────────────
 function applyBand(a) {
   var BAND_ID = 'velora-announce-band';
 
-  // Sayfada kaç tane band varsa hepsini sil, tek temiz başlangıç
   document.querySelectorAll('#' + BAND_ID + ', #velora-announce-bar').forEach(function(el) {
     el.parentNode.removeChild(el);
   });
 
-  // Band kapalıysa bitir
   if (a.announcebar === false || !a.announcetext) {
     resetBodyPadding(0);
     return;
   }
 
-  // Tek band oluştur
   var band = document.createElement('div');
   band.id = BAND_ID;
   band.style.cssText = [
@@ -107,11 +141,9 @@ function applyBand(a) {
 
   document.body.appendChild(band);
 
-  // Header'ı ve body'yi band yüksekliği kadar aşağı it
   setTimeout(function() {
     var h = band.offsetHeight;
     resetBodyPadding(h);
-    // Fixed header'ı da aşağı kaydır
     var header = document.querySelector('.header,.cart-header,.fav-header,.profile-header');
     if (header) header.style.top = h + 'px';
   }, 30);
@@ -158,6 +190,6 @@ function showMaintenance() {
     'background:#111;color:#c9b97a;font-family:serif;text-align:center;padding:20px">' +
     '<div><div style="font-size:48px;margin-bottom:20px">🔧</div>' +
     '<h1 style="font-size:2rem;margin-bottom:10px">Bakım Modu</h1>' +
-    '<p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda.</p>' +
+    '<p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. Lütfen daha sonra tekrar deneyin.</p>' +
     '</div></div>';
 }
