@@ -1291,3 +1291,16 @@ document.addEventListener("DOMContentLoaded", function() {
   if (loginEmail) loginEmail.addEventListener("keydown", function(e) { if(e.key==="Enter") handleLogin(); });
   if (loginPw)    loginPw.addEventListener("keydown",    function(e) { if(e.key==="Enter") handleLogin(); });
 });
+// ── Admin tarafından kullanıcı silinince otomatik çıkış ──────────────
+window.addEventListener('storage', function(e) {
+  if (e.key === 'velora_force_logout') {
+    var activeUser = JSON.parse(localStorage.getItem('activeUser'));
+    if (activeUser && e.newValue && activeUser.email.toLowerCase() === e.newValue) {
+      localStorage.removeItem('activeUser');
+      localStorage.removeItem('velora_remember');
+      localStorage.removeItem('cart');
+      alert('Hesabınız silindi. Ana sayfaya yönlendiriliyorsunuz.');
+      window.location.href = 'index.html';
+    }
+  }
+});
