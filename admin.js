@@ -490,27 +490,39 @@ function deleteUserByEmail(email) {
   if (!email) return;
   if (!confirm(`"${email}" kullanıcısını silmek istediğinize emin misiniz?`)) return;
 
-  // Firestore'dan sil
-  db().collection('users').doc(email).delete()
+  // 1) where('email') sorgusuyla tüm eşleşen doc'ları bul ve sil
+  // 2) Aynı zamanda doc ID = email olan kaydı da sil (her iki yöntemi birden dene)
+  const colRef = db().collection('users');
+
+  const p1 = colRef.where('email', '==', email).get().then(snap => {
+    if (snap.empty) return;
+    const batch = db().batch();
+    snap.forEach(doc => batch.delete(doc.ref));
+    return batch.commit();
+  });
+
+  const p2 = colRef.doc(email).delete();
+
+  // email'deki @ ve . karakterleri Firestore doc ID'de sorun çıkarabilir,
+  // velora-firebase.js bazen email.toLowerCase() ile kaydeder
+  const p3 = colRef.doc(email.toLowerCase()).delete();
+
+  Promise.all([p1, p2, p3])
     .then(() => {
+      // localStorage'dan da sil
+      let local = JSON.parse(localStorage.getItem('velora_users') || '[]');
+      local = local.filter(u => (u.email || '').toLowerCase() !== email.toLowerCase());
+      localStorage.setItem('velora_users', JSON.stringify(local));
+
+      _cachedUsers = _cachedUsers.filter(u => (u.email || '').toLowerCase() !== email.toLowerCase());
+
       addLog('del', `Kullanıcı silindi: ${email}`);
-      showToast('Kullanıcı silindi', 'error');
-      loadUsersFromFirebase();
+      showToast('Kullanıcı silindi ✅', 'success');
+      renderUsersTable(_cachedUsers);
     })
-    .catch(() => {
-      // Firestore'da bulunamazsa email ile bul
-      db().collection('users').where('email', '==', email).get()
-        .then(snap => {
-          const batch = db().batch();
-          snap.forEach(doc => batch.delete(doc.ref));
-          return batch.commit();
-        })
-        .then(() => {
-          addLog('del', `Kullanıcı silindi: ${email}`);
-          showToast('Kullanıcı silindi', 'error');
-          loadUsersFromFirebase();
-        })
-        .catch(() => showToast('Silme hatası!', 'error'));
+    .catch(e => {
+      console.error('Silme hatası:', e);
+      showToast('Silme hatası! Firebase kurallarını kontrol edin.', 'error');
     });
 }
 
@@ -521,13 +533,15 @@ function clearAllUsers() {
     snap.forEach(doc => batch.delete(doc.ref));
     return batch.commit();
   }).then(() => {
-    // localStorage'ı da temizle
     localStorage.removeItem('velora_users');
     _cachedUsers = [];
     addLog('del', 'Tüm kullanıcılar silindi');
-    showToast('Tüm kullanıcılar silindi', 'error');
-    loadUsersFromFirebase();
-  }).catch(() => showToast('Silme hatası!', 'error'));
+    showToast('Tüm kullanıcılar silindi ✅', 'success');
+    renderUsersTable([]);
+  }).catch(e => {
+    console.error('Toplu silme hatası:', e);
+    showToast('Silme hatası! Firebase kurallarını kontrol edin.', 'error');
+  });
 }
 
 // ── SİTE AYARLARI ─────────────────────────────────────────────────────
