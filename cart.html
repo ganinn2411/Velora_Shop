@@ -503,6 +503,37 @@ function vcApplyCoupon() {
     return;
   }
 
+  // Firebase'den kupon oku
+  function checkCoupon() {
+    if (window._db) {
+      window._db.collection('coupons').doc(code.toUpperCase()).get()
+        .then(doc => {
+          if (!doc.exists || doc.data().status !== 'active') {
+            vcDiscountPct = 0;
+            msg.innerHTML = 'Geçersiz veya pasif kupon kodu.';
+            msg.classList.add('err');
+            return;
+          }
+          const c = doc.data();
+          window._db.collection('coupons').doc(code.toUpperCase()).update({ uses: (c.uses||0)+1 });
+          vcDiscountPct  = c.discount;
+          input.disabled = true;
+          btn.disabled   = true;
+          msg.classList.add('ok');
+          msg.innerHTML = `<span>%${vcDiscountPct} indirim uygulandı ✓</span><button class="vc-remove-coupon" onclick="vcRemoveCoupon()">Kaldır</button>`;
+          vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
+        })
+        .catch(() => {
+          msg.innerHTML = 'Bir hata oluştu, tekrar deneyin.';
+          msg.classList.add('err');
+        });
+    } else {
+      // Firebase hazır değilse 500ms sonra tekrar dene
+      setTimeout(checkCoupon, 500);
+    }
+  }
+  checkCoupon();
+}
   /* velora-data.js içindeki merkezi fonksiyon:
      - localStorage'dan velora_coupons okur
      - aktif/pasif kontrolü yapar
