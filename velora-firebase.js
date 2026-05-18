@@ -343,6 +343,21 @@ window.vDeleteProduct = function(id, done) {
   else { document.addEventListener('veloraFirebaseReady', doDelete, { once: true }); }
 };
 
+// Site ayarlarını Firebase'den oku
+window.vGetSettingsAsync = function(callback) {
+  function doGet() {
+    var db = getDB();
+    if (!db) { callback({}); return; }
+    db.collection('settings').doc('main').get()
+      .then(function(doc) {
+        callback(doc.exists ? doc.data() : {});
+      })
+      .catch(function() { callback({}); });
+  }
+  if (window._veloraFirebaseReady) doGet();
+  else document.addEventListener('veloraFirebaseReady', doGet, { once: true });
+};
+
 // ── Kupon kaydet (admin) ──────────────────────────────────────────────
 window.vSaveCoupon = function(coupon, done) {
   function doSave() {
@@ -398,31 +413,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-// Site ayarlarını Firebase'den oku
-window.vGetSettingsAsync = function(callback) {
-  function doGet() {
-    var db = getDB();
-    if (!db) { callback({}); return; }
-    db.collection('settings').doc('main').get()
-      .then(function(doc) {
-        callback(doc.exists ? doc.data() : {});
-      })
-      .catch(function() { callback({}); });
-  }
-  if (window._veloraFirebaseReady) doGet();
-  else document.addEventListener('veloraFirebaseReady', doGet, { once: true });
-};
+
 // Bakım modu kontrolü
 document.addEventListener('DOMContentLoaded', function() {
-  if (window.location.pathname.includes('admin')) return;
+  // Admin sayfasında bakım modunu çalıştırma
+  if (window.location.href.includes('admin')) return;
+  
   window.vGetSettingsAsync(function(settings) {
     if (settings.features && settings.features.maintenance) {
+      document.body.style.margin = '0';
+      document.body.style.padding = '0';
       document.body.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;color:#c9b97a;font-family:serif;text-align:center;padding:20px">
           <div>
             <div style="font-size:48px;margin-bottom:20px">🔧</div>
-            <h1 style="font-size:2rem;margin-bottom:10px">Bakım Modu</h1>
-            <p style="color:#888">Sitemiz şu an bakımda. Kısa süre içinde geri döneceğiz.</p>
+            <h1 style="font-size:2rem;margin-bottom:10px;color:#c9b97a">Bakım Modu</h1>
+            <p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. Kısa süre içinde geri döneceğiz.</p>
           </div>
         </div>`;
     }
