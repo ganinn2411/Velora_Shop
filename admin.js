@@ -40,6 +40,7 @@ let currentFilter = 'all';
 let currentPage   = 1;
 const perPage     = 15;
 let editingId     = null;
+let _cachedUsers  = [];
 
 // ── AUTH ──────────────────────────────────────────────────────────────
 const ADMIN_PW_KEY      = 'velora_admin_pw';
@@ -396,50 +397,120 @@ function copyCoupon(code) { navigator.clipboard.writeText(code).then(() => showT
 
 // ── FİREBASE: KULLANICILAR ────────────────────────────────────────────
 function loadUsersFromFirebase() {
+  const tbody = document.getElementById('userTableBody');
+  tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">Yükleniyor...</td></tr>`;
+
   function doLoad() {
+    // Önce Firebase users koleksiyonunu dene
     db().collection('users').get()
       .then(snap => {
-        const users = [];
-        snap.forEach(doc => users.push(doc.data()));
+        let users = [];
+
+        snap.forEach(doc => {
+          const d = doc.data();
+          // name veya email yoksa doc.id'den türet
+          users.push({
+            name:  d.name  || d.displayName || d.email || doc.id,
+            email: d.email || doc.id,
+            ...d
+          });
+        });
+
+        // Firestore boşsa localStorage'a bak
+        if (users.length === 0) {
+          const local = JSON.parse(localStorage.getItem('velora_users') || '[]');
+          if (local.length > 0) {
+            users = local;
+          }
+        }
+
+        _cachedUsers = users;
         renderUsersTable(users);
       })
-      .catch(() => {
-        // Fallback: localStorage
-        const users = JSON.parse(localStorage.getItem('velora_users') || '[]');
-        renderUsersTable(users);
+      .catch(e => {
+        console.error('Firestore users hatası:', e);
+        // Hata durumunda localStorage'dan oku
+        const local = JSON.parse(localStorage.getItem('velora_users') || '[]');
+        _cachedUsers = local;
+        renderUsersTable(local);
+        if (local.length === 0) {
+          showToast('Firebase izni kontrol edin (users koleksiyonu)', 'error');
+        }
       });
   }
+
   if (window._fbReady) doLoad();
   else document.addEventListener('fbReady', doLoad, { once: true });
 }
 
 function renderUsersTable(users) {
-  const search   = (document.getElementById('userSearch')?.value || '').toLowerCase();
-  const filtered = users.filter(u => !search || u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
-  document.getElementById('userCount').textContent = filtered.length;
+  const searchEl = document.getElementById('userSearch');
+  const search   = (searchEl?.value || '').toLowerCase().trim();
+
+  const filtered = users.filter(u => {
+    if (!search) return true;
+    const nameMatch  = (u.name  || '').toLowerCase().includes(search);
+    const emailMatch = (u.email || '').toLowerCase().includes(search);
+    return nameMatch || emailMatch;
+  });
+
+  document.getElementById('userCount').textContent = users.length;
+
   const tbody = document.getElementById('userTableBody');
+
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">👤</div>Kullanıcı bulunamadı</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4">
+      <div class="empty-state">
+        <div class="empty-icon">👤</div>
+        ${users.length === 0 ? 'Henüz kayıtlı kullanıcı yok' : 'Arama sonucu bulunamadı'}
+      </div>
+    </td></tr>`;
     return;
   }
+
   tbody.innerHTML = filtered.map(u => `
     <tr>
-      <td style="font-weight:500">${u.name}</td>
-      <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${u.email}</td>
+      <td style="font-weight:500">${u.name || '—'}</td>
+      <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${u.email || '—'}</td>
       <td><span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Kayıtlı</span></td>
       <td><button class="btn btn-danger btn-sm" onclick="deleteUserByEmail('${u.email}')">🗑</button></td>
     </tr>`).join('');
 }
 
-function renderUsers() { loadUsersFromFirebase(); }
+// Arama inputu için — Firebase'e tekrar istek atmadan cache'den filtreler
+function renderUsers() {
+  if (_cachedUsers.length > 0) {
+    renderUsersTable(_cachedUsers);
+  } else {
+    loadUsersFromFirebase();
+  }
+}
 
 function deleteUserByEmail(email) {
+  if (!email) return;
   if (!confirm(`"${email}" kullanıcısını silmek istediğinize emin misiniz?`)) return;
+
+  // Firestore'dan sil
   db().collection('users').doc(email).delete()
     .then(() => {
       addLog('del', `Kullanıcı silindi: ${email}`);
       showToast('Kullanıcı silindi', 'error');
       loadUsersFromFirebase();
+    })
+    .catch(() => {
+      // Firestore'da bulunamazsa email ile bul
+      db().collection('users').where('email', '==', email).get()
+        .then(snap => {
+          const batch = db().batch();
+          snap.forEach(doc => batch.delete(doc.ref));
+          return batch.commit();
+        })
+        .then(() => {
+          addLog('del', `Kullanıcı silindi: ${email}`);
+          showToast('Kullanıcı silindi', 'error');
+          loadUsersFromFirebase();
+        })
+        .catch(() => showToast('Silme hatası!', 'error'));
     });
 }
 
@@ -450,10 +521,13 @@ function clearAllUsers() {
     snap.forEach(doc => batch.delete(doc.ref));
     return batch.commit();
   }).then(() => {
+    // localStorage'ı da temizle
+    localStorage.removeItem('velora_users');
+    _cachedUsers = [];
     addLog('del', 'Tüm kullanıcılar silindi');
     showToast('Tüm kullanıcılar silindi', 'error');
     loadUsersFromFirebase();
-  });
+  }).catch(() => showToast('Silme hatası!', 'error'));
 }
 
 // ── SİTE AYARLARI ─────────────────────────────────────────────────────
@@ -495,7 +569,6 @@ function saveSiteSettings() {
       maintenance: document.getElementById('feat-maintenance').checked,
     }
   };
-  // Hem localStorage hem Firebase'e kaydet
   localStorage.setItem('velora_settings', JSON.stringify(settings));
   db().collection('settings').doc('main').set(settings)
     .then(() => {
