@@ -413,6 +413,62 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+// Ayarları Firebase'den okuyup sayfaya uygula
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.location.href.includes('admin')) return;
+
+  function applySettings() {
+    var db = getDB();
+    if (!db) { setTimeout(applySettings, 500); return; }
+
+    // Site ayarları (bakım modu)
+    db.collection('settings').doc('main').get().then(function(doc) {
+      if (!doc.exists) return;
+      var s = doc.data();
+      if (s.features && s.features.maintenance) {
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;color:#c9b97a;font-family:serif;text-align:center;padding:20px">
+            <div>
+              <div style="font-size:48px;margin-bottom:20px">🔧</div>
+              <h1 style="font-size:2rem;margin-bottom:10px;color:#c9b97a">Bakım Modu</h1>
+              <p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. Kısa süre içinde geri döneceğiz.</p>
+            </div>
+          </div>`;
+      }
+    });
+
+    // Görünüm ayarları
+    db.collection('settings').doc('appearance').get().then(function(doc) {
+      if (!doc.exists) return;
+      var a = doc.data();
+      // Duyuru bandı
+      var band = document.querySelector('.announcement-bar, .announce-bar, [class*="announce"]');
+      if (band) {
+        band.style.display = (a.announcebar === false) ? 'none' : '';
+        if (a.announcetext) band.textContent = a.announcetext;
+        if (a.announcecolor) band.style.background = a.announcecolor;
+      }
+      // Renkler
+      if (a.colors) {
+        if (a.colors.primary) document.documentElement.style.setProperty('--accent', a.colors.primary);
+        if (a.colors.bg)      document.documentElement.style.setProperty('--bg', a.colors.bg);
+        if (a.colors.text)    document.documentElement.style.setProperty('--text', a.colors.text);
+      }
+    });
+
+    // WhatsApp ayarları
+    db.collection('settings').doc('contact').get().then(function(doc) {
+      if (!doc.exists) return;
+      var c = doc.data();
+      localStorage.setItem('velora_contact', JSON.stringify(c));
+    });
+  }
+
+  if (window._veloraFirebaseReady) applySettings();
+  else document.addEventListener('veloraFirebaseReady', applySettings, { once: true });
+});
+
 
 // Bakım modu kontrolü
 document.addEventListener('DOMContentLoaded', function() {
