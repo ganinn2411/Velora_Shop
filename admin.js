@@ -393,25 +393,27 @@ function loadUsersFromFirebase() {
   function doLoad() {
     if (_usersUnsubscribe) { _usersUnsubscribe(); _usersUnsubscribe = null; }
 
-    _usersUnsubscribe = db().collection('users').onSnapshot(snap => {
-      const users = [];
-      snap.forEach(doc => {
-        const d = doc.data();
-        users.push({
-          _docId: doc.id,
-          name:   d.name || d.displayName || d.email || doc.id,
-          email:  d.email || doc.id,
-          ...d
+    db().collection('users').get()
+      .then(snap => {
+        const users = [];
+        snap.forEach(doc => {
+          const d = doc.data();
+          users.push({
+            _docId: doc.id,
+            name:   d.name || d.displayName || d.email || doc.id,
+            email:  d.email || doc.id,
+            ...d
+          });
         });
+        localStorage.setItem('velora_users', JSON.stringify(users));
+        _cachedUsers = users;
+        renderUsersTable(users);
+      })
+      .catch(e => {
+        console.error('Firestore users hatası:', e);
+        showToast('Kullanıcılar yüklenemedi!', 'error');
+        renderUsersTable([]);
       });
-      localStorage.setItem('velora_users', JSON.stringify(users));
-      _cachedUsers = users;
-      renderUsersTable(users);
-    }, e => {
-      console.error('Firestore users hatası:', e);
-      showToast('Firebase izni kontrol edin (users koleksiyonu)', 'error');
-      renderUsersTable([]);
-    });
   }
 
   if (window._fbReady) doLoad();
