@@ -401,41 +401,27 @@ function loadUsersFromFirebase() {
   tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">Yükleniyor...</td></tr>`;
 
   function doLoad() {
-    // Önce Firebase users koleksiyonunu dene
     db().collection('users').get()
       .then(snap => {
-        let users = [];
-
+        const users = [];
         snap.forEach(doc => {
           const d = doc.data();
-          // name veya email yoksa doc.id'den türet
           users.push({
-            name:  d.name  || d.displayName || d.email || doc.id,
-            email: d.email || doc.id,
+            _docId: doc.id,
+            name:   d.name || d.displayName || d.email || doc.id,
+            email:  d.email || doc.id,
             ...d
           });
         });
-
-        // Firestore boşsa localStorage'a bak
-        if (users.length === 0) {
-          const local = JSON.parse(localStorage.getItem('velora_users') || '[]');
-          if (local.length > 0) {
-            users = local;
-          }
-        }
-
+        // Firestore'dan başarıyla geldiyse localStorage'ı güncelle (senkron tut)
+        localStorage.setItem('velora_users', JSON.stringify(users));
         _cachedUsers = users;
         renderUsersTable(users);
       })
       .catch(e => {
         console.error('Firestore users hatası:', e);
-        // Hata durumunda localStorage'dan oku
-        const local = JSON.parse(localStorage.getItem('velora_users') || '[]');
-        _cachedUsers = local;
-        renderUsersTable(local);
-        if (local.length === 0) {
-          showToast('Firebase izni kontrol edin (users koleksiyonu)', 'error');
-        }
+        showToast('Firebase izni kontrol edin (users koleksiyonu)', 'error');
+        renderUsersTable([]);
       });
   }
 
@@ -449,15 +435,13 @@ function renderUsersTable(users) {
 
   const filtered = users.filter(u => {
     if (!search) return true;
-    const nameMatch  = (u.name  || '').toLowerCase().includes(search);
-    const emailMatch = (u.email || '').toLowerCase().includes(search);
-    return nameMatch || emailMatch;
+    return (u.name  || '').toLowerCase().includes(search) ||
+           (u.email || '').toLowerCase().includes(search);
   });
 
   document.getElementById('userCount').textContent = users.length;
 
   const tbody = document.getElementById('userTableBody');
-
   if (filtered.length === 0) {
     tbody.innerHTML = `<tr><td colspan="4">
       <div class="empty-state">
@@ -473,11 +457,10 @@ function renderUsersTable(users) {
       <td style="font-weight:500">${u.name || '—'}</td>
       <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${u.email || '—'}</td>
       <td><span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Kayıtlı</span></td>
-      <td><button class="btn btn-danger btn-sm" onclick="deleteUserByEmail('${u.email}')">🗑</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteUserByDocId('${u._docId}','${u.email}')">🗑</button></td>
     </tr>`).join('');
 }
 
-// Arama inputu için — Firebase'e tekrar istek atmadan cache'den filtreler
 function renderUsers() {
   if (_cachedUsers.length > 0) {
     renderUsersTable(_cachedUsers);
@@ -486,44 +469,43 @@ function renderUsers() {
   }
 }
 
-function deleteUserByEmail(email) {
-  if (!email) return;
+function deleteUserByDocId(docId, email) {
+  if (!docId) return;
   if (!confirm(`"${email}" kullanıcısını silmek istediğinize emin misiniz?`)) return;
 
-  // 1) where('email') sorgusuyla tüm eşleşen doc'ları bul ve sil
-  // 2) Aynı zamanda doc ID = email olan kaydı da sil (her iki yöntemi birden dene)
   const colRef = db().collection('users');
 
-  const p1 = colRef.where('email', '==', email).get().then(snap => {
+  // Her ihtimale karşı 3 yöntemle sil: docId, email, email.toLowerCase()
+  const delDocId    = colRef.doc(docId).delete().catch(() => {});
+  const delEmail    = colRef.doc(email).delete().catch(() => {});
+  const delEmailLow = colRef.doc(email.toLowerCase()).delete().catch(() => {});
+  // where sorgusuyla da bul (docId farklıysa)
+  const delWhere = colRef.where('email', '==', email).get().then(snap => {
     if (snap.empty) return;
     const batch = db().batch();
     snap.forEach(doc => batch.delete(doc.ref));
     return batch.commit();
-  });
+  }).catch(() => {});
 
-  const p2 = colRef.doc(email).delete();
-
-  // email'deki @ ve . karakterleri Firestore doc ID'de sorun çıkarabilir,
-  // velora-firebase.js bazen email.toLowerCase() ile kaydeder
-  const p3 = colRef.doc(email.toLowerCase()).delete();
-
-  Promise.all([p1, p2, p3])
+  Promise.all([delDocId, delEmail, delEmailLow, delWhere])
     .then(() => {
-      // localStorage'dan da sil
-      let local = JSON.parse(localStorage.getItem('velora_users') || '[]');
-      local = local.filter(u => (u.email || '').toLowerCase() !== email.toLowerCase());
-      localStorage.setItem('velora_users', JSON.stringify(local));
-
-      _cachedUsers = _cachedUsers.filter(u => (u.email || '').toLowerCase() !== email.toLowerCase());
-
+      // Cache ve localStorage'dan da kaldır
+      _cachedUsers = _cachedUsers.filter(u => u._docId !== docId && (u.email || '').toLowerCase() !== email.toLowerCase());
+      localStorage.setItem('velora_users', JSON.stringify(_cachedUsers));
       addLog('del', `Kullanıcı silindi: ${email}`);
       showToast('Kullanıcı silindi ✅', 'success');
       renderUsersTable(_cachedUsers);
     })
     .catch(e => {
       console.error('Silme hatası:', e);
-      showToast('Silme hatası! Firebase kurallarını kontrol edin.', 'error');
+      showToast('Silme hatası!', 'error');
     });
+}
+
+// Eski fonksiyon adını da destekle
+function deleteUserByEmail(email) {
+  const u = _cachedUsers.find(x => (x.email || '').toLowerCase() === email.toLowerCase());
+  deleteUserByDocId(u ? u._docId : email, email);
 }
 
 function clearAllUsers() {
