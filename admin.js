@@ -457,8 +457,14 @@ function renderUsersTable(users) {
       <td style="font-weight:500">${u.name || '—'}</td>
       <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">${u.email || '—'}</td>
       <td><span class="badge" style="background:rgba(100,100,100,0.2);color:var(--muted)">Kayıtlı</span></td>
-      <td><button class="btn btn-danger btn-sm" onclick="deleteUserByDocId('${u._docId}','${u.email}')">🗑</button></td>
+      <td><button class="btn btn-danger btn-sm del-user-btn" data-docid="${u._docId}" data-email="${u.email}">🗑</button></td>
     </tr>`).join('');
+
+  tbody.querySelectorAll('.del-user-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      deleteUserByDocId(this.dataset.docid, this.dataset.email);
+    });
+  });
 }
 
 function renderUsers() {
@@ -490,7 +496,7 @@ function deleteUserByDocId(docId, email) {
   Promise.all([delDocId, delEmail, delEmailLow, delWhere])
     .then(() => {
       // Cache ve localStorage'dan da kaldır
-      _cachedUsers = _cachedUsers.filter(u => u._docId !== docId && (u.email || '').toLowerCase() !== email.toLowerCase());
+      _cachedUsers = _cachedUsers.filter(u => !(u._docId === docId || (u.email || '').toLowerCase() === email.toLowerCase()));
       localStorage.setItem('velora_users', JSON.stringify(_cachedUsers));
       addLog('del', `Kullanıcı silindi: ${email}`);
       showToast('Kullanıcı silindi ✅', 'success');
