@@ -495,9 +495,14 @@ function saveSiteSettings() {
       maintenance: document.getElementById('feat-maintenance').checked,
     }
   };
+  // Hem localStorage hem Firebase'e kaydet
   localStorage.setItem('velora_settings', JSON.stringify(settings));
-  addLog('settings', 'Site ayarları güncellendi');
-  showToast('Ayarlar kaydedildi ✅', 'success');
+  db().collection('settings').doc('main').set(settings)
+    .then(() => {
+      addLog('settings', 'Site ayarları güncellendi');
+      showToast('Ayarlar kaydedildi ✅', 'success');
+    })
+    .catch(() => showToast('Kayıt hatası!', 'error'));
 }
 
 // ── İLETİŞİM / WHATSAPP ───────────────────────────────────────────────
