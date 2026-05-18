@@ -371,26 +371,25 @@ body.dark .vc-placeholder { background: linear-gradient(145deg,#2a2520,#1e1b16);
   <script src="velora-firebase.js"></script>
   <script src="script.js"></script>
 
+
+
+
 <script>
-/* ═══════════════════════════════════════════════
+   /* ═══════════════════════════════════════════════
    VELORA CART – JS  (temizlenmiş versiyon)
    VC_COUPONS sabit objesi KALDIRILDI.
    Tüm kupon doğrulama velora-data.js → vValidateCoupon() üzerinden.
    ═══════════════════════════════════════════════ */
-
 let vcDiscountPct = 0;
-
 const vcFmt = n => n.toLocaleString('tr-TR') + ' TL';
 
 function vcUpdateTotals(cart) {
   const sub     = cart.reduce((s, i) => s + (parseFloat(i.price) || 0) * (i.quantity || 1), 0);
   const discAmt = Math.round(sub * vcDiscountPct / 100);
   const total   = sub - discAmt;
-
   document.getElementById('vc-subtotal').textContent = vcFmt(sub);
   document.getElementById('vc-discount').textContent = discAmt > 0 ? `−${vcFmt(discAmt)}` : '—';
   document.getElementById('vc-total').textContent    = vcFmt(total);
-
   const legacyTotal = document.getElementById('total');
   if (legacyTotal) legacyTotal.textContent = total.toLocaleString('tr-TR');
 }
@@ -400,9 +399,7 @@ function vcRender() {
   const list  = document.getElementById('vc-list');
   const label = document.getElementById('vc-count-lbl');
   if (!list) return;
-
   list.innerHTML = '';
-
   if (cart.length === 0) {
     label.textContent = '0 Ürün';
     list.innerHTML = `
@@ -416,10 +413,8 @@ function vcRender() {
     vcUpdateTotals([]);
     return;
   }
-
   const totalQty = cart.reduce((s, i) => s + (i.quantity || 1), 0);
   label.textContent = `${totalQty} Ürün Seçildi`;
-
   cart.forEach((item, idx) => {
     const qty     = item.quantity || 1;
     const price   = parseFloat(item.price) || 0;
@@ -427,15 +422,12 @@ function vcRender() {
       item.size  ? `Beden: ${item.size}`  : '',
       item.color ? `Renk: ${item.color}`  : ''
     ].filter(Boolean).join('  ·  ');
-
     const row = document.createElement('div');
     row.className   = 'vc-row';
     row.dataset.idx = idx;
     row.innerHTML   = `
       <div class="vc-thumb">
-        ${item.image
-          ? `<img src="${item.image}" alt="${item.name}" loading="lazy">`
-          : `<div class="vc-placeholder">🛍</div>`}
+        ${item.image ? `<img src="${item.image}" alt="${item.name}" loading="lazy">` : `<div class="vc-placeholder">🛍</div>`}
       </div>
       <div class="vc-info">
         <span class="vc-brand">${item.brand || 'Velora'}</span>
@@ -450,8 +442,7 @@ function vcRender() {
       <div class="vc-right">
         <span class="vc-price">${vcFmt(price * qty)}</span>
         <button class="vc-remove" onclick="vcDel(${idx})">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
           Kaldır
@@ -459,7 +450,6 @@ function vcRender() {
       </div>`;
     list.appendChild(row);
   });
-
   vcUpdateTotals(cart);
 }
 
@@ -487,13 +477,24 @@ function vcDel(idx) {
   }
 }
 
-/* ── Kupon uygula — velora-data.js → vValidateCoupon() kullanır ── */
+function vcApplyCoupon() {
+  const input = document.getElementById('vc-coupon-input');
+  const btn   = document.getElementById('vc-coupon-btn');
+  const msg   = document.getElementById('vc-coupon-msg');
+  const code  = (input.value || '').trim().toUpperCase();
 
+  msg.className = 'vc-coupon-msg';
+  msg.innerHTML = '';
 
-  // Firebase'den kupon oku
+  if (!code) {
+    msg.innerHTML = 'Lütfen bir kupon kodu girin.';
+    msg.classList.add('err');
+    return;
+  }
+
   function checkCoupon() {
     if (window._db) {
-      window._db.collection('coupons').doc(code.toUpperCase()).get()
+      window._db.collection('coupons').doc(code).get()
         .then(doc => {
           if (!doc.exists || doc.data().status !== 'active') {
             vcDiscountPct = 0;
@@ -502,12 +503,12 @@ function vcDel(idx) {
             return;
           }
           const c = doc.data();
-          window._db.collection('coupons').doc(code.toUpperCase()).update({ uses: (c.uses||0)+1 });
+          window._db.collection('coupons').doc(code).update({ uses: (c.uses || 0) + 1 });
           vcDiscountPct  = c.discount;
           input.disabled = true;
           btn.disabled   = true;
           msg.classList.add('ok');
-          msg.innerHTML = `<span>%${vcDiscountPct} indirim uygulandı ✓</span><button class="vc-remove-coupon" onclick="vcRemoveCoupon()">Kaldır</button>`;
+          msg.innerHTML  = `<span>%${vcDiscountPct} indirim uygulandı ✓</span><button class="vc-remove-coupon" onclick="vcRemoveCoupon()">Kaldır</button>`;
           vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
         })
         .catch(() => {
@@ -515,39 +516,12 @@ function vcDel(idx) {
           msg.classList.add('err');
         });
     } else {
-      // Firebase hazır değilse 500ms sonra tekrar dene
       setTimeout(checkCoupon, 500);
     }
   }
   checkCoupon();
 }
-  /* velora-data.js içindeki merkezi fonksiyon:
-     - localStorage'dan velora_coupons okur
-     - aktif/pasif kontrolü yapar
-     - uses sayacını artırır ve kaydeder
-     - { valid, discount, message } döndürür */
-  const result = window.vValidateCoupon(code);
 
-  if (!result.valid) {
-    vcDiscountPct = 0;
-    msg.innerHTML = result.message;
-    msg.classList.add('err');
-    return;
-  }
-
-  vcDiscountPct  = result.discount;
-  input.disabled = true;
-  btn.disabled   = true;
-  msg.classList.add('ok');
-  msg.innerHTML = `
-    <span>${result.message}</span>
-    <button class="vc-remove-coupon" onclick="vcRemoveCoupon()">Kaldır</button>
-  `;
-
-  vcUpdateTotals(JSON.parse(localStorage.getItem('cart')) || []);
-}
-
-/* ── Kuponu kaldır ── */
 function vcRemoveCoupon() {
   vcDiscountPct = 0;
   const input = document.getElementById('vc-coupon-input');
