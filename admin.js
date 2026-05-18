@@ -2,7 +2,6 @@
 
 const CDN = "https://res.cloudinary.com/dy2dvpbit/image/upload";
 
-// ── Firebase Config ───────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyBJuctg0HZnYjbZdGBztu9SioqEjgMNSDs",
   authDomain: "velora-shop-34729.firebaseapp.com",
@@ -12,7 +11,6 @@ const firebaseConfig = {
   appId: "1:73973178858:web:e028f350361d528cc59293"
 };
 
-// Firebase SDK yükle
 (function loadFirebase() {
   const s1 = document.createElement('script');
   s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
@@ -32,7 +30,6 @@ const firebaseConfig = {
 
 function db() { return window._db; }
 
-// ── STATE ─────────────────────────────────────────────────────────────
 let products      = [];
 let coupons       = [];
 let activityLog   = JSON.parse(localStorage.getItem('velora_log') || '[]');
@@ -42,7 +39,6 @@ const perPage     = 15;
 let editingId     = null;
 let _cachedUsers  = [];
 
-// ── AUTH ──────────────────────────────────────────────────────────────
 const ADMIN_PW_KEY      = 'velora_admin_pw';
 const ADMIN_SESSION_KEY = 'velora_admin_session';
 const DEFAULT_PW        = 'admin123';
@@ -82,11 +78,9 @@ function changeAdminPw() {
   addLog('settings', 'Admin şifresi değiştirildi');
 }
 
-// ── SIDEBAR ───────────────────────────────────────────────────────────
 function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
 
-// ── NAV ───────────────────────────────────────────────────────────────
 function navTo(page, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -114,13 +108,11 @@ function navTo(page, el) {
   closeSidebar();
 }
 
-// ── DASHBOARD ─────────────────────────────────────────────────────────
 function initDashboard() {
   document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('tr-TR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   loadProductsFromFirebase();
 }
 
-// ── FİREBASE: ÜRÜNLER ─────────────────────────────────────────────────
 function loadProductsFromFirebase() {
   const tbody = document.getElementById('productTableBody');
   tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted)">Yükleniyor...</td></tr>`;
@@ -195,7 +187,6 @@ function setFilter(f, btn) {
   renderProductTable();
 }
 
-// ── ÜRÜN EKLE ─────────────────────────────────────────────────────────
 function previewImage() {
   const url = document.getElementById('newImage').value;
   const img = document.getElementById('previewImg');
@@ -262,7 +253,6 @@ function bulkAdd() {
   } catch(e) { showToast('JSON formatı hatalı!', 'error'); }
 }
 
-// ── ÜRÜN DÜZENLE / SİL ───────────────────────────────────────────────
 function openEdit(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
@@ -312,7 +302,6 @@ function deleteProduct(id) {
 
 function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
 
-// ── FİREBASE: KUPONLAR ────────────────────────────────────────────────
 function loadCouponsFromFirebase() {
   function doLoad() {
     db().collection('coupons').get()
@@ -395,18 +384,15 @@ function deleteCoupon(code) {
 
 function copyCoupon(code) { navigator.clipboard.writeText(code).then(() => showToast(`"${code}" kopyalandı 📋`, 'success')); }
 
-// ── FİREBASE: KULLANICILAR ────────────────────────────────────────────
-let _usersUnsubscribe = null; // realtime listener'ı temizlemek için
+let _usersUnsubscribe = null;
 
 function loadUsersFromFirebase() {
   const tbody = document.getElementById('userTableBody');
   tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">Yükleniyor...</td></tr>`;
 
   function doLoad() {
-    // Önceki listener varsa kapat
     if (_usersUnsubscribe) { _usersUnsubscribe(); _usersUnsubscribe = null; }
 
-    // Realtime listener — yeni kullanıcı kaydolunca otomatik güncellenir
     _usersUnsubscribe = db().collection('users').onSnapshot(snap => {
       const users = [];
       snap.forEach(doc => {
@@ -471,8 +457,6 @@ function renderUsersTable(users) {
 }
 
 function renderUsers() {
-  // Arama inputu değişince cache'den filtrele (Firebase'e her tuşta istek atma)
-  // Sayfa ilk açılışında navTo zaten loadUsersFromFirebase çağırıyor
   if (_cachedUsers.length > 0) {
     renderUsersTable(_cachedUsers);
   } else {
@@ -486,11 +470,9 @@ function deleteUserByDocId(docId, email) {
 
   const colRef = db().collection('users');
 
-  // Her ihtimale karşı 3 yöntemle sil: docId, email, email.toLowerCase()
   const delDocId    = colRef.doc(docId).delete().catch(() => {});
   const delEmail    = colRef.doc(email).delete().catch(() => {});
   const delEmailLow = colRef.doc(email.toLowerCase()).delete().catch(() => {});
-  // where sorgusuyla da bul (docId farklıysa)
   const delWhere = colRef.where('email', '==', email).get().then(snap => {
     if (snap.empty) return;
     const batch = db().batch();
@@ -500,24 +482,23 @@ function deleteUserByDocId(docId, email) {
 
   Promise.all([delDocId, delEmail, delEmailLow, delWhere])
     .then(() => {
-  _cachedUsers = _cachedUsers.filter(u => !(u._docId === docId || (u.email || '').toLowerCase() === email.toLowerCase()));
-  localStorage.setItem('velora_users', JSON.stringify(_cachedUsers));
-  
-  // Silinen kullanıcı aktif oturumda ise çıkış yaptır
-  localStorage.setItem('velora_force_logout', email.toLowerCase());
-  setTimeout(() => localStorage.removeItem('velora_force_logout'), 3000);
-  
-  addLog('del', `Kullanıcı silindi: ${email}`);
-  showToast('Kullanıcı silindi ✅', 'success');
-  renderUsersTable(_cachedUsers);
-})
+      _cachedUsers = _cachedUsers.filter(u => !(u._docId === docId || (u.email || '').toLowerCase() === email.toLowerCase()));
+      localStorage.setItem('velora_users', JSON.stringify(_cachedUsers));
+
+      // ── Kullanıcı sitede açıksa çıkış yaptır ──────────────────────
+      localStorage.setItem('velora_force_logout', email.toLowerCase());
+      setTimeout(() => localStorage.removeItem('velora_force_logout'), 5000);
+
+      addLog('del', `Kullanıcı silindi: ${email}`);
+      showToast('Kullanıcı silindi ✅', 'success');
+      renderUsersTable(_cachedUsers);
+    })
     .catch(e => {
       console.error('Silme hatası:', e);
       showToast('Silme hatası!', 'error');
     });
 }
 
-// Eski fonksiyon adını da destekle
 function deleteUserByEmail(email) {
   const u = _cachedUsers.find(x => (x.email || '').toLowerCase() === email.toLowerCase());
   deleteUserByDocId(u ? u._docId : email, email);
@@ -541,7 +522,6 @@ function clearAllUsers() {
   });
 }
 
-// ── SİTE AYARLARI ─────────────────────────────────────────────────────
 function loadSiteSettingsForm() {
   const saved = JSON.parse(localStorage.getItem('velora_settings') || 'null');
   if (!saved) return;
@@ -589,7 +569,6 @@ function saveSiteSettings() {
     .catch(() => showToast('Kayıt hatası!', 'error'));
 }
 
-// ── İLETİŞİM / WHATSAPP ───────────────────────────────────────────────
 function loadContactForm() {
   const contact = JSON.parse(localStorage.getItem('velora_contact') || 'null');
   if (!contact) return;
@@ -633,7 +612,6 @@ function saveContact() {
     .catch(() => showToast('Kayıt hatası!', 'error'));
 }
 
-// ── GÖRÜNÜM ───────────────────────────────────────────────────────────
 function loadAppearanceForm() {
   const app = JSON.parse(localStorage.getItem('velora_appearance') || 'null');
   if (!app) return;
@@ -679,7 +657,6 @@ function saveAppearance() {
     .catch(() => showToast('Kayıt hatası!', 'error'));
 }
 
-// ── EXPORT ────────────────────────────────────────────────────────────
 function exportProducts() {
   const header = 'ID,Ad,Fiyat,Kategori,Tip,Görsel\n';
   const rows   = products.map(p => `${p.id},"${p.name}",${p.price},${p.category},${p.type},"${p.image}"`).join('\n');
@@ -691,7 +668,6 @@ function exportProducts() {
   addLog('settings', 'Ürün listesi CSV indirildi');
 }
 
-// ── LOG ───────────────────────────────────────────────────────────────
 function addLog(type, msg) {
   activityLog.unshift({ type, msg, time: new Date().toLocaleString('tr-TR') });
   if (activityLog.length > 200) activityLog.pop();
@@ -714,7 +690,6 @@ function clearLog() {
   renderFullLog(); showToast('Log temizlendi','success');
 }
 
-// ── TOAST ─────────────────────────────────────────────────────────────
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
   t.textContent=msg; t.className='toast show '+type;
@@ -722,7 +697,6 @@ function showToast(msg, type='') {
   t._timer = setTimeout(() => { t.className='toast'; }, 3000);
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────
 window.addEventListener('load', function() {
   if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
     document.getElementById('loginScreen').style.display = 'none';
