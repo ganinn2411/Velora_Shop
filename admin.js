@@ -43,20 +43,7 @@ const ADMIN_PW_KEY      = 'velora_admin_pw';
 const ADMIN_SESSION_KEY = 'velora_admin_session';
 const DEFAULT_PW        = 'admin123';
 
-function checkAdmin() {
-  const storedPw = localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW;
-  const input    = document.getElementById('adminPwInput').value;
-  if (input === storedPw) {
-    sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display  = 'flex';
-    initDashboard();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-    document.getElementById('adminPwInput').value = '';
-    document.getElementById('adminPwInput').focus();
-  }
-}
+
 
 function adminLogout() {
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
@@ -71,11 +58,54 @@ function changeAdminPw() {
   if (!pw1)           { showToast('Şifre boş olamaz!', 'error'); return; }
   if (pw1.length < 4) { showToast('Şifre en az 4 karakter!', 'error'); return; }
   if (pw1 !== pw2)    { showToast('Şifreler eşleşmiyor!', 'error'); return; }
-  localStorage.setItem(ADMIN_PW_KEY, pw1);
-  document.getElementById('set-newAdminPw').value  = '';
-  document.getElementById('set-newAdminPw2').value = '';
-  showToast('Admin şifresi güncellendi ✅', 'success');
-  addLog('settings', 'Admin şifresi değiştirildi');
+
+  function doSave() {
+    db().collection('settings').doc('adminAuth').set({ password: pw1 })
+      .then(() => {
+        localStorage.setItem(ADMIN_PW_KEY, pw1);
+        document.getElementById('set-newAdminPw').value  = '';
+        document.getElementById('set-newAdminPw2').value = '';
+        showToast('Admin şifresi güncellendi ✅', 'success');
+        addLog('settings', 'Admin şifresi değiştirildi');
+      })
+      .catch(() => showToast('Firebase kayıt hatası!', 'error'));
+  }
+
+  if (window._fbReady) doSave();
+  else document.addEventListener('fbReady', doSave, { once: true });
+}
+
+function checkAdmin() {
+  const input = document.getElementById('adminPwInput').value;
+
+  function verify(storedPw) {
+    if (input === storedPw) {
+      localStorage.setItem(ADMIN_PW_KEY, storedPw); // lokali güncelle
+      sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminPanel').style.display  = 'flex';
+      initDashboard();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('adminPwInput').value = '';
+      document.getElementById('adminPwInput').focus();
+    }
+  }
+
+  function doCheck() {
+    db().collection('settings').doc('adminAuth').get()
+      .then(doc => {
+        const pw = (doc.exists && doc.data().password) ? doc.data().password : (localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW);
+        verify(pw);
+      })
+      .catch(() => {
+        // Firebase erişilemezse localStorage'a düş
+        verify(localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW);
+      });
+  }
+
+  if (window._fbReady) doCheck();
+  else document.addEventListener('fbReady', doCheck, { once: true });
 }
 
 function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
