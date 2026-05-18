@@ -500,13 +500,17 @@ function deleteUserByDocId(docId, email) {
 
   Promise.all([delDocId, delEmail, delEmailLow, delWhere])
     .then(() => {
-      // Cache ve localStorage'dan da kaldır
-      _cachedUsers = _cachedUsers.filter(u => !(u._docId === docId || (u.email || '').toLowerCase() === email.toLowerCase()));
-      localStorage.setItem('velora_users', JSON.stringify(_cachedUsers));
-      addLog('del', `Kullanıcı silindi: ${email}`);
-      showToast('Kullanıcı silindi ✅', 'success');
-      renderUsersTable(_cachedUsers);
-    })
+  _cachedUsers = _cachedUsers.filter(u => !(u._docId === docId || (u.email || '').toLowerCase() === email.toLowerCase()));
+  localStorage.setItem('velora_users', JSON.stringify(_cachedUsers));
+  
+  // Silinen kullanıcı aktif oturumda ise çıkış yaptır
+  localStorage.setItem('velora_force_logout', email.toLowerCase());
+  setTimeout(() => localStorage.removeItem('velora_force_logout'), 3000);
+  
+  addLog('del', `Kullanıcı silindi: ${email}`);
+  showToast('Kullanıcı silindi ✅', 'success');
+  renderUsersTable(_cachedUsers);
+})
     .catch(e => {
       console.error('Silme hatası:', e);
       showToast('Silme hatası!', 'error');
