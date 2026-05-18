@@ -396,33 +396,36 @@ function deleteCoupon(code) {
 function copyCoupon(code) { navigator.clipboard.writeText(code).then(() => showToast(`"${code}" kopyalandı 📋`, 'success')); }
 
 // ── FİREBASE: KULLANICILAR ────────────────────────────────────────────
+let _usersUnsubscribe = null; // realtime listener'ı temizlemek için
+
 function loadUsersFromFirebase() {
   const tbody = document.getElementById('userTableBody');
   tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">Yükleniyor...</td></tr>`;
 
   function doLoad() {
-    db().collection('users').get()
-      .then(snap => {
-        const users = [];
-        snap.forEach(doc => {
-          const d = doc.data();
-          users.push({
-            _docId: doc.id,
-            name:   d.name || d.displayName || d.email || doc.id,
-            email:  d.email || doc.id,
-            ...d
-          });
+    // Önceki listener varsa kapat
+    if (_usersUnsubscribe) { _usersUnsubscribe(); _usersUnsubscribe = null; }
+
+    // Realtime listener — yeni kullanıcı kaydolunca otomatik güncellenir
+    _usersUnsubscribe = db().collection('users').onSnapshot(snap => {
+      const users = [];
+      snap.forEach(doc => {
+        const d = doc.data();
+        users.push({
+          _docId: doc.id,
+          name:   d.name || d.displayName || d.email || doc.id,
+          email:  d.email || doc.id,
+          ...d
         });
-        // Firestore'dan başarıyla geldiyse localStorage'ı güncelle (senkron tut)
-        localStorage.setItem('velora_users', JSON.stringify(users));
-        _cachedUsers = users;
-        renderUsersTable(users);
-      })
-      .catch(e => {
-        console.error('Firestore users hatası:', e);
-        showToast('Firebase izni kontrol edin (users koleksiyonu)', 'error');
-        renderUsersTable([]);
       });
+      localStorage.setItem('velora_users', JSON.stringify(users));
+      _cachedUsers = users;
+      renderUsersTable(users);
+    }, e => {
+      console.error('Firestore users hatası:', e);
+      showToast('Firebase izni kontrol edin (users koleksiyonu)', 'error');
+      renderUsersTable([]);
+    });
   }
 
   if (window._fbReady) doLoad();
@@ -468,6 +471,8 @@ function renderUsersTable(users) {
 }
 
 function renderUsers() {
+  // Arama inputu değişince cache'den filtrele (Firebase'e her tuşta istek atma)
+  // Sayfa ilk açılışında navTo zaten loadUsersFromFirebase çağırıyor
   if (_cachedUsers.length > 0) {
     renderUsersTable(_cachedUsers);
   } else {
