@@ -1,11 +1,7 @@
 // ============================================================
 //  VELORA — velora-firebase.js
-//  Firebase Firestore ile bulut veri yönetimi
-//  Bu dosya velora-data.js'in YERİNE geçer.
-//  Tüm HTML sayfalarında script.js'den ÖNCE yüklenmelidir.
 // ============================================================
 
-// Firebase SDK (CDN)
 var firebaseConfig = {
   apiKey: "AIzaSyBJuctg0HZnYjbZdGBztu9SioqEjgMNSDs",
   authDomain: "velora-shop-34729.firebaseapp.com",
@@ -16,22 +12,14 @@ var firebaseConfig = {
   measurementId: "G-S1518PPRTE"
 };
 
-// Firebase yüklü mü kontrol et, değilse yükle
 (function loadFirebase() {
-  if (typeof firebase !== 'undefined') {
-    initVeloraFirebase();
-    return;
-  }
-  // Firebase App SDK
+  if (typeof firebase !== 'undefined') { initVeloraFirebase(); return; }
   var s1 = document.createElement('script');
   s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
   s1.onload = function() {
-    // Firestore SDK
     var s2 = document.createElement('script');
     s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
-    s2.onload = function() {
-      initVeloraFirebase();
-    };
+    s2.onload = function() { initVeloraFirebase(); };
     document.head.appendChild(s2);
   };
   document.head.appendChild(s1);
@@ -40,13 +28,9 @@ var firebaseConfig = {
 var _db = null;
 
 function initVeloraFirebase() {
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   _db = firebase.firestore();
   window._veloraFirebaseReady = true;
-
-  // Hazır olduğunda event fırlat
   document.dispatchEvent(new Event('veloraFirebaseReady'));
 }
 
@@ -152,7 +136,9 @@ var VELORA_DEFAULT_COUPONS = [
   { code:"MM",        discount:20, status:"active", uses:0 }
 ];
 
-// ── Firebase'den ürünleri oku (async) ─────────────────────────────────
+// ── Ürünler ───────────────────────────────────────────────────────────
+window._vProductsCache = null;
+
 window.vGetProductsAsync = function(callback) {
   function doGet() {
     var db = getDB();
@@ -160,49 +146,34 @@ window.vGetProductsAsync = function(callback) {
     db.collection('products').orderBy('id').get()
       .then(function(snap) {
         if (snap.empty) {
-          // Firestore boşsa varsayılanları yükle
-          vSeedProducts(function() {
-            callback(VELORA_DEFAULT_PRODUCTS);
-          });
+          vSeedProducts(function() { callback(VELORA_DEFAULT_PRODUCTS); });
         } else {
           var arr = [];
           snap.forEach(function(doc) { arr.push(doc.data()); });
           callback(arr);
         }
       })
-      .catch(function(e) {
-        console.warn('Firestore okuma hatası:', e);
-        callback(VELORA_DEFAULT_PRODUCTS);
-      });
+      .catch(function() { callback(VELORA_DEFAULT_PRODUCTS); });
   }
   if (window._veloraFirebaseReady) { doGet(); }
   else { document.addEventListener('veloraFirebaseReady', doGet, { once: true }); }
 };
 
-// Geriye dönük uyumluluk (sync gibi davranır, cache'den okur)
-window._vProductsCache = null;
 window.vGetProducts = function() {
   return window._vProductsCache || VELORA_DEFAULT_PRODUCTS;
 };
 
-// ── Firestore'a varsayılan ürünleri yükle ─────────────────────────────
 function vSeedProducts(done) {
   var db = getDB();
   if (!db) { if (done) done(); return; }
   var batch = db.batch();
   VELORA_DEFAULT_PRODUCTS.forEach(function(p) {
-    var ref = db.collection('products').doc(String(p.id));
-    batch.set(ref, p);
+    batch.set(db.collection('products').doc(String(p.id)), p);
   });
-  batch.commit().then(function() {
-    if (done) done();
-  }).catch(function(e) {
-    console.warn('Seed hatası:', e);
-    if (done) done();
-  });
+  batch.commit().then(function() { if (done) done(); }).catch(function() { if (done) done(); });
 }
 
-// ── Firestore'dan kuponları oku ───────────────────────────────────────
+// ── Kuponlar ──────────────────────────────────────────────────────────
 window.vGetCouponsAsync = function(callback) {
   function doGet() {
     var db = getDB();
@@ -228,13 +199,11 @@ function vSeedCoupons(done) {
   if (!db) { if (done) done(); return; }
   var batch = db.batch();
   VELORA_DEFAULT_COUPONS.forEach(function(c) {
-    var ref = db.collection('coupons').doc(c.code);
-    batch.set(ref, c);
+    batch.set(db.collection('coupons').doc(c.code), c);
   });
   batch.commit().then(function() { if (done) done(); }).catch(function() { if (done) done(); });
 }
 
-// ── Kupon doğrula ─────────────────────────────────────────────────────
 window.vValidateCoupon = function(code, callback) {
   if (!code || !code.trim()) {
     if (callback) callback({ valid:false, discount:0, message:"Lütfen kupon kodu girin." });
@@ -244,19 +213,10 @@ window.vValidateCoupon = function(code, callback) {
   function doValidate() {
     var db = getDB();
     if (!db) {
-      // Fallback: localStorage
-      var raw = localStorage.getItem('velora_coupons');
-      var coupons = raw ? JSON.parse(raw) : VELORA_DEFAULT_COUPONS;
-      var c = coupons.find(function(x) { return x.code === norm; });
-      if (!c || c.status !== 'active') {
-        if (callback) callback({ valid:false, discount:0, message:"Geçersiz kupon kodu." });
-      } else {
-        if (callback) callback({ valid:true, discount:c.discount, message:"%" + c.discount + " indirim uygulandı! 🎉" });
-      }
+      if (callback) callback({ valid:false, discount:0, message:"Bağlantı hatası." });
       return;
     }
-    var ref = db.collection('coupons').doc(norm);
-    ref.get().then(function(doc) {
+    db.collection('coupons').doc(norm).get().then(function(doc) {
       if (!doc.exists) {
         if (callback) callback({ valid:false, discount:0, message:"Geçersiz kupon kodu." });
         return;
@@ -266,8 +226,7 @@ window.vValidateCoupon = function(code, callback) {
         if (callback) callback({ valid:false, discount:0, message:"Bu kupon artık aktif değil." });
         return;
       }
-      // Kullanım sayısını artır
-      ref.update({ uses: (c.uses || 0) + 1 });
+      db.collection('coupons').doc(norm).update({ uses: (c.uses || 0) + 1 });
       if (callback) callback({ valid:true, discount:c.discount, message:"%" + c.discount + " indirim uygulandı! 🎉" });
     }).catch(function() {
       if (callback) callback({ valid:false, discount:0, message:"Bir hata oluştu." });
@@ -277,47 +236,122 @@ window.vValidateCoupon = function(code, callback) {
   else { document.addEventListener('veloraFirebaseReady', doValidate, { once: true }); }
 };
 
-// ── Kullanıcı kaydet ──────────────────────────────────────────────────
+// ── Kullanıcı Kaydet ─────────────────────────────────────────────────
+// DÜZELTME: Kullanıcıyı hem Firestore'a hem localStorage'a kaydet
+// Doc ID olarak email yerine rastgele ID kullan (@ ve . sorunu yok)
 window.vSaveUser = function(user, done) {
+  if (!user || !user.email) {
+    console.error('vSaveUser: email eksik', user);
+    if (done) done(false);
+    return;
+  }
+
+  // localStorage'a her zaman kaydet (fallback)
+  try {
+    var localUsers = JSON.parse(localStorage.getItem('velora_users') || '[]');
+    var existsLocal = localUsers.findIndex(function(u) {
+      return u.email && u.email.toLowerCase() === user.email.toLowerCase();
+    });
+    if (existsLocal >= 0) {
+      localUsers[existsLocal] = user; // güncelle
+    } else {
+      localUsers.push(user);
+    }
+    localStorage.setItem('velora_users', JSON.stringify(localUsers));
+  } catch(e) {
+    console.error('localStorage yazma hatası:', e);
+  }
+
   function doSave() {
     var db = getDB();
     if (!db) {
-      // Fallback localStorage
-      var users = JSON.parse(localStorage.getItem('velora_users') || '[]');
-      if (!users.find(function(u) { return u.email === user.email; })) {
-        users.push(user);
-        localStorage.setItem('velora_users', JSON.stringify(users));
-      }
+      console.warn('vSaveUser: Firebase hazır değil, sadece localStorage kaydedildi');
       if (done) done(true);
       return;
     }
-    db.collection('users').doc(user.email).set(user)
-      .then(function() { if (done) done(true); })
-      .catch(function() { if (done) done(false); });
+
+    // Doc ID = email'i güvenli hale getir (@ → _AT_, . → _DOT_)
+    // Bu sayede Firestore'da sorunsuz saklanır ve admin paneli bulabilir
+    var safeDocId = user.email.toLowerCase()
+      .replace(/\./g, '_DOT_')
+      .replace(/@/g, '_AT_');
+
+    var userData = {
+      name:      user.name      || '',
+      email:     user.email     || '',
+      password:  user.password  || '',
+      createdAt: user.createdAt || new Date().toISOString(),
+      _safeDocId: safeDocId
+    };
+
+    // Hem safeDocId ile hem de email field'ı ile kaydet
+    db.collection('users').doc(safeDocId).set(userData)
+      .then(function() {
+        console.log('vSaveUser: Firestore kaydı başarılı -', user.email, '→ doc:', safeDocId);
+        if (done) done(true);
+      })
+      .catch(function(e) {
+        console.error('vSaveUser: Firestore hatası:', e);
+        // localStorage'a zaten kaydettik, yine de başarılı say
+        if (done) done(true);
+      });
   }
+
   if (window._veloraFirebaseReady) { doSave(); }
   else { document.addEventListener('veloraFirebaseReady', doSave, { once: true }); }
 };
 
-// ── Kullanıcı bul ─────────────────────────────────────────────────────
+// ── Kullanıcı Bul ─────────────────────────────────────────────────────
 window.vFindUser = function(email, callback) {
+  if (!email) { callback(null); return; }
+
   function doFind() {
     var db = getDB();
     if (!db) {
+      // localStorage fallback
       var users = JSON.parse(localStorage.getItem('velora_users') || '[]');
-      var u = users.find(function(x) { return x.email.toLowerCase() === email.toLowerCase(); });
+      var u = users.find(function(x) { return x.email && x.email.toLowerCase() === email.toLowerCase(); });
       callback(u || null);
       return;
     }
-    db.collection('users').doc(email.toLowerCase()).get()
-      .then(function(doc) { callback(doc.exists ? doc.data() : null); })
-      .catch(function() { callback(null); });
+
+    var safeDocId = email.toLowerCase()
+      .replace(/\./g, '_DOT_')
+      .replace(/@/g, '_AT_');
+
+    // Önce safeDocId ile ara
+    db.collection('users').doc(safeDocId).get()
+      .then(function(doc) {
+        if (doc.exists) {
+          callback(doc.data());
+          return;
+        }
+        // Bulunamazsa email field'ı ile sorgula
+        return db.collection('users').where('email', '==', email).get()
+          .then(function(snap) {
+            if (!snap.empty) {
+              callback(snap.docs[0].data());
+            } else {
+              // Son çare: localStorage
+              var users = JSON.parse(localStorage.getItem('velora_users') || '[]');
+              var u = users.find(function(x) { return x.email && x.email.toLowerCase() === email.toLowerCase(); });
+              callback(u || null);
+            }
+          });
+      })
+      .catch(function(e) {
+        console.error('vFindUser hatası:', e);
+        var users = JSON.parse(localStorage.getItem('velora_users') || '[]');
+        var u = users.find(function(x) { return x.email && x.email.toLowerCase() === email.toLowerCase(); });
+        callback(u || null);
+      });
   }
+
   if (window._veloraFirebaseReady) { doFind(); }
   else { document.addEventListener('veloraFirebaseReady', doFind, { once: true }); }
 };
 
-// ── Ürün kaydet (admin) ───────────────────────────────────────────────
+// ── Ürün Yönetimi (admin) ─────────────────────────────────────────────
 window.vSaveProduct = function(product, done) {
   function doSave() {
     var db = getDB();
@@ -330,7 +364,6 @@ window.vSaveProduct = function(product, done) {
   else { document.addEventListener('veloraFirebaseReady', doSave, { once: true }); }
 };
 
-// ── Ürün sil (admin) ──────────────────────────────────────────────────
 window.vDeleteProduct = function(id, done) {
   function doDelete() {
     var db = getDB();
@@ -343,22 +376,7 @@ window.vDeleteProduct = function(id, done) {
   else { document.addEventListener('veloraFirebaseReady', doDelete, { once: true }); }
 };
 
-// Site ayarlarını Firebase'den oku
-window.vGetSettingsAsync = function(callback) {
-  function doGet() {
-    var db = getDB();
-    if (!db) { callback({}); return; }
-    db.collection('settings').doc('main').get()
-      .then(function(doc) {
-        callback(doc.exists ? doc.data() : {});
-      })
-      .catch(function() { callback({}); });
-  }
-  if (window._veloraFirebaseReady) doGet();
-  else document.addEventListener('veloraFirebaseReady', doGet, { once: true });
-};
-
-// ── Kupon kaydet (admin) ──────────────────────────────────────────────
+// ── Kupon Yönetimi (admin) ────────────────────────────────────────────
 window.vSaveCoupon = function(coupon, done) {
   function doSave() {
     var db = getDB();
@@ -371,7 +389,6 @@ window.vSaveCoupon = function(coupon, done) {
   else { document.addEventListener('veloraFirebaseReady', doSave, { once: true }); }
 };
 
-// ── Kupon sil (admin) ─────────────────────────────────────────────────
 window.vDeleteCoupon = function(code, done) {
   function doDelete() {
     var db = getDB();
@@ -390,15 +407,23 @@ window.vGetContact    = function() { try { return JSON.parse(localStorage.getIte
 window.vGetAppearance = function() { try { return JSON.parse(localStorage.getItem("velora_appearance") || "{}"); } catch(e) { return {}; } };
 window.vSyncProducts  = function() { window._vProductsCache = null; };
 
+window.vGetSettingsAsync = function(callback) {
+  function doGet() {
+    var db = getDB();
+    if (!db) { callback({}); return; }
+    db.collection('settings').doc('main').get()
+      .then(function(doc) { callback(doc.exists ? doc.data() : {}); })
+      .catch(function() { callback({}); });
+  }
+  if (window._veloraFirebaseReady) doGet();
+  else document.addEventListener('veloraFirebaseReady', doGet, { once: true });
+};
+
 // ── Sayfa yüklenince ürünleri çek ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   window.vGetProductsAsync(function(arr) {
     window._vProductsCache = arr;
-    // script.js'deki products değişkenini güncelle
-    if (typeof products !== 'undefined') {
-      products = arr;
-    }
-    // Sayfayı yeniden render et
+    if (typeof products !== 'undefined') products = arr;
     if (typeof renderTopProducts === 'function' && document.getElementById('products') && !document.getElementById('category-title')) {
       renderTopProducts(typeof getNewCollection === 'function' ? getNewCollection(arr) : arr.slice(0,12));
     }
@@ -413,7 +438,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-// Ayarları Firebase'den okuyup sayfaya uygula
+
+// ── Ayarları Firebase'den okuyup sayfaya uygula ───────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   if (window.location.href.includes('admin')) return;
 
@@ -421,35 +447,24 @@ document.addEventListener('DOMContentLoaded', function() {
     var db = getDB();
     if (!db) { setTimeout(applySettings, 500); return; }
 
-    // Site ayarları (bakım modu)
     db.collection('settings').doc('main').get().then(function(doc) {
       if (!doc.exists) return;
       var s = doc.data();
       if (s.features && s.features.maintenance) {
         document.body.style.margin = '0';
-        document.body.innerHTML = `
-          <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;color:#c9b97a;font-family:serif;text-align:center;padding:20px">
-            <div>
-              <div style="font-size:48px;margin-bottom:20px">🔧</div>
-              <h1 style="font-size:2rem;margin-bottom:10px;color:#c9b97a">Bakım Modu</h1>
-              <p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. Kısa süre içinde geri döneceğiz.</p>
-            </div>
-          </div>`;
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;color:#c9b97a;font-family:serif;text-align:center;padding:20px"><div><div style="font-size:48px;margin-bottom:20px">🔧</div><h1 style="font-size:2rem;margin-bottom:10px;color:#c9b97a">Bakım Modu</h1><p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. Kısa süre içinde geri döneceğiz.</p></div></div>';
       }
     });
 
-    // Görünüm ayarları
     db.collection('settings').doc('appearance').get().then(function(doc) {
       if (!doc.exists) return;
       var a = doc.data();
-      // Duyuru bandı
       var band = document.querySelector('.announcement-bar, .announce-bar, [class*="announce"]');
       if (band) {
         band.style.display = (a.announcebar === false) ? 'none' : '';
         if (a.announcetext) band.textContent = a.announcetext;
         if (a.announcecolor) band.style.background = a.announcecolor;
       }
-      // Renkler
       if (a.colors) {
         if (a.colors.primary) document.documentElement.style.setProperty('--accent', a.colors.primary);
         if (a.colors.bg)      document.documentElement.style.setProperty('--bg', a.colors.bg);
@@ -457,11 +472,9 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // WhatsApp ayarları
     db.collection('settings').doc('contact').get().then(function(doc) {
       if (!doc.exists) return;
-      var c = doc.data();
-      localStorage.setItem('velora_contact', JSON.stringify(c));
+      localStorage.setItem('velora_contact', JSON.stringify(doc.data()));
     });
   }
 
@@ -469,24 +482,14 @@ document.addEventListener('DOMContentLoaded', function() {
   else document.addEventListener('veloraFirebaseReady', applySettings, { once: true });
 });
 
-
-// Bakım modu kontrolü
+// ── Bakım modu kontrolü ───────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  // Admin sayfasında bakım modunu çalıştırma
   if (window.location.href.includes('admin')) return;
-  
   window.vGetSettingsAsync(function(settings) {
     if (settings.features && settings.features.maintenance) {
       document.body.style.margin = '0';
       document.body.style.padding = '0';
-      document.body.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;color:#c9b97a;font-family:serif;text-align:center;padding:20px">
-          <div>
-            <div style="font-size:48px;margin-bottom:20px">🔧</div>
-            <h1 style="font-size:2rem;margin-bottom:10px;color:#c9b97a">Bakım Modu</h1>
-            <p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. Kısa süre içinde geri döneceğiz.</p>
-          </div>
-        </div>`;
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;color:#c9b97a;font-family:serif;text-align:center;padding:20px"><div><div style="font-size:48px;margin-bottom:20px">🔧</div><h1 style="font-size:2rem;margin-bottom:10px;color:#c9b97a">Bakım Modu</h1><p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. Kısa süre içinde geri döneceğiz.</p></div></div>';
     }
   });
 });
