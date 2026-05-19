@@ -1,96 +1,211 @@
 <!DOCTYPE html>
+<!-- Türkçe dil tanımı — ekran okuyucular ve SEO için önemli -->
 <html lang="tr">
 <head>
+<!-- Tarayıcıya Türkçe karakterlerin doğru görünmesi için UTF-8 kodlaması -->
 <meta charset="UTF-8">
+<!-- Mobil cihazlarda sayfanın ekran genişliğine uyması için viewport ayarı.
+     maximum-scale=1.0 ve user-scalable=no — iOS'ta çift dokunuşla
+     yakınlaştırmayı engeller, admin paneli sabit kalır. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Velora Admin Panel</title>
+
+<!-- Google Fonts bağlantısı — DM Mono (kod/mono alanlar) ve
+     Syne (başlık/arayüz yazıları) fontları yüklenir -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-  <!-- Favicon: altın V ikonu -->
+
+<!-- Tarayıcı sekmesinde görünen altın V ikonu.
+     SVG data URI olarak gömülmüştür — ayrı dosya gerekmez. -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23111'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23c9b97a'>V</text></svg>">
-<!-- Sekme başlığı -->
-<title>VELORA – Hesabım</title>
+
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tüm admin panelinin görsel tasarımı admin.css dosyasından gelir -->
 <link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ================================================================
+     GİRİŞ EKRANI
+     Sayfa ilk açıldığında bu ekran tüm sayfayı kaplar (position: fixed).
+     checkAdmin() fonksiyonu şifreyi doğrularsa bu div gizlenir,
+     adminPanel div'i görünür hale gelir.
+     ================================================================ -->
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
+    <!-- VELORA marka adı — altın renk büyük yazı -->
     <div class="login-logo">VELORA</div>
+    <!-- "ADMIN PANEL" alt yazısı — küçük izlenimli mono font -->
     <div class="login-sub">ADMIN PANEL</div>
     <div class="login-title">Giriş Yap</div>
+
+    <!-- Şifre giriş alanı — type="password" karakterleri gizler -->
     <div class="form-group" style="margin-bottom:16px">
       <label class="form-label">ŞİFRE</label>
       <input type="password" class="form-input" id="adminPwInput" placeholder="••••••••">
     </div>
+
+    <!-- Giriş butonu — onclick ile checkAdmin() çalışır -->
     <button class="btn btn-primary btn-full" onclick="checkAdmin()">GİRİŞ YAP</button>
+
+    <!-- Hatalı şifrede görünen hata mesajı — başlangıçta display:none ile gizlidir,
+         JavaScript checkAdmin() içinde display:block yaparak gösterir -->
     <p id="loginError" style="color:var(--danger);font-size:11px;margin-top:10px;text-align:center;display:none">Hatalı şifre!</p>
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
+
+<!-- ================================================================
+     ANA ADMIN PANELİ
+     Giriş başarılı olunca display:flex yapılır.
+     .shell class'ı sidebar + main'i yan yana tutar (flexbox).
+     ================================================================ -->
 <div id="adminPanel" class="shell" style="display:none">
 
+  <!-- Mobilde sidebar açıkken arkayı karartır.
+       Tıklanınca closeSidebar() çalışır ve sidebar kapanır. -->
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-  <!-- SIDEBAR -->
+  <!-- ============================================================
+       SIDEBAR — Sol Navigasyon Menüsü
+       Masaüstünde her zaman görünür.
+       Mobilde gizlidir, hamburger butonu ile açılır.
+       navTo() fonksiyonu tıklanan sayfayı aktif hale getirir.
+       ============================================================ -->
   <nav class="sidebar" id="sidebar">
+
+    <!-- Logo alanı — sidebar üst kısmında sabit -->
     <div class="sidebar-logo">
       <div class="logo-name">VELORA</div>
       <div class="logo-sub">ADMIN PANEL</div>
     </div>
+
+    <!-- Navigasyon linkleri -->
     <div class="nav">
+
+      <!-- "Ürünler" grup başlığı — tıklanamaz, sadece etiket -->
       <div class="nav-sec">Ürünler</div>
-      <div class="nav-item active" onclick="navTo('products',this)"><span class="nav-icon">👕</span>Ürün Listesi</div>
-      <div class="nav-item" onclick="navTo('addProduct',this)"><span class="nav-icon">➕</span>Yeni Ürün Ekle</div>
+
+      <!-- Ürün listesi — sayfa açılışında varsayılan aktif sayfa -->
+      <div class="nav-item active" onclick="navTo('products',this)">
+        <span class="nav-icon">👕</span>Ürün Listesi
+      </div>
+
+      <!-- Yeni ürün ekleme sayfası -->
+      <div class="nav-item" onclick="navTo('addProduct',this)">
+        <span class="nav-icon">➕</span>Yeni Ürün Ekle
+      </div>
+
+      <!-- "Mağaza" grup başlığı -->
       <div class="nav-sec">Mağaza</div>
-      <div class="nav-item" onclick="navTo('coupons',this)"><span class="nav-icon">🏷️</span>Kupon Yönetimi</div>
-      <div class="nav-item" onclick="navTo('users',this)"><span class="nav-icon">👥</span>Kullanıcılar</div>
+
+      <!-- Kupon yönetimi sayfası -->
+      <div class="nav-item" onclick="navTo('coupons',this)">
+        <span class="nav-icon">🏷️</span>Kupon Yönetimi
+      </div>
+
+      <!-- Kullanıcı listesi sayfası -->
+      <div class="nav-item" onclick="navTo('users',this)">
+        <span class="nav-icon">👥</span>Kullanıcılar
+      </div>
+
+      <!-- "Ayarlar" grup başlığı -->
       <div class="nav-sec">Ayarlar</div>
-      <div class="nav-item" onclick="navTo('siteSettings',this)"><span class="nav-icon">⚙️</span>Site Ayarları</div>
-      <div class="nav-item" onclick="navTo('whatsapp',this)"><span class="nav-icon">💬</span>WhatsApp / İletişim</div>
-      <div class="nav-item" onclick="navTo('appearance',this)"><span class="nav-icon">🎨</span>Görünüm</div>
-      <div class="nav-item" onclick="navTo('activity',this)"><span class="nav-icon">📋</span>Aktivite Logu</div>
+
+      <!-- Site genel ayarları (mağaza adı, SEO, özellikler) -->
+      <div class="nav-item" onclick="navTo('siteSettings',this)">
+        <span class="nav-icon">⚙️</span>Site Ayarları
+      </div>
+
+      <!-- WhatsApp numarası ve iletişim bilgileri -->
+      <div class="nav-item" onclick="navTo('whatsapp',this)">
+        <span class="nav-icon">💬</span>WhatsApp / İletişim
+      </div>
+
+      <!-- Renkler, fontlar, banner görünüm ayarları -->
+      <div class="nav-item" onclick="navTo('appearance',this)">
+        <span class="nav-icon">🎨</span>Görünüm
+      </div>
+
+      <!-- Yapılan işlemlerin geçmişi -->
+      <div class="nav-item" onclick="navTo('activity',this)">
+        <span class="nav-icon">📋</span>Aktivite Logu
+      </div>
     </div>
+
+    <!-- Sidebar alt kısmı — admin bilgisi ve çıkış butonu -->
     <div class="sidebar-foot">
+      <!-- Admin adı ve rolü — avatar + bilgi yan yana -->
       <div class="admin-pill">
+        <!-- "AD" baş harfleri yuvarlak avatarda gösterilir -->
         <div class="av">AD</div>
         <div>
           <div class="admin-name">Admin</div>
           <div class="admin-role">superadmin</div>
         </div>
       </div>
+      <!-- Çıkış butonu — sessionStorage'ı temizler, login ekranına döner -->
       <button class="btn btn-secondary btn-full" style="margin-top:8px;font-size:11px" onclick="adminLogout()">Çıkış Yap</button>
     </div>
   </nav>
 
-  <!-- MAIN -->
+
+  <!-- ============================================================
+       ANA İÇERİK ALANI
+       Tüm sayfalar (.page) burada bulunur.
+       Sadece aktif sayfa (.page.active) görünür, diğerleri gizlidir.
+       ============================================================ -->
   <div class="main">
 
-    <!-- TOPBAR -->
+    <!-- ============================================================
+         ÜST ÇUBUK (TOPBAR)
+         Sayfa başlığı, hamburger butonu ve aksiyon butonları.
+         position: sticky ile aşağı kaydırılırken üstte sabit kalır.
+         ============================================================ -->
     <div class="topbar">
+      <!-- Hamburger butonu — sadece mobilde görünür.
+           Tıklanınca openSidebar() çalışır ve sidebar açılır. -->
       <button class="hamburger-btn" onclick="openSidebar()">☰</button>
+
+      <!-- Aktif sayfanın başlığı — navTo() fonksiyonu günceller -->
       <span class="topbar-title" id="topbarTitle">Ürün Listesi</span>
+
       <div class="topbar-actions">
+        <!-- Güncel tarih — masaüstünde görünür, JavaScript ile yazılır -->
         <span class="topbar-date" id="topbarDate"></span>
+        <!-- Siteyi yeni sekmede açma butonu -->
         <a href="index.html" target="_blank" class="btn btn-secondary btn-sm">🌐 Site</a>
       </div>
     </div>
 
-    <!-- ÜRÜN LİSTESİ -->
+
+    <!-- ============================================================
+         ÜRÜN LİSTESİ SAYFASI
+         Varsayılan açık sayfa (.page.active).
+         Firebase'den çekilen tüm ürünler tabloda listelenir.
+         ============================================================ -->
     <div class="page active" id="page-products">
       <div class="section-header">
+        <!-- Ürün sayısı JavaScript tarafından güncellenir -->
         <span class="section-title">Ürünler (<span id="productCount">0</span>)</span>
         <div style="display:flex;gap:7px">
+          <!-- CSV indirme — exportProducts() fonksiyonu çalışır -->
           <button class="btn btn-secondary btn-sm" onclick="exportProducts()">📥 CSV</button>
+          <!-- Ürün ekleme sayfasına yönlendir -->
           <button class="btn btn-primary btn-sm" onclick="navTo('addProduct',null)">+ Ekle</button>
         </div>
       </div>
+
+      <!-- Arama kutusu — her tuş basışında renderProductTable() çalışır -->
       <div class="search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="productSearch" placeholder="Ara..." oninput="currentPage=1;renderProductTable()">
+        <input type="text" class="search-input" id="productSearch"
+               placeholder="Ara..."
+               oninput="currentPage=1;renderProductTable()">
       </div>
+
+      <!-- Kategori/tip filtre butonları — yatay kaydırılabilir.
+           setFilter() fonksiyonu seçilen filtreyi uygular. -->
       <div class="filter-bar">
         <button class="filter-btn active" onclick="setFilter('all',this)">Tümü</button>
         <button class="filter-btn" onclick="setFilter('erkek',this)">Erkek</button>
@@ -101,34 +216,66 @@
         <button class="filter-btn" onclick="setFilter('ceket',this)">Ceket</button>
         <button class="filter-btn" onclick="setFilter('sapka',this)">Şapka</button>
       </div>
+
+      <!-- Ürün tablosu — yatay kaydırılabilir (table-scroll).
+           tbody#productTableBody içeriği JavaScript ile doldurulur. -->
       <div class="table-wrap">
         <div class="table-scroll">
           <table>
-            <thead><tr><th>Görsel</th><th>Ad</th><th>Fiyat</th><th>Kategori</th><th>Tip</th><th>ID</th><th>İşlem</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Görsel</th>
+                <th>Ad</th>
+                <th>Fiyat</th>
+                <th>Kategori</th>
+                <th>Tip</th>
+                <th>ID</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <!-- renderProductTable() fonksiyonu bu tbody'yi doldurur -->
             <tbody id="productTableBody"></tbody>
           </table>
         </div>
       </div>
+
+      <!-- Sayfalama butonları — renderProductTable() tarafından oluşturulur -->
       <div class="pagination" id="productPagination"></div>
     </div>
 
-    <!-- YENİ ÜRÜN -->
+
+    <!-- ============================================================
+         YENİ ÜRÜN EKLEME SAYFASI
+         Tek ürün form ile veya JSON ile toplu ürün eklenebilir.
+         editingId değişkeni ile düzenleme modunda da kullanılır.
+         ============================================================ -->
     <div class="page" id="page-addProduct">
       <div class="section-header">
+        <!-- Başlık: "Yeni Ürün Ekle" veya "Ürünü Düzenle" — JavaScript günceller -->
         <span class="section-title" id="addProductTitle">Yeni Ürün Ekle</span>
       </div>
+
+      <!-- Masaüstünde iki sütun (form + önizleme), mobilde tek sütun -->
       <div class="add-product-grid">
+
+        <!-- Sol kart: Ürün bilgi formu -->
         <div class="settings-card">
           <div class="settings-card-title">Ürün Bilgileri</div>
           <div class="form-grid">
+
+            <!-- Ürün adı -->
             <div class="form-group">
               <label class="form-label">Ürün Adı</label>
               <input type="text" class="form-input" id="newName" placeholder="Erkek Tişört">
             </div>
+
+            <!-- Fiyat — inputmode="numeric" mobilde sayısal klavye açar -->
             <div class="form-group">
               <label class="form-label">Fiyat (TL)</label>
               <input type="number" class="form-input" id="newPrice" placeholder="1200" inputmode="numeric">
             </div>
+
+            <!-- Kategori seçimi -->
             <div class="form-group">
               <label class="form-label">Kategori</label>
               <select class="form-select" id="newCategory">
@@ -138,6 +285,8 @@
                 <option value="cocuk">Çocuk</option>
               </select>
             </div>
+
+            <!-- Ürün tipi seçimi -->
             <div class="form-group">
               <label class="form-label">Tip</label>
               <select class="form-select" id="newType">
@@ -148,239 +297,594 @@
                 <option value="sapka">Şapka</option>
               </select>
             </div>
+
+            <!-- Görsel URL — oninput ile previewImage() anında önizleme yapar.
+                 full class: iki sütunlu grid'de tam genişlik kaplar. -->
             <div class="form-group full">
               <label class="form-label">Görsel URL</label>
-              <input type="text" class="form-input" id="newImage" placeholder="https://res.cloudinary.com/..." oninput="previewImage()">
+              <input type="text" class="form-input" id="newImage"
+                     placeholder="https://res.cloudinary.com/..."
+                     oninput="previewImage()">
             </div>
           </div>
+
+          <!-- Kaydet ve Temizle butonları -->
           <div style="margin-top:16px;display:flex;gap:10px">
             <button class="btn btn-primary" onclick="saveProduct()">💾 Kaydet</button>
             <button class="btn btn-secondary" onclick="clearProductForm()">Temizle</button>
           </div>
         </div>
+
+        <!-- Sağ sütun: Önizleme + Toplu ekleme -->
         <div>
+          <!-- Ürün önizleme kartı — URL girilince görsel ve bilgiler burada görünür -->
           <div class="settings-card">
             <div class="settings-card-title">Önizleme</div>
-            <img id="previewImg" class="product-preview-img" src="" onerror="this.style.display='none'" style="display:none">
+            <!-- onerror: görsel yüklenemezse kendini gizler -->
+            <img id="previewImg" class="product-preview-img" src=""
+                 onerror="this.style.display='none'" style="display:none">
+            <!-- URL girilmeden önce görünen yer tutucu -->
             <div id="previewPlaceholder" class="preview-placeholder">URL girin</div>
+            <!-- Ürün adı ve fiyatı — previewImage() fonksiyonu günceller -->
             <div id="previewName" style="font-size:13px;font-weight:600;margin-bottom:3px">—</div>
             <div id="previewPrice" style="color:var(--accent);font-size:12px">— TL</div>
           </div>
+
+          <!-- JSON ile toplu ürün ekleme kartı.
+               bulkAdd() fonksiyonu JSON'u parse eder ve tüm ürünleri Firebase'e yazar. -->
           <div class="settings-card">
             <div class="settings-card-title">Toplu Ekle (JSON)</div>
-            <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6">JSON formatında birden fazla ürün ekleyin.</p>
-            <textarea class="form-input" id="bulkJson" rows="4" style="font-family:'DM Mono',monospace;font-size:10px;width:100%;resize:vertical" placeholder='[{"name":"...","price":800,"category":"erkek","type":"tisort","image":"https://..."}]'></textarea>
+            <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6">
+              JSON formatında birden fazla ürün ekleyin.
+            </p>
+            <!-- JSON textarea — resize: vertical ile sadece dikey büyütülebilir -->
+            <textarea class="form-input" id="bulkJson" rows="4"
+                      style="font-family:'DM Mono',monospace;font-size:10px;width:100%;resize:vertical"
+                      placeholder='[{"name":"...","price":800,"category":"erkek","type":"tisort","image":"https://..."}]'></textarea>
             <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="bulkAdd()">JSON'dan Ekle</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- KUPON -->
+
+    <!-- ============================================================
+         KUPON YÖNETİMİ SAYFASI
+         Firebase'deki kupon kodları listelenir.
+         Yeni kupon modal ile eklenir, toggle ile aktif/pasif yapılır.
+         ============================================================ -->
     <div class="page" id="page-coupons">
       <div class="section-header">
         <span class="section-title">Kupon Yönetimi</span>
+        <!-- Bu butona tıklanınca kupon ekleme modalı açılır -->
         <button class="btn btn-primary btn-sm" onclick="openCouponModal()">+ Yeni Kupon</button>
       </div>
+
+      <!-- Kupon tablosu — renderCoupons() fonksiyonu doldurur -->
       <div class="table-wrap">
         <div class="table-scroll">
           <table>
-            <thead><tr><th>Kod</th><th>İndirim</th><th>Durum</th><th>Kullanım</th><th>İşlem</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Kod</th>
+                <th>İndirim</th>
+                <th>Durum</th>
+                <th>Kullanım</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <!-- Her kupon satırı: duraklat/başlat, kopyala, sil butonları -->
             <tbody id="couponTableBody"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- KULLANICILAR -->
+
+    <!-- ============================================================
+         KULLANICILAR SAYFASI
+         Firebase'deki users koleksiyonundan kullanıcılar çekilir.
+         Realtime listener ile yeni kayıt anında listelenir.
+         ============================================================ -->
     <div class="page" id="page-users">
       <div class="section-header">
+        <!-- Kullanıcı sayısı JavaScript tarafından güncellenir -->
         <span class="section-title">Kullanıcılar (<span id="userCount">0</span>)</span>
+        <!-- Tüm kullanıcıları tek seferde siler — onay kutusu çıkar -->
         <button class="btn btn-danger btn-sm" onclick="clearAllUsers()">🗑 Tümünü Sil</button>
       </div>
+
+      <!-- Arama kutusu — renderUsers() çalıştırır, cache'den filtreler -->
       <div class="search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="userSearch" placeholder="İsim veya e-posta..." oninput="renderUsers()">
+        <input type="text" class="search-input" id="userSearch"
+               placeholder="İsim veya e-posta..."
+               oninput="renderUsers()">
       </div>
+
+      <!-- Kullanıcı tablosu — renderUsersTable() fonksiyonu doldurur -->
       <div class="table-wrap">
         <div class="table-scroll">
           <table>
-            <thead><tr><th>İsim</th><th>E-posta</th><th>Durum</th><th>İşlem</th></tr></thead>
+            <thead>
+              <tr>
+                <th>İsim</th>
+                <th>E-posta</th>
+                <th>Durum</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <!-- Her satırda silme butonu data-docid ve data-email attribute'ları ile çalışır -->
             <tbody id="userTableBody"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- SİTE AYARLARI -->
+
+    <!-- ============================================================
+         SİTE AYARLARI SAYFASI
+         Mağaza adı, SEO, para birimi, özellik toggle'ları ve
+         admin şifre değiştirme buradan yapılır.
+         Ayarlar hem localStorage'a hem Firebase'e kaydedilir.
+         ============================================================ -->
     <div class="page" id="page-siteSettings">
       <div class="section-header">
         <span class="section-title">Site Ayarları</span>
+        <!-- saveSiteSettings() — Firebase + localStorage'a kaydeder -->
         <button class="btn btn-primary btn-sm" onclick="saveSiteSettings()">💾 Kaydet</button>
       </div>
+
+      <!-- settings-two-col: masaüstünde iki sütun, mobilde tek sütun -->
       <div class="settings-two-col">
         <div>
+          <!-- Mağaza temel bilgileri -->
           <div class="settings-card">
             <div class="settings-card-title">Mağaza Bilgileri</div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Mağaza Adı</label><input type="text" class="form-input" id="set-storeName" value="VELORA"></div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Slogan</label><input type="text" class="form-input" id="set-slogan" placeholder="Style Redefined"></div>
-            <div class="form-group"><label class="form-label">Para Birimi</label><select class="form-select" id="set-currency"><option value="TL" selected>TL</option><option value="USD">USD</option><option value="EUR">EUR</option></select></div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Mağaza Adı</label>
+              <input type="text" class="form-input" id="set-storeName" value="VELORA">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Slogan</label>
+              <input type="text" class="form-input" id="set-slogan" placeholder="Style Redefined">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Para Birimi</label>
+              <select class="form-select" id="set-currency">
+                <option value="TL" selected>TL</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
           </div>
+
+          <!-- Admin şifre değiştirme — changeAdminPw() localStorage'a yazar -->
           <div class="settings-card">
             <div class="settings-card-title">Güvenlik — Admin Şifresi</div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Yeni Şifre</label><input type="password" class="form-input" id="set-newAdminPw" placeholder="Yeni şifre"></div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Şifreyi Onayla</label><input type="password" class="form-input" id="set-newAdminPw2" placeholder="Tekrar girin"></div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Yeni Şifre</label>
+              <input type="password" class="form-input" id="set-newAdminPw" placeholder="Yeni şifre">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Şifreyi Onayla</label>
+              <input type="password" class="form-input" id="set-newAdminPw2" placeholder="Tekrar girin">
+            </div>
             <button class="btn btn-secondary btn-sm" onclick="changeAdminPw()">Şifreyi Güncelle</button>
           </div>
         </div>
+
         <div>
+          <!-- SEO meta bilgileri — velora-firebase.js üzerinden siteye yansır -->
           <div class="settings-card">
             <div class="settings-card-title">SEO & Meta</div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Sayfa Başlığı</label><input type="text" class="form-input" id="set-title" value="VELORA | Modern Giyim"></div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Meta Açıklama</label><textarea class="form-input" id="set-metaDesc" rows="3">Velora - Modern ve şık giyim koleksiyonu.</textarea></div>
-            <div class="form-group"><label class="form-label">Anahtar Kelimeler</label><input type="text" class="form-input" id="set-keywords" placeholder="giyim, tişört, pantolon"></div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Sayfa Başlığı</label>
+              <input type="text" class="form-input" id="set-title" value="VELORA | Modern Giyim">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Meta Açıklama</label>
+              <textarea class="form-input" id="set-metaDesc" rows="3">Velora - Modern ve şık giyim koleksiyonu.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Anahtar Kelimeler</label>
+              <input type="text" class="form-input" id="set-keywords" placeholder="giyim, tişört, pantolon">
+            </div>
           </div>
+
+          <!-- Özellik toggle'ları — checked durumu Firebase'e kaydedilir.
+               velora-firebase.js sayfaya uyguladığında bu değerlere göre
+               ilgili özellikler açılır/kapanır. -->
           <div class="settings-card">
             <div class="settings-card-title">Özellikler</div>
-            <div class="toggle-row"><div><div class="toggle-label">Arama Çubuğu</div></div><label class="toggle"><input type="checkbox" id="feat-search" checked><span class="slider-toggle"></span></label></div>
-            <div class="toggle-row"><div><div class="toggle-label">Favoriler</div></div><label class="toggle"><input type="checkbox" id="feat-favorites" checked><span class="slider-toggle"></span></label></div>
-            <div class="toggle-row"><div><div class="toggle-label">Dark Mode</div></div><label class="toggle"><input type="checkbox" id="feat-darkmode" checked><span class="slider-toggle"></span></label></div>
-            <div class="toggle-row"><div><div class="toggle-label">Kupon Sistemi</div></div><label class="toggle"><input type="checkbox" id="feat-coupon" checked><span class="slider-toggle"></span></label></div>
-            <div class="toggle-row"><div><div class="toggle-label">Üyelik Sistemi</div></div><label class="toggle"><input type="checkbox" id="feat-auth" checked><span class="slider-toggle"></span></label></div>
-            <div class="toggle-row"><div><div class="toggle-label">Bakım Modu</div></div><label class="toggle"><input type="checkbox" id="feat-maintenance"><span class="slider-toggle"></span></label></div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Arama Çubuğu</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-search" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Favoriler</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-favorites" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Dark Mode</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-darkmode" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Kupon Sistemi</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-coupon" checked><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Üyelik Sistemi</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-auth" checked><span class="slider-toggle"></span></label>
+            </div>
+            <!-- Bakım modu açılırsa site ziyaretçilere "Bakımda" sayfası gösterir -->
+            <div class="toggle-row">
+              <div><div class="toggle-label">Bakım Modu</div></div>
+              <label class="toggle"><input type="checkbox" id="feat-maintenance"><span class="slider-toggle"></span></label>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- WHATSAPP -->
+
+    <!-- ============================================================
+         WHATSAPP & İLETİŞİM SAYFASI
+         Sipariş için WhatsApp numarası, karşılama mesajı ve
+         EmailJS (e-posta gönderimi) ayarları buradan yapılır.
+         saveContact() Firebase + localStorage'a kaydeder.
+         ============================================================ -->
     <div class="page" id="page-whatsapp">
       <div class="section-header">
         <span class="section-title">WhatsApp & İletişim</span>
         <button class="btn btn-primary btn-sm" onclick="saveContact()">💾 Kaydet</button>
       </div>
+
       <div class="settings-two-col">
+        <!-- WhatsApp sipariş ayarları -->
         <div class="settings-card">
           <div class="settings-card-title">WhatsApp Sipariş</div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">Numara</label><input type="text" class="form-input" id="wa-number" value="905550066123" inputmode="tel"></div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">Hoşgeldin Mesajı</label><textarea class="form-input" id="wa-greeting" rows="3">Merhaba! Sipariş vermek istiyorum.</textarea></div>
-          <div class="toggle-row"><div><div class="toggle-label">WhatsApp Butonu</div><div class="toggle-desc">Sepette aktif göster</div></div><label class="toggle"><input type="checkbox" id="wa-active" checked><span class="slider-toggle"></span></label></div>
+          <!-- inputmode="tel" mobilde telefon klavyesi açar -->
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Numara</label>
+            <input type="text" class="form-input" id="wa-number" value="905550066123" inputmode="tel">
+          </div>
+          <!-- Müşteri WhatsApp'ı açtığında otomatik yazılan hoşgeldin mesajı -->
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Hoşgeldin Mesajı</label>
+            <textarea class="form-input" id="wa-greeting" rows="3">Merhaba! Sipariş vermek istiyorum.</textarea>
+          </div>
+          <!-- Toggle kapalıysa sepet sayfasında WhatsApp butonu gizlenir -->
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">WhatsApp Butonu</div>
+              <div class="toggle-desc">Sepette aktif göster</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="wa-active" checked><span class="slider-toggle"></span></label>
+          </div>
         </div>
+
+        <!-- Mağaza iletişim bilgileri — footer ve iletişim sayfasında kullanılır -->
         <div class="settings-card">
           <div class="settings-card-title">İletişim Bilgileri</div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">E-posta</label><input type="email" class="form-input" id="contact-email" placeholder="info@velora.com"></div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">Telefon</label><input type="tel" class="form-input" id="contact-phone" placeholder="+90 555 006 6123"></div>
-          <div class="form-group" style="margin-bottom:12px"><label class="form-label">Adres</label><textarea class="form-input" id="contact-address" rows="2" placeholder="Mağaza adresi..."></textarea></div>
-          <div class="form-group"><label class="form-label">Instagram</label><input type="text" class="form-input" id="contact-instagram" placeholder="@velora"></div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">E-posta</label>
+            <input type="email" class="form-input" id="contact-email" placeholder="info@velora.com">
+          </div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Telefon</label>
+            <input type="tel" class="form-input" id="contact-phone" placeholder="+90 555 006 6123">
+          </div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Adres</label>
+            <textarea class="form-input" id="contact-address" rows="2" placeholder="Mağaza adresi..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Instagram</label>
+            <input type="text" class="form-input" id="contact-instagram" placeholder="@velora">
+          </div>
         </div>
       </div>
+
+      <!-- EmailJS ayarları — e-posta doğrulama kodları buradan gönderilir.
+           service_id, template_id ve public_key EmailJS hesabından alınır. -->
       <div class="settings-card">
         <div class="settings-card-title">EmailJS Ayarları</div>
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">Service ID</label><input type="text" class="form-input" id="ejs-service" value="service_u871hgw"></div>
-          <div class="form-group"><label class="form-label">Template ID</label><input type="text" class="form-input" id="ejs-template" value="template_nnfkcc3"></div>
-          <div class="form-group full"><label class="form-label">Public Key</label><input type="text" class="form-input" id="ejs-pubkey" placeholder="xxxxxxxxxxxxx"></div>
+          <div class="form-group">
+            <label class="form-label">Service ID</label>
+            <input type="text" class="form-input" id="ejs-service" value="service_u871hgw">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Template ID</label>
+            <input type="text" class="form-input" id="ejs-template" value="template_nnfkcc3">
+          </div>
+          <!-- full class: iki sütunlu grid'de tam genişlik kaplar -->
+          <div class="form-group full">
+            <label class="form-label">Public Key</label>
+            <input type="text" class="form-input" id="ejs-pubkey" placeholder="xxxxxxxxxxxxx">
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- GÖRÜNÜM -->
+
+    <!-- ============================================================
+         GÖRÜNÜM AYARLARI SAYFASI
+         Banner, logo, favicon görselleri, font seçimi,
+         renk paleti ve duyuru bandı buradan yönetilir.
+         saveAppearance() Firebase + localStorage'a kaydeder.
+         velora-firebase.js bu değerleri okuyarak siteye uygular.
+         ============================================================ -->
     <div class="page" id="page-appearance">
       <div class="section-header">
         <span class="section-title">Görünüm Ayarları</span>
         <button class="btn btn-primary btn-sm" onclick="saveAppearance()">💾 Kaydet</button>
       </div>
+
       <div class="settings-two-col">
         <div>
+          <!-- Görsel URL'leri — Cloudinary veya başka CDN linki girilebilir -->
           <div class="settings-card">
             <div class="settings-card-title">Banner & Görseller</div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Ana Banner URL</label><input type="text" class="form-input" id="app-banner" placeholder="https://..."></div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Logo URL</label><input type="text" class="form-input" id="app-logo" placeholder="https://..."></div>
-            <div class="form-group"><label class="form-label">Favicon URL</label><input type="text" class="form-input" id="app-favicon" placeholder="https://..."></div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Ana Banner URL</label>
+              <input type="text" class="form-input" id="app-banner" placeholder="https://...">
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Logo URL</label>
+              <input type="text" class="form-input" id="app-logo" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Favicon URL</label>
+              <input type="text" class="form-input" id="app-favicon" placeholder="https://...">
+            </div>
           </div>
+
+          <!-- Font seçimi — seçilen fontlar sitenin CSS değişkenlerine uygulanır -->
           <div class="settings-card">
             <div class="settings-card-title">Tipografi</div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Başlık Fontu</label><select class="form-select" id="app-headfont"><option>Cinzel</option><option>Playfair Display</option><option>Syne</option><option>Bebas Neue</option><option>Cormorant Garamond</option></select></div>
-            <div class="form-group"><label class="form-label">Gövde Fontu</label><select class="form-select" id="app-bodyfont"><option>DM Sans</option><option>Inter</option><option>Lato</option><option>Raleway</option></select></div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Başlık Fontu</label>
+              <select class="form-select" id="app-headfont">
+                <option>Cinzel</option>
+                <option>Playfair Display</option>
+                <option>Syne</option>
+                <option>Bebas Neue</option>
+                <option>Cormorant Garamond</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gövde Fontu</label>
+              <select class="form-select" id="app-bodyfont">
+                <option>DM Sans</option>
+                <option>Inter</option>
+                <option>Lato</option>
+                <option>Raleway</option>
+              </select>
+            </div>
           </div>
         </div>
+
         <div>
+          <!-- Renk seçiciler — type="color" tarayıcının renk paletini açar.
+               Seçilen renkler --accent, --bg, --text CSS değişkenlerine uygulanır. -->
           <div class="settings-card">
             <div class="settings-card-title">Renk Paleti</div>
-            <div class="color-row"><div><div class="toggle-label">Birincil Renk</div><div class="toggle-desc">Buton ve vurgu</div></div><input type="color" id="color-primary" value="#c9b97a" class="color-input"></div>
-            <div class="color-row"><div><div class="toggle-label">Arka Plan</div><div class="toggle-desc">Sayfa arka planı</div></div><input type="color" id="color-bg" value="#ffffff" class="color-input"></div>
-            <div class="color-row"><div><div class="toggle-label">Metin Rengi</div></div><input type="color" id="color-text" value="#111111" class="color-input"></div>
+            <div class="color-row">
+              <div>
+                <div class="toggle-label">Birincil Renk</div>
+                <div class="toggle-desc">Buton ve vurgu</div>
+              </div>
+              <input type="color" id="color-primary" value="#c9b97a" class="color-input">
+            </div>
+            <div class="color-row">
+              <div>
+                <div class="toggle-label">Arka Plan</div>
+                <div class="toggle-desc">Sayfa arka planı</div>
+              </div>
+              <input type="color" id="color-bg" value="#ffffff" class="color-input">
+            </div>
+            <div class="color-row">
+              <div><div class="toggle-label">Metin Rengi</div></div>
+              <input type="color" id="color-text" value="#111111" class="color-input">
+            </div>
           </div>
+
+          <!-- Duyuru bandı — sitenin en üstündeki ince bilgi şeridi.
+               "✨ Yeni Koleksiyon! Kod: VELORA10" gibi mesajlar gösterilir. -->
           <div class="settings-card">
             <div class="settings-card-title">Duyuru Bandı</div>
-            <div class="toggle-row" style="margin-bottom:12px"><div><div class="toggle-label">Duyuru Bandı</div><div class="toggle-desc">Sayfa üstünde mesaj</div></div><label class="toggle"><input type="checkbox" id="app-announcebar" checked><span class="slider-toggle"></span></label></div>
-            <div class="form-group" style="margin-bottom:12px"><label class="form-label">Bant Mesajı</label><input type="text" class="form-input" id="app-announcetext" value="✨ Yeni Koleksiyon! Kod: VELORA10"></div>
-            <div class="form-group"><label class="form-label">Bant Arka Plan</label><input type="color" id="app-announcecolor" value="#111111" style="width:100%;height:36px;border:1px solid var(--border2);border-radius:8px;cursor:pointer;padding:4px"></div>
+            <!-- Toggle kapalıysa band sitede gizlenir -->
+            <div class="toggle-row" style="margin-bottom:12px">
+              <div>
+                <div class="toggle-label">Duyuru Bandı</div>
+                <div class="toggle-desc">Sayfa üstünde mesaj</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="app-announcebar" checked>
+                <span class="slider-toggle"></span>
+              </label>
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Bant Mesajı</label>
+              <input type="text" class="form-input" id="app-announcetext" value="✨ Yeni Koleksiyon! Kod: VELORA10">
+            </div>
+            <!-- Bant arka plan rengi — type="color" ile renk seçilir -->
+            <div class="form-group">
+              <label class="form-label">Bant Arka Plan</label>
+              <input type="color" id="app-announcecolor" value="#111111"
+                     style="width:100%;height:36px;border:1px solid var(--border2);border-radius:8px;cursor:pointer;padding:4px">
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- AKTİVİTE LOGU -->
+
+    <!-- ============================================================
+         AKTİVİTE LOGU SAYFASI
+         Ürün ekleme, silme, ayar değiştirme gibi işlemler
+         localStorage'da saklanır ve burada listelenir.
+         clearLog() tüm log geçmişini siler.
+         ============================================================ -->
     <div class="page" id="page-activity">
       <div class="section-header">
         <span class="section-title">Aktivite Logu</span>
+        <!-- clearLog() fonksiyonu tüm log girişlerini siler -->
         <button class="btn btn-danger btn-sm" onclick="clearLog()">🗑 Temizle</button>
       </div>
       <div class="table-wrap">
+        <!-- renderFullLog() fonksiyonu bu div'i log kayıtlarıyla doldurur.
+             max-height ile çok fazla log varsa içeride kaydırılabilir. -->
         <div id="fullActivityLog" style="padding:4px 16px;max-height:520px;overflow-y:auto"></div>
       </div>
     </div>
 
   </div><!-- /main -->
 
-  <!-- BOTTOM NAV -->
+
+  <!-- ============================================================
+       ALT NAVİGASYON (BOTTOM NAV)
+       Sadece mobilde görünür (admin.css'te masaüstünde display:none).
+       En sık kullanılan 4 sayfa + menü butonu bulunur.
+       id="bnav-xxx" — navTo() fonksiyonu aktif sekmeyi vurgular.
+       ============================================================ -->
   <nav class="bottom-nav">
-    <button class="bottom-nav-item active" id="bnav-products" onclick="navTo('products',null)"><span>👕</span><span>Ürünler</span></button>
-    <button class="bottom-nav-item" id="bnav-coupons" onclick="navTo('coupons',null)"><span>🏷️</span><span>Kuponlar</span></button>
-    <button class="bottom-nav-item" id="bnav-addProduct" onclick="navTo('addProduct',null)"><span>➕</span><span>Ekle</span></button>
-    <button class="bottom-nav-item" id="bnav-users" onclick="navTo('users',null)"><span>👥</span><span>Kullanıcı</span></button>
-    <button class="bottom-nav-item" onclick="openSidebar()"><span>☰</span><span>Menü</span></button>
+    <button class="bottom-nav-item active" id="bnav-products" onclick="navTo('products',null)">
+      <span>👕</span><span>Ürünler</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-coupons" onclick="navTo('coupons',null)">
+      <span>🏷️</span><span>Kuponlar</span>
+    </button>
+    <!-- Ortadaki + butonu — yeni ürün ekleme sayfasına götürür -->
+    <button class="bottom-nav-item" id="bnav-addProduct" onclick="navTo('addProduct',null)">
+      <span>➕</span><span>Ekle</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-users" onclick="navTo('users',null)">
+      <span>👥</span><span>Kullanıcı</span>
+    </button>
+    <!-- Menü butonu — tam sidebar'ı açar, diğer sayfalara erişim sağlar -->
+    <button class="bottom-nav-item" onclick="openSidebar()">
+      <span>☰</span><span>Menü</span>
+    </button>
   </nav>
 
 </div><!-- /adminPanel -->
 
-<!-- KUPON MODAL -->
+
+<!-- ============================================================
+     KUPON EKLEME MODALİ
+     "Yeni Kupon" butonuna tıklanınca .open class eklenir ve görünür.
+     Mobilde alttan çıkar, masaüstünde ortalanır.
+     addCoupon() Firebase'e yeni kuponu kaydeder.
+     ============================================================ -->
 <div class="modal-overlay" id="couponModal">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">Yeni Kupon Ekle</span><button class="modal-close" onclick="closeCouponModal()">×</button></div>
+    <!-- Başlık ve kapat butonu — modal-header sticky konumludur -->
+    <div class="modal-header">
+      <span class="modal-title">Yeni Kupon Ekle</span>
+      <button class="modal-close" onclick="closeCouponModal()">×</button>
+    </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Kupon Kodu</label><input type="text" class="form-input" id="coup-code" placeholder="YENI20" style="text-transform:uppercase" autocomplete="off"></div>
-        <div class="form-group"><label class="form-label">İndirim (%)</label><input type="number" class="form-input" id="coup-discount" placeholder="10" min="1" max="100" inputmode="numeric"></div>
-        <div class="form-group full"><label class="form-label">Durum</label><select class="form-select" id="coup-status"><option value="active">Aktif</option><option value="inactive">Pasif</option></select></div>
+        <!-- Kupon kodu — text-transform:uppercase ile otomatik büyük harf -->
+        <div class="form-group">
+          <label class="form-label">Kupon Kodu</label>
+          <input type="text" class="form-input" id="coup-code"
+                 placeholder="YENI20"
+                 style="text-transform:uppercase"
+                 autocomplete="off">
+        </div>
+        <!-- İndirim yüzdesi — min:1 max:100 ile sınırlandırılmış -->
+        <div class="form-group">
+          <label class="form-label">İndirim (%)</label>
+          <input type="number" class="form-input" id="coup-discount"
+                 placeholder="10" min="1" max="100" inputmode="numeric">
+        </div>
+        <!-- Durum seçimi — full class ile iki sütunu da kaplar -->
+        <div class="form-group full">
+          <label class="form-label">Durum</label>
+          <select class="form-select" id="coup-status">
+            <option value="active">Aktif</option>
+            <option value="inactive">Pasif</option>
+          </select>
+        </div>
       </div>
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeCouponModal()">İptal</button><button class="btn btn-primary" onclick="addCoupon()">Kaydet</button></div>
+    <!-- Modal altındaki aksiyon butonları — sticky konumlu -->
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCouponModal()">İptal</button>
+      <button class="btn btn-primary" onclick="addCoupon()">Kaydet</button>
+    </div>
   </div>
 </div>
 
-<!-- ÜRÜN DÜZENLE MODAL -->
+
+<!-- ============================================================
+     ÜRÜN DÜZENLEME MODALİ
+     Tablo satırındaki ✏️ butonuna tıklanınca openEdit(id) çalışır.
+     Mevcut ürün bilgileri forma doldurulur, düzenlenip kaydedilir.
+     saveEdit() Firebase'i günceller ve listeyi yeniler.
+     ============================================================ -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
-    <div class="modal-header"><span class="modal-title">Ürünü Düzenle</span><button class="modal-close" onclick="closeEditModal()">×</button></div>
+    <div class="modal-header">
+      <span class="modal-title">Ürünü Düzenle</span>
+      <button class="modal-close" onclick="closeEditModal()">×</button>
+    </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Ürün Adı</label><input type="text" class="form-input" id="edit-name"></div>
-        <div class="form-group"><label class="form-label">Fiyat (TL)</label><input type="number" class="form-input" id="edit-price" inputmode="numeric"></div>
-        <div class="form-group"><label class="form-label">Kategori</label><select class="form-select" id="edit-category"><option value="erkek">Erkek</option><option value="kadin">Kadın</option><option value="cocuk">Çocuk</option></select></div>
-        <div class="form-group"><label class="form-label">Tip</label><select class="form-select" id="edit-type"><option value="tisort">Tişört</option><option value="pantalon">Pantolon</option><option value="ceket">Ceket</option><option value="sapka">Şapka</option></select></div>
-        <div class="form-group full"><label class="form-label">Görsel URL</label><input type="text" class="form-input" id="edit-image"></div>
+        <div class="form-group">
+          <label class="form-label">Ürün Adı</label>
+          <input type="text" class="form-input" id="edit-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fiyat (TL)</label>
+          <input type="number" class="form-input" id="edit-price" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kategori</label>
+          <select class="form-select" id="edit-category">
+            <option value="erkek">Erkek</option>
+            <option value="kadin">Kadın</option>
+            <option value="cocuk">Çocuk</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tip</label>
+          <select class="form-select" id="edit-type">
+            <option value="tisort">Tişört</option>
+            <option value="pantalon">Pantolon</option>
+            <option value="ceket">Ceket</option>
+            <option value="sapka">Şapka</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Görsel URL</label>
+          <input type="text" class="form-input" id="edit-image">
+        </div>
       </div>
-      <img id="editPreviewImg" src="" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-top:12px;display:none">
+      <!-- URL değiştikçe önizleme güncellenir — admin.js'deki event listener ile -->
+      <img id="editPreviewImg" src=""
+           style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-top:12px;display:none">
+      <!-- Düzenlenen ürünün ID'si — görünmez, saveEdit() tarafından okunur -->
       <input type="hidden" id="edit-id">
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeEditModal()">İptal</button><button class="btn btn-primary" onclick="saveEdit()">Kaydet</button></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeEditModal()">İptal</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Kaydet</button>
+    </div>
   </div>
 </div>
 
+
+<!-- İşlem sonrası çıkan bildirim mesajı — showToast() fonksiyonu yönetir.
+     .show class eklenince görünür, 3 saniye sonra kaldırılır. -->
 <div class="toast" id="toast"></div>
 
+<!-- Admin panelinin tüm JavaScript mantığı — Firebase işlemleri,
+     navigasyon, CRUD operasyonları, toast bildirimleri hepsi burada. -->
 <script src="admin.js"></script>
 </body>
 </html>
