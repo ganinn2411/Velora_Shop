@@ -1,45 +1,69 @@
 // ============================================================
 //  VELORA — velora-firebase.js
+//  Firebase Firestore bağlantısını kurar; ürün, kupon,
+//  kullanıcı ve ayar verilerini Firestore + localStorage
+//  üzerinden okuyup yazar.
 // ============================================================
 
+// Firebase projesine ait yapılandırma bilgileri.
+// Bu nesne Firebase Console'dan alınır; hangi projeye
+// bağlanılacağını ve kimlik doğrulamayı tanımlar.
 var firebaseConfig = {
-  apiKey: "AIzaSyBJuctg0HZnYjbZdGBztu9SioqEjgMNSDs",
-  authDomain: "velora-shop-34729.firebaseapp.com",
-  projectId: "velora-shop-34729",
-  storageBucket: "velora-shop-34729.firebasestorage.app",
+  apiKey:            "AIzaSyBJuctg0HZnYjbZdGBztu9SioqEjgMNSDs",
+  authDomain:        "velora-shop-34729.firebaseapp.com",
+  projectId:         "velora-shop-34729",
+  storageBucket:     "velora-shop-34729.firebasestorage.app",
   messagingSenderId: "73973178858",
-  appId: "1:73973178858:web:e028f350361d528cc59293",
-  measurementId: "G-S1518PPRTE"
+  appId:             "1:73973178858:web:e028f350361d528cc59293",
+  measurementId:     "G-S1518PPRTE"
 };
 
+// Firebase SDK'sını dinamik olarak yükleyen IIFE.
+// Önce firebase-app, sonra sırayla firebase-firestore script'i
+// head'e eklenir; her ikisi de yüklenince initVeloraFirebase çağrılır.
+// firebase zaten tanımlıysa (önceden yüklendiyse) direkt geçer.
 (function loadFirebase() {
   if (typeof firebase !== 'undefined') { initVeloraFirebase(); return; }
+
+  // 1. Adım: Firebase App SDK'sını yükle
   var s1 = document.createElement('script');
   s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
   s1.onload = function() {
+    // 2. Adım: App yüklendikten sonra Firestore SDK'sını yükle
     var s2 = document.createElement('script');
     s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
-    s2.onload = function() { initVeloraFirebase(); };
+    s2.onload = function() { initVeloraFirebase(); }; // Her ikisi hazır → başlat
     document.head.appendChild(s2);
   };
   document.head.appendChild(s1);
 })();
 
+// Firestore veritabanı örneğini tutan modül değişkeni.
+// initVeloraFirebase çalışana kadar null kalır.
 var _db = null;
 
+// Firebase uygulamasını başlatan fonksiyon.
+// Daha önce başlatılmış bir uygulama varsa tekrar başlatmaz.
+// Hazır olunca global flag'i ve özel event'i tetikler;
+// böylece diğer modüller veritabanını kullanmaya başlayabilir.
 function initVeloraFirebase() {
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  _db = firebase.firestore();
-  window._veloraFirebaseReady = true;
-  document.dispatchEvent(new Event('veloraFirebaseReady'));
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); // İlk kez başlat
+  _db = firebase.firestore();                                          // Firestore referansını al
+  window._veloraFirebaseReady = true;                                  // Hazır olduğunu işaretle
+  document.dispatchEvent(new Event('veloraFirebaseReady'));            // Bekleyen dinleyicileri uyar
 }
 
+// Firestore örneğini döndüren yardımcı fonksiyon.
+// Henüz hazır değilse null döner.
 function getDB() { return _db; }
 
 // ── CDN ──────────────────────────────────────────────────────────────
+// Cloudinary CDN base URL'i; tüm ürün görselleri bu adrese eklenerek oluşturulur
 var CDN = "https://res.cloudinary.com/dy2dvpbit/image/upload";
 
 // ── VARSAYILAN ÜRÜNLER ────────────────────────────────────────────────
+// Firestore boş ya da erişilemezse kullanılacak yerel ürün kataloğu.
+// Her nesne: id, name, price (TL), image (CDN yolu), category, type içerir.
 var VELORA_DEFAULT_PRODUCTS = [
   { id:1,  name:"Erkek Tişört",   price:1200, image:CDN+"/haryo-setyadi-acn5ERAeSb4-unsplash_svhjqz.jpg",               category:"erkek", type:"tisort"   },
   { id:2,  name:"Erkek Tişört",   price:300,  image:CDN+"/pexels-david-fowora-2160297192-36801391_hfunqe.jpg",           category:"erkek", type:"tisort"   },
@@ -89,6 +113,7 @@ var VELORA_DEFAULT_PRODUCTS = [
   { id:46, name:"Çocuk Ceket",    price:1500, image:CDN+"/christopher-campbell--h_cufTEtcg-unsplash_cehfnl.jpg",        category:"cocuk", type:"ceket"    },
   { id:47, name:"Çocuk Ceket",    price:1500, image:CDN+"/nathan-dumlao-QqLuSb0sypY-unsplash_gs4zul.jpg",               category:"cocuk", type:"ceket"    },
   { id:48, name:"Çocuk Ceket",    price:1500, image:CDN+"/phat-tr-ng-UbJ2Q_HInuU-unsplash_sbwzvv.jpg",                  category:"cocuk", type:"ceket"    },
+  // id 50+ → WhatsApp üzerinden gönderilen gerçek mağaza ürün fotoğrafları
   { id:50, name:"Erkek Tişört",   price:1200, image:CDN+"/WhatsApp_Image_2026-05-16_at_12.49.26_9_mqf5za.jpg",          category:"erkek", type:"tisort"   },
   { id:51, name:"Erkek Tişört",   price:1200, image:CDN+"/WhatsApp_Image_2026-05-16_at_12.49.27_4_rawlcg.jpg",          category:"erkek", type:"tisort"   },
   { id:52, name:"Erkek Pantolon", price:1200, image:CDN+"/WhatsApp_Image_2026-05-16_at_12.49.24_sp3epo.jpg",            category:"erkek", type:"pantalon" },
@@ -127,6 +152,8 @@ var VELORA_DEFAULT_PRODUCTS = [
   { id:85, name:"Çocuk Ceket",    price:800,  image:CDN+"/WhatsApp_Image_2026-05-16_at_14.23.44_1_lvqfgm.jpg",          category:"cocuk", type:"ceket"    }
 ];
 
+// Firestore boş ya da erişilemezse kullanılacak yerel kupon listesi.
+// Her nesne: code, discount (%), status (active/inactive), uses (kullanım sayısı)
 var VELORA_DEFAULT_COUPONS = [
   { code:"VELORA10",  discount:10, status:"active", uses:0 },
   { code:"VELORA20",  discount:20, status:"active", uses:0 },
@@ -137,50 +164,75 @@ var VELORA_DEFAULT_COUPONS = [
 ];
 
 // ── Ürünler ───────────────────────────────────────────────────────────
+
+// Ürünlerin bellekte tutulduğu önbellek değişkeni.
+// vSyncProducts() ile null'a sıfırlanabilir.
 window._vProductsCache = null;
 
+// Firestore'dan ürün listesini asenkron olarak çeken global fonksiyon.
+// Firebase hazırsa hemen sorgu yapar; değilse 'veloraFirebaseReady' event'ini bekler.
+// Koleksiyon boşsa önce vSeedProducts ile varsayılanları ekler, sonra callback'i çağırır.
 window.vGetProductsAsync = function(callback) {
   function doGet() {
     var db = getDB();
-    if (!db) { callback(VELORA_DEFAULT_PRODUCTS); return; }
+    if (!db) { callback(VELORA_DEFAULT_PRODUCTS); return; } // DB yoksa yerel veri döndür
+
     db.collection('products').orderBy('id').get()
       .then(function(snap) {
         if (snap.empty) {
+          // Koleksiyon boş → varsayılanları Firestore'a yaz, sonra callback'i çağır
           vSeedProducts(function() { callback(VELORA_DEFAULT_PRODUCTS); });
         } else {
+          // Firestore'daki tüm dokümanları diziye aktar ve callback'e gönder
           var arr = [];
           snap.forEach(function(doc) { arr.push(doc.data()); });
           callback(arr);
         }
       })
-      .catch(function() { callback(VELORA_DEFAULT_PRODUCTS); });
+      .catch(function() { callback(VELORA_DEFAULT_PRODUCTS); }); // Hata olursa yerel veri
   }
+
+  // Firebase hazır mı? Hazırsa anında çalıştır, değilse event bekle
   if (window._veloraFirebaseReady) { doGet(); }
   else { document.addEventListener('veloraFirebaseReady', doGet, { once: true }); }
 };
 
+// Senkron ürün okuma fonksiyonu.
+// Önbellekte veri varsa onu döndürür; yoksa yerel varsayılanı döndürür.
+// Sayfa içi anlık render'lar için kullanılır (async beklenmez).
 window.vGetProducts = function() {
   return window._vProductsCache || VELORA_DEFAULT_PRODUCTS;
 };
 
+// Varsayılan ürünleri Firestore'a toplu (batch) olarak yazan iç fonksiyon.
+// Her ürün için doc ID olarak ürünün id'si (string) kullanılır.
+// Batch tamamlandığında veya hata olduğunda done callback'i çağrılır.
 function vSeedProducts(done) {
   var db = getDB();
-  if (!db) { if (done) done(); return; }
-  var batch = db.batch();
+  if (!db) { if (done) done(); return; } // DB yoksa işlem yapma
+
+  var batch = db.batch(); // Toplu yazma işlemi oluştur
   VELORA_DEFAULT_PRODUCTS.forEach(function(p) {
     batch.set(db.collection('products').doc(String(p.id)), p);
   });
-  batch.commit().then(function() { if (done) done(); }).catch(function() { if (done) done(); });
+  batch.commit()
+    .then(function()  { if (done) done(); })
+    .catch(function() { if (done) done(); }); // Hata olsa da done çağır (sessiz geç)
 }
 
 // ── Kuponlar ──────────────────────────────────────────────────────────
+
+// Firestore'dan kupon listesini asenkron olarak çeken global fonksiyon.
+// Koleksiyon boşsa vSeedCoupons ile varsayılanları ekler.
 window.vGetCouponsAsync = function(callback) {
   function doGet() {
     var db = getDB();
-    if (!db) { callback(VELORA_DEFAULT_COUPONS); return; }
+    if (!db) { callback(VELORA_DEFAULT_COUPONS); return; } // DB yoksa yerel veri
+
     db.collection('coupons').get()
       .then(function(snap) {
         if (snap.empty) {
+          // Koleksiyon boş → varsayılanları yaz, sonra callback
           vSeedCoupons(function() { callback(VELORA_DEFAULT_COUPONS); });
         } else {
           var arr = [];
@@ -188,57 +240,78 @@ window.vGetCouponsAsync = function(callback) {
           callback(arr);
         }
       })
-      .catch(function() { callback(VELORA_DEFAULT_COUPONS); });
+      .catch(function() { callback(VELORA_DEFAULT_COUPONS); }); // Hata → yerel veri
   }
+
   if (window._veloraFirebaseReady) { doGet(); }
   else { document.addEventListener('veloraFirebaseReady', doGet, { once: true }); }
 };
 
+// Varsayılan kuponları Firestore'a toplu olarak yazan iç fonksiyon.
+// Her kupon için doc ID olarak kupon kodu kullanılır.
 function vSeedCoupons(done) {
   var db = getDB();
   if (!db) { if (done) done(); return; }
+
   var batch = db.batch();
   VELORA_DEFAULT_COUPONS.forEach(function(c) {
     batch.set(db.collection('coupons').doc(c.code), c);
   });
-  batch.commit().then(function() { if (done) done(); }).catch(function() { if (done) done(); });
+  batch.commit()
+    .then(function()  { if (done) done(); })
+    .catch(function() { if (done) done(); });
 }
 
+// Kupon kodunu Firestore'da doğrulayan global fonksiyon.
+// Boş kod → hata mesajı döndür.
+// Aktif kupon bulunursa kullanım sayacını artırır ve indirim oranını callback'e iletir.
 window.vValidateCoupon = function(code, callback) {
   if (!code || !code.trim()) {
     if (callback) callback({ valid:false, discount:0, message:"Lütfen kupon kodu girin." });
     return;
   }
+
+  // Kodu büyük harfe çevir; büyük/küçük harf duyarsız karşılaştırma sağlar
   var norm = code.trim().toUpperCase();
+
   function doValidate() {
     var db = getDB();
     if (!db) {
       if (callback) callback({ valid:false, discount:0, message:"Bağlantı hatası." });
       return;
     }
+
+    // Firestore'da kupon kodu (norm) ile eşleşen dokümanı getir
     db.collection('coupons').doc(norm).get().then(function(doc) {
       if (!doc.exists) {
         if (callback) callback({ valid:false, discount:0, message:"Geçersiz kupon kodu." });
         return;
       }
+
       var c = doc.data();
       if (c.status !== 'active') {
         if (callback) callback({ valid:false, discount:0, message:"Bu kupon artık aktif değil." });
         return;
       }
+
+      // Kuponu geçerli say: kullanım sayacını Firestore'da 1 artır (fire-and-forget)
       db.collection('coupons').doc(norm).update({ uses: (c.uses || 0) + 1 });
+
+      // Başarı: indirim yüzdesi ve kutlama mesajı döndür
       if (callback) callback({ valid:true, discount:c.discount, message:"%" + c.discount + " indirim uygulandı! 🎉" });
     }).catch(function() {
       if (callback) callback({ valid:false, discount:0, message:"Bir hata oluştu." });
     });
   }
+
   if (window._veloraFirebaseReady) { doValidate(); }
   else { document.addEventListener('veloraFirebaseReady', doValidate, { once: true }); }
 };
 
 // ── Kullanıcı Kaydet ─────────────────────────────────────────────────
-// DÜZELTME: Kullanıcıyı hem Firestore'a hem localStorage'a kaydet
-// Doc ID olarak email yerine rastgele ID kullan (@ ve . sorunu yok)
+// Kullanıcıyı hem Firestore'a hem localStorage'a kaydeder.
+// Doc ID olarak e-posta yerine güvenli hale getirilmiş (@ → _AT_, . → _DOT_)
+// bir string kullanılır; böylece Firestore'da özel karakter sorunları önlenir.
 window.vSaveUser = function(user, done) {
   if (!user || !user.email) {
     console.error('vSaveUser: email eksik', user);
@@ -246,16 +319,17 @@ window.vSaveUser = function(user, done) {
     return;
   }
 
-  // localStorage'a her zaman kaydet (fallback)
+  // ── localStorage'a her zaman yaz (Firebase çöksün çalışsın, fallback) ──
   try {
     var localUsers = JSON.parse(localStorage.getItem('velora_users') || '[]');
+    // Aynı e-posta ile kayıtlı kullanıcı var mı? (büyük/küçük harf duyarsız)
     var existsLocal = localUsers.findIndex(function(u) {
       return u.email && u.email.toLowerCase() === user.email.toLowerCase();
     });
     if (existsLocal >= 0) {
-      localUsers[existsLocal] = user; // güncelle
+      localUsers[existsLocal] = user; // Varsa üzerine güncelle
     } else {
-      localUsers.push(user);
+      localUsers.push(user);          // Yoksa yeni ekle
     }
     localStorage.setItem('velora_users', JSON.stringify(localUsers));
   } catch(e) {
@@ -265,26 +339,28 @@ window.vSaveUser = function(user, done) {
   function doSave() {
     var db = getDB();
     if (!db) {
+      // Firebase hazır değilse sadece localStorage kullan; yine başarılı say
       console.warn('vSaveUser: Firebase hazır değil, sadece localStorage kaydedildi');
       if (done) done(true);
       return;
     }
 
-    // Doc ID = email'i güvenli hale getir (@ → _AT_, . → _DOT_)
-    // Bu sayede Firestore'da sorunsuz saklanır ve admin paneli bulabilir
+    // E-postayı Firestore doc ID'si için güvenli hale getir:
+    // küçük harfe çevir, nokta → _DOT_, @ → _AT_
     var safeDocId = user.email.toLowerCase()
       .replace(/\./g, '_DOT_')
       .replace(/@/g, '_AT_');
 
+    // Firestore'a yazılacak kullanıcı nesnesi
     var userData = {
-      name:      user.name      || '',
-      email:     user.email     || '',
-      password:  user.password  || '',
-      createdAt: user.createdAt || new Date().toISOString(),
-      _safeDocId: safeDocId
+      name:       user.name      || '',
+      email:      user.email     || '',
+      password:   user.password  || '',              // Şifre hash'lenmeden saklanıyor (dikkat!)
+      createdAt:  user.createdAt || new Date().toISOString(),
+      _safeDocId: safeDocId      // Admin panelinin kullanıcıyı bulabilmesi için saklıyoruz
     };
 
-    // Hem safeDocId ile hem de email field'ı ile kaydet
+    // Firestore'da 'users' koleksiyonuna safeDocId ile kaydet
     db.collection('users').doc(safeDocId).set(userData)
       .then(function() {
         console.log('vSaveUser: Firestore kaydı başarılı -', user.email, '→ doc:', safeDocId);
@@ -292,7 +368,7 @@ window.vSaveUser = function(user, done) {
       })
       .catch(function(e) {
         console.error('vSaveUser: Firestore hatası:', e);
-        // localStorage'a zaten kaydettik, yine de başarılı say
+        // localStorage'a zaten kaydettik; başarılı say
         if (done) done(true);
       });
   }
@@ -302,37 +378,42 @@ window.vSaveUser = function(user, done) {
 };
 
 // ── Kullanıcı Bul ─────────────────────────────────────────────────────
+// E-posta adresine göre kullanıcıyı Firestore'da arar.
+// Önce safeDocId ile doğrudan dokümanı çeker; bulamazsa e-posta field'ı
+// ile where sorgusu yapar; yine bulamazsa localStorage'a düşer (fallback zinciri).
 window.vFindUser = function(email, callback) {
   if (!email) { callback(null); return; }
 
   function doFind() {
     var db = getDB();
     if (!db) {
-      // localStorage fallback
+      // Firebase yoksa localStorage'dan ara
       var users = JSON.parse(localStorage.getItem('velora_users') || '[]');
       var u = users.find(function(x) { return x.email && x.email.toLowerCase() === email.toLowerCase(); });
       callback(u || null);
       return;
     }
 
+    // E-postayı güvenli doc ID'ye çevir
     var safeDocId = email.toLowerCase()
       .replace(/\./g, '_DOT_')
       .replace(/@/g, '_AT_');
 
-    // Önce safeDocId ile ara
+    // 1. Deneme: safeDocId ile doğrudan getir (en hızlı yol)
     db.collection('users').doc(safeDocId).get()
       .then(function(doc) {
         if (doc.exists) {
-          callback(doc.data());
+          callback(doc.data()); // Bulundu → döndür
           return;
         }
-        // Bulunamazsa email field'ı ile sorgula
+
+        // 2. Deneme: email field'ı ile where sorgusu yap
         return db.collection('users').where('email', '==', email).get()
           .then(function(snap) {
             if (!snap.empty) {
-              callback(snap.docs[0].data());
+              callback(snap.docs[0].data()); // İlk eşleşen dokümanı döndür
             } else {
-              // Son çare: localStorage
+              // 3. Deneme (son çare): localStorage'a düş
               var users = JSON.parse(localStorage.getItem('velora_users') || '[]');
               var u = users.find(function(x) { return x.email && x.email.toLowerCase() === email.toLowerCase(); });
               callback(u || null);
@@ -341,6 +422,7 @@ window.vFindUser = function(email, callback) {
       })
       .catch(function(e) {
         console.error('vFindUser hatası:', e);
+        // Hata durumunda localStorage'a düş
         var users = JSON.parse(localStorage.getItem('velora_users') || '[]');
         var u = users.find(function(x) { return x.email && x.email.toLowerCase() === email.toLowerCase(); });
         callback(u || null);
@@ -352,24 +434,28 @@ window.vFindUser = function(email, callback) {
 };
 
 // ── Ürün Yönetimi (admin) ─────────────────────────────────────────────
+
+// Tek bir ürünü Firestore'a kaydeden (ekle veya güncelle) admin fonksiyonu.
+// Doc ID olarak ürünün id'si (string) kullanılır.
 window.vSaveProduct = function(product, done) {
   function doSave() {
     var db = getDB();
     if (!db) { if (done) done(false); return; }
     db.collection('products').doc(String(product.id)).set(product)
-      .then(function() { if (done) done(true); })
+      .then(function()  { if (done) done(true);  })
       .catch(function() { if (done) done(false); });
   }
   if (window._veloraFirebaseReady) { doSave(); }
   else { document.addEventListener('veloraFirebaseReady', doSave, { once: true }); }
 };
 
+// Belirtilen id'ye sahip ürünü Firestore'dan silen admin fonksiyonu.
 window.vDeleteProduct = function(id, done) {
   function doDelete() {
     var db = getDB();
     if (!db) { if (done) done(false); return; }
     db.collection('products').doc(String(id)).delete()
-      .then(function() { if (done) done(true); })
+      .then(function()  { if (done) done(true);  })
       .catch(function() { if (done) done(false); });
   }
   if (window._veloraFirebaseReady) { doDelete(); }
@@ -377,24 +463,28 @@ window.vDeleteProduct = function(id, done) {
 };
 
 // ── Kupon Yönetimi (admin) ────────────────────────────────────────────
+
+// Tek bir kuponu Firestore'a kaydeden (ekle veya güncelle) admin fonksiyonu.
+// Doc ID olarak kupon kodu kullanılır.
 window.vSaveCoupon = function(coupon, done) {
   function doSave() {
     var db = getDB();
     if (!db) { if (done) done(false); return; }
     db.collection('coupons').doc(coupon.code).set(coupon)
-      .then(function() { if (done) done(true); })
+      .then(function()  { if (done) done(true);  })
       .catch(function() { if (done) done(false); });
   }
   if (window._veloraFirebaseReady) { doSave(); }
   else { document.addEventListener('veloraFirebaseReady', doSave, { once: true }); }
 };
 
+// Belirtilen koda sahip kuponu Firestore'dan silen admin fonksiyonu.
 window.vDeleteCoupon = function(code, done) {
   function doDelete() {
     var db = getDB();
     if (!db) { if (done) done(false); return; }
     db.collection('coupons').doc(code).delete()
-      .then(function() { if (done) done(true); })
+      .then(function()  { if (done) done(true);  })
       .catch(function() { if (done) done(false); });
   }
   if (window._veloraFirebaseReady) { doDelete(); }
@@ -402,11 +492,20 @@ window.vDeleteCoupon = function(code, done) {
 };
 
 // ── Ayarlar ───────────────────────────────────────────────────────────
+// Genel site ayarlarını localStorage'dan okuyan senkron yardımcı fonksiyon
 window.vGetSettings   = function() { try { return JSON.parse(localStorage.getItem("velora_settings")   || "{}"); } catch(e) { return {}; } };
+
+// İletişim bilgilerini localStorage'dan okuyan senkron yardımcı fonksiyon
 window.vGetContact    = function() { try { return JSON.parse(localStorage.getItem("velora_contact")    || "{}"); } catch(e) { return {}; } };
+
+// Görünüm ayarlarını localStorage'dan okuyan senkron yardımcı fonksiyon
 window.vGetAppearance = function() { try { return JSON.parse(localStorage.getItem("velora_appearance") || "{}"); } catch(e) { return {}; } };
+
+// Ürün önbelleğini temizleyen fonksiyon; ürün ekleme/silme sonrası çağrılır
 window.vSyncProducts  = function() { window._vProductsCache = null; };
 
+// Firestore'dan site ayarlarını asenkron olarak çeken fonksiyon.
+// 'settings/main' dokümanını okur; bulunamazsa boş nesne döndürür.
 window.vGetSettingsAsync = function(callback) {
   function doGet() {
     var db = getDB();
@@ -420,36 +519,68 @@ window.vGetSettingsAsync = function(callback) {
 };
 
 // ── Sayfa yüklenince ürünleri çek ─────────────────────────────────────
+// DOMContentLoaded sonrasında Firestore'dan ürünleri alır, önbelleğe yazar
+// ve sayfada bulunan render fonksiyonlarını (ürün listesi, kategori, favoriler)
+// uygun verilerle tetikler. Hangi render fonksiyonunun çağrılacağına
+// sayfadaki DOM elementleri bakılarak karar verilir.
 document.addEventListener('DOMContentLoaded', function() {
   window.vGetProductsAsync(function(arr) {
-    window._vProductsCache = arr;
+    window._vProductsCache = arr; // Önbelleği güncelle
+
+    // Eğer global products değişkeni tanımlıysa onu da güncelle
     if (typeof products !== 'undefined') products = arr;
-    if (typeof renderTopProducts === 'function' && document.getElementById('products') && !document.getElementById('category-title')) {
-      renderTopProducts(typeof getNewCollection === 'function' ? getNewCollection(arr) : arr.slice(0,12));
+
+    // Ana sayfa ürün listesi render'ı (kategori başlığı yoksa ana sayfadayız)
+    if (typeof renderTopProducts === 'function' &&
+        document.getElementById('products') &&
+        !document.getElementById('category-title')) {
+      renderTopProducts(typeof getNewCollection === 'function'
+        ? getNewCollection(arr)    // Yeni koleksiyon seçici varsa kullan
+        : arr.slice(0, 12));       // Yoksa ilk 12 ürünü göster
     }
-    if (typeof renderBottomProducts === 'function' && document.getElementById('products-bottom')) {
-      renderBottomProducts(typeof getRandomCollection === 'function' ? getRandomCollection(arr) : arr.slice(0,12));
+
+    // Alt bölüm ürün listesi render'ı
+    if (typeof renderBottomProducts === 'function' &&
+        document.getElementById('products-bottom')) {
+      renderBottomProducts(typeof getRandomCollection === 'function'
+        ? getRandomCollection(arr)
+        : arr.slice(0, 12));
     }
-    if (typeof loadCategoryPage === 'function' && document.getElementById('category-title')) {
+
+    // Kategori sayfası render'ı (category-title elementi varsa kategori sayfasındayız)
+    if (typeof loadCategoryPage === 'function' &&
+        document.getElementById('category-title')) {
       loadCategoryPage();
     }
-    if (typeof renderFavoritesPage === 'function' && document.getElementById('favorites-list')) {
+
+    // Favoriler sayfası render'ı
+    if (typeof renderFavoritesPage === 'function' &&
+        document.getElementById('favorites-list')) {
       renderFavoritesPage();
     }
   });
 });
 
-// ── Ayarları Firebase'den okuyup sayfaya uygula ───────────────────────
-
-
 // ── Bakım modu kontrolü ───────────────────────────────────────────────
+// Admin panelinde değilsek Firestore'dan 'settings/main' dokümanını okur.
+// maintenance flag'i true ise sayfanın tüm içeriğini siler ve
+// bakım modu ekranını gösterir; başka hiçbir işlem yapılmaz.
 document.addEventListener('DOMContentLoaded', function() {
-  if (window.location.href.includes('admin')) return;
+  if (window.location.href.includes('admin')) return; // Admin sayfasında bakım gösterme
+
   window.vGetSettingsAsync(function(settings) {
     if (settings.features && settings.features.maintenance) {
-      document.body.style.margin = '0';
+      // Sayfayı tamamen temizle ve bakım mesajını yerleştir
+      document.body.style.margin  = '0';
       document.body.style.padding = '0';
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;color:#c9b97a;font-family:serif;text-align:center;padding:20px"><div><div style="font-size:48px;margin-bottom:20px">🔧</div><h1 style="font-size:2rem;margin-bottom:10px;color:#c9b97a">Bakım Modu</h1><p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. Kısa süre içinde geri döneceğiz.</p></div></div>';
+      document.body.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:center;' +
+        'min-height:100vh;background:#111;color:#c9b97a;font-family:serif;' +
+        'text-align:center;padding:20px">' +
+        '<div><div style="font-size:48px;margin-bottom:20px">🔧</div>' +
+        '<h1 style="font-size:2rem;margin-bottom:10px;color:#c9b97a">Bakım Modu</h1>' +
+        '<p style="color:#888;font-family:sans-serif">Sitemiz şu an bakımda. ' +
+        'Kısa süre içinde geri döneceğiz.</p></div></div>';
     }
   });
 });
