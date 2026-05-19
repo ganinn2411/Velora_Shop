@@ -2,26 +2,37 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<!-- Mobil cihazlarda düzgün ölçekleme için viewport ayarı -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Sekme başlığı -->
 <title>VELORA – Hesabım</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Favicon: altın V ikonu -->
+<!-- Sekme ikonunu SVG veri URI ile gömülü olarak tanımla: siyah zemin üstünde altın V harfi -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23111'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23c9b97a'>V</text></svg>">
-<!-- Sekme başlığı -->
+<!-- Bu title etiketi yukarıdakini geçersiz kılar; kaldırılması gereken yer tutucu -->
 <title>VELORA – Hesabım</title>
+<!-- Google Fonts: Montserrat yükle — sitenin ana gövde fontu -->
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<!-- Sitenin genel CSS dosyası -->
 <link rel="stylesheet" href="style.css">
 <style>
-/* ── Admin Panel Butonu ── */
+/* ────────────────────────────────────────────────
+   ADMİN PANEL GİRİŞ BUTONU — profil sayfasının
+   giriş formunun altına yerleştirilen yönetici
+   erişim bölümünün stilleri
+   ──────────────────────────────────────────────── */
 .admin-entry {
   margin-top: 28px;
   padding-top: 20px;
+  /* Giriş formundan görsel olarak ayıran ince çizgi */
   border-top: 1px solid #e0d9d0;
   text-align: center;
 }
+/* Koyu modda ayırıcı çizginin rengi */
 body.dark .admin-entry { border-top-color: #2a2a2a; }
 
+/* "YÖNETİCİ GİRİŞİ" gibi küçük etiket metni */
 .admin-entry-label {
   font-size: 10px;
   letter-spacing: 0.2em;
@@ -31,12 +42,13 @@ body.dark .admin-entry { border-top-color: #2a2a2a; }
   margin-bottom: 10px;
 }
 
+/* Admin paneli açan altın renkli kenarlıklı buton */
 .admin-entry-btn {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   background: none;
-  border: 1px solid #c9b97a;
+  border: 1px solid #c9b97a;  /* Altın kenarlık */
   color: #c9b97a;
   padding: 9px 20px;
   font-family: 'Montserrat', sans-serif;
@@ -48,25 +60,33 @@ body.dark .admin-entry { border-top-color: #2a2a2a; }
   transition: background 0.2s, color 0.2s;
   text-decoration: none;
 }
+/* Hover'da arka plan altın, metin beyaz olur */
 .admin-entry-btn:hover {
   background: #c9b97a;
   color: #fff;
 }
 .admin-entry-btn svg { flex-shrink: 0; }
 
-/* ── Admin Modal ── */
+/* ────────────────────────────────────────────────
+   ADMİN GİRİŞ MODALİ — profil sayfası üzerinde
+   açılan şifre doğrulama penceresi
+   ──────────────────────────────────────────────── */
+
+/* Tam ekranı kaplayan yarı saydam siyah arkaplan katmanı */
 .admin-modal-overlay {
   position: fixed;
-  inset: 0;
+  inset: 0;                       /* top/right/bottom/left hepsi 0 */
   background: rgba(0,0,0,0.55);
   z-index: 999;
-  display: none;
+  display: none;                  /* Varsayılan kapalı */
   align-items: center;
   justify-content: center;
   padding: 24px;
 }
+/* .open sınıfı eklenince modal görünür hale gelir */
 .admin-modal-overlay.open { display: flex; }
 
+/* Modal kartı */
 .admin-modal {
   background: #fff;
   border-radius: 10px;
@@ -75,20 +95,23 @@ body.dark .admin-entry { border-top-color: #2a2a2a; }
   padding: 36px 32px 28px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.18);
   position: relative;
-  animation: fadeInUp 0.3s ease;
+  animation: fadeInUp 0.3s ease;  /* Aşağıdan yukarı belirme animasyonu */
 }
+/* Koyu modda modal kartının arka planı ve kenarlığı */
 body.dark .admin-modal {
   background: #1a1a1a;
   border: 1px solid #2a2a2a;
 }
 
+/* Modal içindeki VELORA marka adı */
 .admin-modal-logo {
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 3px;
-  color: #c9b97a;
+  color: #c9b97a;  /* Altın renk — marka rengiyle uyumlu */
   margin-bottom: 4px;
 }
+/* "Admin Panel" alt başlığı */
 .admin-modal-sub {
   font-size: 10px;
   color: #aaa;
@@ -96,6 +119,7 @@ body.dark .admin-modal {
   text-transform: uppercase;
   margin-bottom: 24px;
 }
+/* "Yönetici Girişi" başlığı */
 .admin-modal-title {
   font-size: 16px;
   font-weight: 600;
@@ -104,6 +128,7 @@ body.dark .admin-modal {
 }
 body.dark .admin-modal-title { color: #f0f0f0; }
 
+/* Sağ üst köşedeki × kapatma butonu */
 .admin-modal-close {
   position: absolute;
   top: 14px; right: 18px;
@@ -113,6 +138,7 @@ body.dark .admin-modal-title { color: #f0f0f0; }
 }
 .admin-modal-close:hover { color: #333; }
 
+/* Şifre input grubu: etiket + input + hata mesajı */
 .admin-pw-group { margin-bottom: 16px; position: relative; }
 .admin-pw-label {
   display: block;
@@ -122,6 +148,7 @@ body.dark .admin-modal-title { color: #f0f0f0; }
   color: #888;
   margin-bottom: 7px;
 }
+/* Şifre metin girişi: sağda göz ikonu için padding bırakılır */
 .admin-pw-input {
   width: 100%;
   border: 1px solid #ddd;
@@ -134,12 +161,16 @@ body.dark .admin-modal-title { color: #f0f0f0; }
   background: #fafafa;
   color: #1a1714;
 }
+/* Koyu modda input arka planı ve kenarlığı */
 body.dark .admin-pw-input { background: #111; border-color: #333; color: #f0f0f0; }
+/* Odaklanınca altın kenarlık */
 .admin-pw-input:focus { border-color: #c9b97a; }
+/* Yanlış şifre girilince kırmızı kenarlık */
 .admin-pw-input.error { border-color: #c0392b; }
 
 .admin-pw-group { position: relative; }
 
+/* Şifreyi göster/gizle yapan göz butonu — input'un içine konumlandırılır */
 .admin-pw-toggle {
   position: absolute;
   right: 10px;
@@ -154,6 +185,7 @@ body.dark .admin-pw-input { background: #111; border-color: #333; color: #f0f0f0
 }
 .admin-pw-toggle:hover { color: #555; }
 
+/* Hatalı şifre uyarı metni — varsayılan gizli, .show ile gösterilir */
 .admin-pw-error {
   font-size: 11px;
   color: #c0392b;
@@ -162,6 +194,7 @@ body.dark .admin-pw-input { background: #111; border-color: #333; color: #f0f0f0
 }
 .admin-pw-error.show { display: block; }
 
+/* "Admin Paneline Gir" tam genişlik koyu buton */
 .admin-modal-btn {
   width: 100%;
   background: #1a1714;
@@ -178,8 +211,10 @@ body.dark .admin-pw-input { background: #111; border-color: #333; color: #f0f0f0
   margin-top: 4px;
 }
 .admin-modal-btn:hover { opacity: 0.85; }
+/* Koyu modda buton altın renge döner */
 body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
 
+/* Modal alt not metni */
 .admin-modal-note {
   font-size: 11px;
   color: #bbb;
@@ -187,7 +222,12 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
   margin-top: 14px;
   font-family: 'Montserrat', monospace;
 }
-  /* E-posta taşma düzeltmesi */
+
+/* ────────────────────────────────────────────────
+   E-POSTA TAŞMA DÜZELTMESİ
+   Uzun e-posta adresleri profil kartından taşmasın
+   diye overflow: hidden + text-overflow: ellipsis
+   ──────────────────────────────────────────────── */
 .profile-email,
 #profile-email,
 #profile-email-detail {
@@ -200,25 +240,31 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
   box-sizing: border-box !important;
 }
 
+/* Profil bilgi satırının taşmaması için overflow gizle */
 .profile-info-row {
   overflow: hidden !important;
 }
 
+/* Değer sütununun flex içinde daralmaya izin ver ve taşmayı gizle */
 .profile-info-value {
   overflow: hidden !important;
   min-width: 0 !important;
   flex: 1 !important;
+  /* Etiket ~94px genişliğinde olduğundan değer sütununa kalan alan hesaplanır */
   max-width: calc(100% - 94px) !important;
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ── SAYFA HEADER'I: Daha sade profil header'ı — ana navigasyon yok ── -->
 <header class="profile-header">
+  <!-- Logo: ana sayfaya döner -->
   <a href="index.html" class="logo">VELORA</a>
   <div class="profile-header-right">
+    <!-- Açık/koyu mod geçiş butonu -->
     <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
+    <!-- Alışveriş sayfasına dönme bağlantısı -->
     <a href="index.html" class="back-home">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -229,17 +275,25 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
   </div>
 </header>
 
-<!-- TOAST -->
+<!-- showToast() fonksiyonunun kullandığı genel bildirim alanı -->
 <div class="toast" id="toast"></div>
 
-<!-- SÖZLEŞME MODALİ -->
+<!-- ────────────────────────────────────────────────
+   KULLANIM ŞARTLARI MODALİ
+   Kayıt formundaki "Kullanım Şartları" linkine
+   tıklanınca açılır; kullanıcı kabul edince
+   termsCheck checkbox'ı otomatik işaretlenir
+   ──────────────────────────────────────────────── -->
+<!-- Dışına tıklanınca closeTermsModal() çalışır -->
 <div class="modal-overlay" id="termsModal" onclick="closeTermsModal(event)">
   <div class="modal-box">
     <div class="modal-header">
       <span>Kullanım Şartları ve Gizlilik Politikası</span>
+      <!-- × butonu modalı direkt kapatır -->
       <button class="modal-close" onclick="document.getElementById('termsModal').classList.remove('active')">✕</button>
     </div>
     <div class="modal-body">
+      <!-- Şartlar metni: bölüm başlıkları ve açıklamalar -->
       <h3>1. Genel Hükümler</h3>
       <p>VELORA'ya üye olarak bu platformun sunduğu hizmetlerden yararlanabilirsiniz.</p>
       <h3>2. Kişisel Verilerin Korunması</h3>
@@ -256,71 +310,96 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
       <p>VELORA, bu şartları önceden bildirmeksizin değiştirme hakkını saklı tutar.</p>
     </div>
     <div class="modal-footer">
+      <!-- Kabul butonuna tıklanınca acceptTerms() çalışır; checkbox işaretlenir ve modal kapanır -->
       <button class="auth-btn" onclick="acceptTerms()">Okudum, Kabul Ediyorum</button>
     </div>
   </div>
 </div>
-  
 
-  
-<!-- ── ADMİN GİRİŞ MODALİ ── -->
+<!-- ────────────────────────────────────────────────
+   ADMİN GİRİŞ MODALİ
+   Giriş formunun altındaki "Admin Paneli" butonuna
+   tıklanınca açılır; şifre doğrulandıktan sonra
+   admin.html'e yönlendirir
+   ──────────────────────────────────────────────── -->
 <div class="admin-modal-overlay" id="adminModal">
   <div class="admin-modal">
+    <!-- Sağ üst köşe kapatma butonu -->
     <button class="admin-modal-close" onclick="closeAdminModal()">×</button>
+    <!-- Marka adı ve alt başlık -->
     <div class="admin-modal-logo">VELORA</div>
     <div class="admin-modal-sub">Admin Panel</div>
     <div class="admin-modal-title">Yönetici Girişi</div>
 
+    <!-- Şifre giriş grubu: input + göz ikonu butonu + hata mesajı -->
     <div class="admin-pw-group">
-  <label class="admin-pw-label">Admin Şifresi</label>
-  <div style="position:relative;">
-    <input type="password" class="admin-pw-input" id="adminModalPw"
-           placeholder="Şifrenizi girin"
-           style="padding-right:42px;"
-           onkeydown="if(event.key==='Enter') checkAdminEntry()">
-    <button class="admin-pw-toggle" onclick="toggleAdminPw()" tabindex="-1" id="adminPwToggle"
-            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;padding:2px;line-height:1;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-        <circle cx="12" cy="12" r="3"/>
-      </svg>
-    </button>
-  </div>
-  <div class="admin-pw-error" id="adminPwError">Hatalı şifre! Tekrar deneyin.</div>
-</div>
+      <label class="admin-pw-label">Admin Şifresi</label>
+      <div style="position:relative;">
+        <!-- Enter tuşuna basınca checkAdminEntry() tetiklenir -->
+        <input type="password" class="admin-pw-input" id="adminModalPw"
+               placeholder="Şifrenizi girin"
+               style="padding-right:42px;"
+               onkeydown="if(event.key==='Enter') checkAdminEntry()">
+        <!-- Göz butonu: şifreyi göster/gizle; tabindex="-1" ile Tab odağından çıkarılır -->
+        <button class="admin-pw-toggle" onclick="toggleAdminPw()" tabindex="-1" id="adminPwToggle"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;padding:2px;line-height:1;">
+          <!-- Göz (açık) SVG ikonu — şifre gizliyken gösterilir -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Hatalı şifre uyarısı — JS tarafından .show sınıfıyla gösterilir -->
+      <div class="admin-pw-error" id="adminPwError">Hatalı şifre! Tekrar deneyin.</div>
+    </div>
 
+    <!-- Şifreyi doğrulayan ve admin.html'e yönlendiren ana aksiyon butonu -->
     <button class="admin-modal-btn" onclick="checkAdminEntry()">Admin Paneline Gir</button>
   </div>
 </div>
 
-<!-- AUTH KUTUSU -->
+<!-- ────────────────────────────────────────────────
+   AUTH KUTUSU
+   Dört farklı bölüm içerir; JS tarafından
+   hangisinin gösterileceği yönetilir:
+   1. Kayıt formu (register-section)
+   2. E-posta doğrulama (verify-section)
+   3. Giriş formu (login-section)
+   4. Profil kartı (profile-section)
+   ──────────────────────────────────────────────── */
 <div class="auth-wrapper">
   <div class="auth-box">
 
-    <!-- 1. KAYIT FORMU -->
+    <!-- ── 1. KAYIT FORMU ── -->
     <div id="register-section">
       <h2>Üye Ol</h2>
       <div class="auth-divider"></div>
       <p class="auth-subtitle">Hesabınızı oluşturun ve alışverişin tadını çıkarın.</p>
 
+      <!-- Ad Soyad alanı: fg-name ID'si ile hata stili form-group'a eklenir -->
       <div class="form-group" id="fg-name">
         <label>Ad Soyad</label>
         <input type="text" id="reg-name" placeholder="Adınız ve Soyadınız" autocomplete="name">
         <div class="error-msg">Ad soyad zorunludur.</div>
       </div>
 
+      <!-- E-posta alanı: e-posta format doğrulaması JS tarafından yapılır -->
       <div class="form-group" id="fg-email">
         <label>E-posta Adresi</label>
         <input type="email" id="reg-email" placeholder="ornek@mail.com" autocomplete="email">
         <div class="error-msg" id="email-error-msg">Geçerli bir e-posta adresi giriniz.</div>
       </div>
 
+      <!-- Şifre alanı: güç çubuğu ve kural kontrolleri içerir -->
       <div class="form-group" id="fg-password">
         <label>Şifre</label>
         <div class="password-wrap">
+          <!-- oninput ile her tuş vuruşunda şifre gücü hesaplanır -->
           <input type="password" id="reg-password" placeholder="Şifrenizi oluşturun" autocomplete="new-password"
                  oninput="checkPasswordStrength(this.value)">
+          <!-- Göz ikonu butonu: şifreyi göster/gizle -->
           <button type="button" class="toggle-pw" onclick="togglePw('reg-password', this)" tabindex="-1">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                  stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
@@ -329,9 +408,11 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
             </svg>
           </button>
         </div>
+        <!-- Şifre gücü görsel çubuğu: JS ile genişliği ve rengi değişir -->
         <div class="pw-strength-bar">
           <div class="pw-strength-fill" id="pw-strength-fill"></div>
         </div>
+        <!-- Her kural karşılandığında ✗ → ✓ ve kırmızı → yeşil olur -->
         <div class="pw-rules" id="pw-rules">
           <span id="rule-length"  class="rule">✗ En az 8 karakter</span>
           <span id="rule-upper"   class="rule">✗ En az 1 büyük harf</span>
@@ -341,6 +422,7 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
         <div class="error-msg" id="password-error-msg">Şifre gereksinimleri karşılanmıyor.</div>
       </div>
 
+      <!-- Şifre tekrar alanı: birinci şifreyle eşleşip eşleşmediği kontrol edilir -->
       <div class="form-group" id="fg-password2">
         <label>Şifre Tekrar</label>
         <div class="password-wrap">
@@ -356,59 +438,72 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
         <div class="error-msg" id="password2-error-msg">Şifreler eşleşmiyor.</div>
       </div>
 
+      <!-- Şartları kabul checkbox'ı: işaretlenmezse kayıt engellenir -->
       <div class="checkbox-group" id="fg-terms">
         <label class="checkbox-label">
           <input type="checkbox" id="termsCheck">
           <span class="checkbox-custom"></span>
           <span class="checkbox-text">
+            <!-- Tıklanınca termsModal'ı açar (openTermsModal fonksiyonu) -->
             <a href="#" onclick="openTermsModal(event)">Kullanım Şartları ve Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
           </span>
         </label>
         <div class="error-msg" id="terms-error-msg">Devam etmek için şartları kabul etmelisiniz.</div>
       </div>
 
+      <!-- Formu doğrulayan ve EmailJS ile doğrulama kodu gönderen kayıt butonu -->
       <button class="auth-btn" id="register-btn" onclick="handleRegister()">
         Üye Ol ve Doğrulama Kodu Gönder
       </button>
 
+      <!-- Giriş formuna geçiş linki -->
       <p class="switch-text">Zaten hesabınız var mı? <span onclick="showLogin()">Giriş Yap</span></p>
     </div>
 
-    <!-- 2. DOĞRULAMA -->
+    <!-- ── 2. E-POSTA DOĞRULAMA BÖLÜMÜ ── -->
+    <!-- Kayıt sonrası gelen 4 haneli kodu kullanıcının girmesi için gösterilir -->
     <div id="verify-section" class="hidden">
       <h2>E-posta Doğrulama</h2>
       <div class="auth-divider"></div>
+      <!-- Hangi e-postaya kod gönderildiği dinamik olarak buraya yazılır -->
       <p class="verify-hint">
         <strong id="verify-email-label"></strong> adresine<br>4 haneli doğrulama kodu gönderildi.
       </p>
+      <!-- 4 ayrı tek haneli input: her biri doldurulunca otomatik sonrakine geçer (script.js) -->
       <div class="code-input-wrap">
         <input class="code-digit" type="text" maxlength="1" id="d1" inputmode="numeric">
         <input class="code-digit" type="text" maxlength="1" id="d2" inputmode="numeric">
         <input class="code-digit" type="text" maxlength="1" id="d3" inputmode="numeric">
         <input class="code-digit" type="text" maxlength="1" id="d4" inputmode="numeric">
       </div>
+      <!-- Girilen kodu doğrulayan ve Firestore'a kullanıcı kaydeden buton -->
       <button class="auth-btn" onclick="handleVerify()">Kodu Doğrula ve Üye Ol</button>
+      <!-- Kod yeniden gönderme: 60 saniye geri sayım sonrası aktif olur -->
       <div class="resend-row">
         <span id="resend-btn" class="counting" onclick="resendCode()">Kodu Yeniden Gönder</span>
         <span id="countdown-text"> (60s)</span>
       </div>
+      <!-- Kayıt formuna geri dön bağlantısı -->
       <p class="switch-text" style="margin-top:20px;">
         <span onclick="showSection('register-section')">← Geri Dön</span>
       </p>
     </div>
 
-    <!-- 3. GİRİŞ FORMU -->
+    <!-- ── 3. GİRİŞ FORMU ── -->
     <div id="login-section" class="hidden">
       <h2>Giriş Yap</h2>
       <div class="auth-divider"></div>
       <p class="auth-subtitle">E-posta ve şifrenizle giriş yapın.</p>
 
+      <!-- Giriş e-posta alanı -->
       <div class="form-group" id="fg-login-email">
         <label>E-posta Adresi</label>
         <input type="email" id="login-email" placeholder="ornek@mail.com" autocomplete="email">
+        <!-- Firestore'da e-posta bulunamazsa gösterilir -->
         <div class="error-msg" id="login-email-error-msg">Bu e-posta ile kayıtlı kullanıcı bulunamadı.</div>
       </div>
 
+      <!-- Giriş şifre alanı -->
       <div class="form-group" id="fg-login-password">
         <label>Şifre</label>
         <div class="password-wrap">
@@ -421,9 +516,11 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
             </svg>
           </button>
         </div>
+        <!-- Şifre eşleşmezse gösterilir -->
         <div class="error-msg" id="login-password-error-msg">Şifre hatalı.</div>
       </div>
 
+      <!-- "Beni Hatırla" checkbox'ı: işaretlenirse kullanıcı localStorage'a kaydedilir -->
       <div class="checkbox-group remember-group">
         <label class="checkbox-label">
           <input type="checkbox" id="rememberMe">
@@ -432,13 +529,17 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
         </label>
       </div>
 
+      <!-- Firestore'da e-posta + şifre karşılaştırması yapan giriş butonu -->
       <button class="auth-btn" onclick="handleLogin()">Giriş Yap</button>
+      <!-- Kayıt formuna geçiş linki -->
       <p class="switch-text">Hesabınız yok mu? <span onclick="showRegister()">Üye Ol</span></p>
 
-      <!-- ── Admin Panel Giriş Butonu ── -->
+      <!-- Admin panel erişim bölümü: yalnızca giriş ekranında görünür -->
       <div class="admin-entry">
         <span class="admin-entry-label">Yönetici Girişi</span>
+        <!-- Tıklanınca adminModal'ı açar -->
         <button class="admin-entry-btn" onclick="openAdminModal()">
+          <!-- Kilit SVG ikonu -->
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -449,12 +550,18 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
       </div>
     </div>
 
-    <!-- 4. PROFİL -->
+    <!-- ── 4. PROFİL KARTI ── -->
+    <!-- Kullanıcı giriş yaptıktan sonra gösterilir; bilgiler JS tarafından doldurulur -->
     <div id="profile-section" class="hidden">
       <div class="profile-card">
+        <!-- Kullanıcı adının baş harfinden oluşan avatar (JS tarafından oluşturulur) -->
         <div class="profile-avatar" id="profile-avatar"></div>
+        <!-- Kullanıcının tam adı -->
         <div class="profile-name" id="profile-name"></div>
+        <!-- Kullanıcının e-posta adresi (uzunsa ... ile kısaltılır) -->
         <div class="profile-email" id="profile-email"></div>
+
+        <!-- Bilgi satırları: etiket + değer -->
         <div class="profile-info-row">
           <div class="profile-info-label">Ad Soyad</div>
           <div class="profile-info-value" id="profile-name-detail"></div>
@@ -466,12 +573,16 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
         <div class="profile-info-row">
           <div class="profile-info-label">Şifre</div>
           <div class="profile-info-value">
+            <!-- Şifre nokta karakterleriyle maskelenir -->
             <span class="pw-dots">••••••••</span>
+            <!-- Şifre değiştirme formunu aç/kapat butonu -->
             <button class="pw-change-toggle" id="pw-change-toggle" onclick="togglePwChangeForm()">Değiştir</button>
           </div>
         </div>
 
+        <!-- Şifre değiştirme formu: varsayılan gizli, togglePwChangeForm() ile açılır -->
         <div id="pw-change-form" class="pw-change-form hidden">
+          <!-- Mevcut şifre doğrulama alanı -->
           <div class="form-group" id="fg-current-pw">
             <label>Mevcut Şifre</label>
             <div class="password-wrap">
@@ -487,9 +598,11 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
             <div class="error-msg" id="current-pw-error-msg">Mevcut şifre hatalı.</div>
           </div>
 
+          <!-- Yeni şifre alanı: güç göstergesi ve kural listesi içerir -->
           <div class="form-group" id="fg-new-pw">
             <label>Yeni Şifre</label>
             <div class="password-wrap">
+              <!-- checkPasswordStrength2: kayıt formundakinden farklı bir set kullanır -->
               <input type="password" id="new-pw" placeholder="Yeni şifrenizi oluşturun"
                      autocomplete="new-password" oninput="checkPasswordStrength2(this.value)">
               <button type="button" class="toggle-pw" onclick="togglePw('new-pw', this)" tabindex="-1">
@@ -500,9 +613,11 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
                 </svg>
               </button>
             </div>
+            <!-- İkinci şifre gücü çubuğu (pw-strength-fill2) -->
             <div class="pw-strength-bar">
               <div class="pw-strength-fill" id="pw-strength-fill2"></div>
             </div>
+            <!-- İkinci kural seti (rule2-*) -->
             <div class="pw-rules" id="pw-rules2">
               <span id="rule2-length"  class="rule">✗ En az 8 karakter</span>
               <span id="rule2-upper"   class="rule">✗ En az 1 büyük harf</span>
@@ -512,6 +627,7 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
             <div class="error-msg" id="new-pw-error-msg">Şifre gereksinimleri karşılanmıyor.</div>
           </div>
 
+          <!-- Yeni şifre tekrar alanı: birinci yeni şifreyle eşleşip eşleşmediği kontrol edilir -->
           <div class="form-group" id="fg-new-pw2">
             <label>Yeni Şifre Tekrar</label>
             <div class="password-wrap">
@@ -527,12 +643,15 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
             <div class="error-msg" id="new-pw2-error-msg">Şifreler eşleşmiyor.</div>
           </div>
 
+          <!-- Şifreyi güncelleyen ve iptal eden aksiyon butonları -->
           <div class="pw-change-actions">
+            <!-- handleChangePassword(): mevcut şifreyi doğrulayıp yeni şifreyi Firestore'a kaydeder -->
             <button class="auth-btn" onclick="handleChangePassword()">Şifreyi Güncelle</button>
             <button class="pw-cancel-btn" onclick="togglePwChangeForm()">İptal</button>
           </div>
         </div>
 
+        <!-- Kullanıcıyı oturumdan çıkaran ve giriş formuna döndüren buton -->
         <button class="logout-btn" onclick="handleLogout()">Çıkış Yap</button>
       </div>
     </div>
@@ -540,68 +659,87 @@ body.dark .admin-modal-btn { background: #c9b97a; color: #111; }
   </div>
 </div>
 
-
+<!-- EmailJS SDK: e-posta doğrulama kodunu göndermek için kullanılır -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- EmailJS public key ile init: bu key ile şablonlara erişim sağlanır -->
 <script>emailjs.init("AMxxbdCuDcWeWcuio");</script>
-   <script src="velora-appearance.js"></script>  
-  <script src="velora-firebase.js"></script>
+
+<!-- 1. Görünüm ayarlarını uygulayan script -->
+<script src="velora-appearance.js"></script>
+<!-- 2. Firebase bağlantısını kuran ve window._db'yi hazırlayan script -->
+<script src="velora-firebase.js"></script>
+<!-- 3. Firestore gerçek zamanlı dinleyicilerini başlatan script -->
 <script src="velora-realtime.js"></script>
-  <script src="script.js"></script>
+<!-- 4. Ana uygulama scripti: kayıt, giriş, profil, şifre değiştirme mantığı -->
+<script src="script.js"></script>
+
 <script>
 // ── Admin Modal Fonksiyonları ──
+// Bu fonksiyonlar profil.html'e özgüdür; admin.js'den bağımsız çalışır.
+
+// Admin modalını açar: input temizlenir, hata sıfırlanır, odak input'a taşınır
 function openAdminModal() {
   document.getElementById('adminModal').classList.add('open');
   document.getElementById('adminModalPw').value = '';
   document.getElementById('adminModalPw').classList.remove('error');
   document.getElementById('adminPwError').classList.remove('show');
+  // 100ms gecikme: modal animasyonu bitmeden odak verilmesin diye
   setTimeout(() => document.getElementById('adminModalPw').focus(), 100);
 }
 
+// Admin modalını kapatır
 function closeAdminModal() {
   document.getElementById('adminModal').classList.remove('open');
 }
 
-// Modalın dışına tıklayınca kapat
+// Modalın arka plan katmanına tıklanınca kapatır (iç alana tıklamada kapanmaz)
 document.getElementById('adminModal').addEventListener('click', function(e) {
   if (e.target === this) closeAdminModal();
 });
 
+// Şifre alanını metin/şifre arasında geçiren ve göz ikonunu güncelleyen fonksiyon
 function toggleAdminPw() {
-  const input = document.getElementById('adminModalPw');
-  const btn   = document.getElementById('adminPwToggle');
+  const input  = document.getElementById('adminModalPw');
+  const btn    = document.getElementById('adminPwToggle');
   const isText = input.type === 'text';
+  // Tipi tersine çevir
   input.type = isText ? 'password' : 'text';
+  // Önceki hata stilini temizle
   input.classList.remove('error');
   document.getElementById('adminPwError').classList.remove('show');
-  // Göz ikonunu değiştir
+  // Göz ikonunu duruma göre güncelle: şifre gizliyse açık göz, görünüyorsa çizgili göz
   btn.innerHTML = isText
     ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
            stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
          <circle cx="12" cy="12" r="3"/>
-       </svg>`
+       </svg>`  // Açık göz: şifre gizlenecek
     : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
            stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-         <line x1="1" y1="1" x2="23" y2="23"/>
-       </svg>`;
+         <line x1="1" y1="1" x2="23" y2="23"/>  <!-- Çapraz çizgi: göz üstünde -->
+       </svg>`; // Çizgili göz: şifre görünecek
 }
 
+// Girilen şifreyi localStorage'daki admin şifresiyle karşılaştıran fonksiyon
 function checkAdminEntry() {
   const input    = document.getElementById('adminModalPw');
   const errorEl  = document.getElementById('adminPwError');
   const pw       = input.value;
+  // localStorage'da şifre yoksa varsayılan 'admin123' kullanılır
   const storedPw = localStorage.getItem('velora_admin_pw') || 'admin123';
 
-  // Her denemede önce hata mesajını temizle
+  // Her denemede önce hata görselini sıfırla
   input.classList.remove('error');
   errorEl.classList.remove('show');
 
   if (pw === storedPw) {
+    // Şifre doğruysa session'a oturum bilgisi yaz ve admin paneline yönlendir
     sessionStorage.setItem('velora_admin_session', '1');
     window.location.href = 'admin.html';
   } else {
+    // Şifre yanlışsa kırmızı kenarlık ve hata mesajı göster, sonra 1.5s'de temizle
     input.classList.add('error');
     errorEl.classList.add('show');
     input.value = '';
