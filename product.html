@@ -2,37 +2,52 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <!-- Sayfanın başlığı: ürün detay sayfası -->
   <title>Ürün Detay</title>
+  <!-- Mobil cihazlarda düzgün ölçekleme için viewport ayarı -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <!-- Favicon: altın V ikonu -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23111'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23c9b97a'>V</text></svg>">
-<!-- Sekme başlığı -->
-<title>VELORA – Hesabım</title>
+  <!-- Sekme ikonunu SVG veri URI ile gömülü olarak tanımla: siyah zemin üstünde altın V harfi -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23111'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23c9b97a'>V</text></svg>">
+  <!-- Bu title etiketi yukarıdakini geçersiz kılar; ileride kaldırılması gereken yer tutucu -->
+  <title>VELORA – Hesabım</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Google Fonts: Montserrat (genel metin), Playfair Display (büyük başlıklar), Ubuntu (alternatif metin) -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <!-- Sitenin genel CSS dosyası -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  
-<div class="center-toast" id="centerToast">
+
+  <!-- Sepete ürün eklenince ekranın ortasında beliren bildirim tostu -->
+  <div class="center-toast" id="centerToast">
     <div class="center-toast-icon">🛒</div>
     <div class="center-toast-title">Sepete Eklendi</div>
+    <!-- Eklenen ürünün adı JS tarafından buraya yazılır -->
     <div class="center-toast-msg" id="centerToastMsg"></div>
   </div>
 
 </body>
 </html>
+
+<!-- ── ÜST NAVIGASYON HEADER ──
+     NOT: Bu header </html> etiketinden SONRA yazılmış — yapısal bir hata.
+     Tarayıcı toleranslı davranır ve yine de render eder, ancak
+     idealde <body> içine taşınmalıdır. ── -->
 <header class="header">
+  <!-- Logo: tıklanınca ana sayfaya döner -->
   <a href="index.html" class="logo">VELORA</a>
 
-  <!-- Hamburger (mobilde görünür) -->
+  <!-- Mobilde menüyü açıp kapatan hamburger butonu -->
   <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menü">
     <span></span><span></span><span></span>
   </button>
 
+  <!-- Ana navigasyon menüsü: mega menülü kategori linkleri -->
   <nav class="nav" id="navMenu">
+
+    <!-- KADIN mega menüsü: hover'da açılır, URL parametreleriyle category.html'e yönlendirir -->
     <div class="nav-item">
       <a href="#" class="nav-link">KADIN</a>
       <div class="mega-menu">
@@ -46,6 +61,7 @@
       </div>
     </div>
 
+    <!-- ERKEK mega menüsü -->
     <div class="nav-item">
       <a href="#" class="nav-link">ERKEK</a>
       <div class="mega-menu">
@@ -59,6 +75,7 @@
       </div>
     </div>
 
+    <!-- ÇOCUK mega menüsü -->
     <div class="nav-item">
       <a href="#" class="nav-link">ÇOCUK</a>
       <div class="mega-menu">
@@ -72,11 +89,13 @@
       </div>
     </div>
 
+    <!-- Favoriler sayfasına doğrudan link -->
     <a href="wishlist.html" class="fav-link">FAVORİLER</a>
   </nav>
 
-  <!-- Sağ ikonlar -->
+  <!-- Sağ taraftaki ikon grubu -->
   <div class="header-actions">
+    <!-- Kullanıcı profil sayfasına giden ikon -->
     <a href="profile.html" class="profile-icon" id="profile-icon" title="Hesabım">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
            stroke-linecap="round" stroke-linejoin="round">
@@ -84,45 +103,62 @@
         <circle cx="12" cy="7" r="4"/>
       </svg>
     </a>
+    <!-- Açık/koyu mod geçiş butonu -->
     <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
+    <!-- Sepet linki: rozet JS ile ürün adediyle güncellenir -->
     <a href="cart.html" class="cart">
       🛒 <span class="cart-badge" id="cart-count">0</span>
     </a>
+    <!-- Tarayıcı geçmişinde bir önceki sayfaya dönen geri butonu -->
     <a href="javascript:history.back()" class="back-btn" title="Geri Dön">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
            stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <!-- Sol ok işareti SVG'si -->
         <path d="M15 18l-6-6 6-6"/>
       </svg>
     </a>
   </div>
 </header>
 
+<!-- Ürün detay içeriğinin JS tarafından dinamik olarak doldurulacağı bölüm -->
+<!-- script.js URL'deki ?id= parametresini okuyarak Firebase'den ürünü çeker ve buraya render eder -->
 <section class="product-page" id="productDetail"></section>
 
+<!-- ── FOOTER ── -->
 <footer class="footer">
+  <!-- Kategori kısa yolları -->
   <div class="footer-col">
     <h4>MAĞAZA</h4>
     <a href="category.html?category=kadin&type=tisort">Kadın</a>
     <a href="category.html?category=erkek&type=tisort">Erkek</a>
     <a href="category.html?category=cocuk&type=tisort">Çocuk</a>
   </div>
+  <!-- Destek ve iletişim linkleri -->
   <div class="footer-col">
     <h4>YARDIM</h4>
+    <!-- WhatsApp numarasına tıkla-ara linki -->
     <a href="https://wa.me/905550066123" target="_blank">İletişim</a>
     <a href="#">Kargo</a>
     <a href="#">İade</a>
   </div>
+  <!-- Kurumsal linkleri -->
   <div class="footer-col">
     <h4>KURUMSAL</h4>
     <a href="#">Hakkımızda</a>
     <a href="#">Kariyer</a>
   </div>
+  <!-- Telif hakkı notu -->
   <div class="footer-bottom">© 2026 VELORA – Tüm Hakları Saklıdır</div>
 </footer>
-  
- <script src="velora-appearance.js"></script>  
-  <script src="velora-firebase.js"></script>
+
+<!-- Script yükleme sırası: her biri bir sonrakine bağımlı olduğundan sırayla yüklenir -->
+<!-- 1. Görünüm ayarlarını (tema renkleri, fontlar, duyuru çubuğu) uygulayan script -->
+<script src="velora-appearance.js"></script>
+<!-- 2. Firebase bağlantısını kuran ve window._db'yi hazırlayan script -->
+<script src="velora-firebase.js"></script>
+<!-- 3. Firestore'daki değişiklikleri gerçek zamanlı dinleyen script -->
 <script src="velora-realtime.js"></script>
-  <script src="script.js"></script>
+<!-- 4. Ana uygulama scripti: URL'deki ürün ID'sini okuyup detay sayfasını render eder -->
+<script src="script.js"></script>
 </body>
 </html>
