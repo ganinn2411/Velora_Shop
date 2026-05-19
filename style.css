@@ -1307,6 +1307,12 @@ label { font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 8px
   font-size: 13px;
   color: var(--text-light);
   margin-bottom: 36px;
+  max-width: 220px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* =====================================================================
