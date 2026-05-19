@@ -1,10 +1,17 @@
 // ============================================================
 //  VELORA — velora-data.js
+//  Ürün kataloğunu, kupon listesini ve yardımcı erişim
+//  fonksiyonlarını localStorage üzerinden yönetir.
 // ============================================================
 (function () {
 
+  // Cloudinary CDN base URL'i; tüm ürün görselleri buraya göre oluşturulur
   var CDN = "https://res.cloudinary.com/dy2dvpbit/image/upload";
 
+  // Varsayılan ürün listesi.
+  // Her nesne: id (benzersiz), name (ürün adı), price (fiyat TL),
+  // image (CDN'deki görsel yolu), category (erkek/kadin/cocuk),
+  // type (tisort/pantalon/sapka/ceket) alanlarını içerir.
   var VELORA_DEFAULT_PRODUCTS = [
     { id:1,  name:"Erkek Tişört",   price:1200, image:CDN+"/haryo-setyadi-acn5ERAeSb4-unsplash_svhjqz.jpg",               category:"erkek", type:"tisort"   },
     { id:2,  name:"Erkek Tişört",   price:300,  image:CDN+"/pexels-david-fowora-2160297192-36801391_hfunqe.jpg",           category:"erkek", type:"tisort"   },
@@ -54,6 +61,7 @@
     { id:46, name:"Çocuk Ceket",    price:1500, image:CDN+"/christopher-campbell--h_cufTEtcg-unsplash_cehfnl.jpg",        category:"cocuk", type:"ceket"    },
     { id:47, name:"Çocuk Ceket",    price:1500, image:CDN+"/nathan-dumlao-QqLuSb0sypY-unsplash_gs4zul.jpg",               category:"cocuk", type:"ceket"    },
     { id:48, name:"Çocuk Ceket",    price:1500, image:CDN+"/phat-tr-ng-UbJ2Q_HInuU-unsplash_sbwzvv.jpg",                  category:"cocuk", type:"ceket"    },
+    // Aşağıdaki ürünler (id 50+) WhatsApp üzerinden gönderilen gerçek mağaza fotoğraflarıdır
     { id:50, name:"Erkek Tişört",   price:1200, image:CDN+"/WhatsApp_Image_2026-05-16_at_12.49.26_9_mqf5za.jpg",          category:"erkek", type:"tisort"   },
     { id:51, name:"Erkek Tişört",   price:1200, image:CDN+"/WhatsApp_Image_2026-05-16_at_12.49.27_4_rawlcg.jpg",          category:"erkek", type:"tisort"   },
     { id:52, name:"Erkek Pantolon", price:1200, image:CDN+"/WhatsApp_Image_2026-05-16_at_12.49.24_sp3epo.jpg",            category:"erkek", type:"pantalon" },
@@ -92,6 +100,9 @@
     { id:85, name:"Çocuk Ceket",    price:800,  image:CDN+"/WhatsApp_Image_2026-05-16_at_14.23.44_1_lvqfgm.jpg",          category:"cocuk", type:"ceket"    }
   ];
 
+  // Varsayılan kupon listesi.
+  // Her nesne: code (kupon kodu), discount (indirim yüzdesi),
+  // status (active/inactive), uses (kaç kez kullanıldı) alanlarını içerir.
   var VELORA_DEFAULT_COUPONS = [
     { code:"VELORA10",  discount:10, status:"active", uses:0 },
     { code:"VELORA20",  discount:20, status:"active", uses:0 },
@@ -101,52 +112,82 @@
     { code:"MM",        discount:20, status:"active", uses:0 }
   ];
 
+  // Başlangıç verilerini localStorage'a yazar; daha önce veri varsa üzerine yazmaz.
+  // Böylece kullanıcının yaptığı değişiklikler korunur.
   (function seedDefaults() {
     try {
+      // Ürün verisi yoksa varsayılanları kaydet
       if (!localStorage.getItem("velora_products")) {
         localStorage.setItem("velora_products", JSON.stringify(VELORA_DEFAULT_PRODUCTS));
       }
+      // Kupon verisi yoksa varsayılanları kaydet
       if (!localStorage.getItem("velora_coupons")) {
         localStorage.setItem("velora_coupons", JSON.stringify(VELORA_DEFAULT_COUPONS));
       }
-    } catch(e) {}
+    } catch(e) {} // localStorage erişimi engellenirse (özel sekme vb.) sessizce geç
   })();
 
+  // Ürün listesini döndüren global fonksiyon.
+  // Önce localStorage'dan okumayı dener; başarısız olursa varsayılan listeyi yazar ve döndürür.
   window.vGetProducts = function () {
     try {
       var raw = localStorage.getItem("velora_products");
       if (raw) {
         var arr = JSON.parse(raw);
+        // Geçerli bir dizi ve en az bir eleman varsa döndür
         if (Array.isArray(arr) && arr.length > 0) return arr;
       }
     } catch(e) { console.warn("velora-data: ürünler okunamadı", e); }
+    // Okuma başarısız olduysa varsayılanları tekrar kaydet ve döndür
     localStorage.setItem("velora_products", JSON.stringify(VELORA_DEFAULT_PRODUCTS));
-    return VELORA_DEFAULT_PRODUCTS.slice();
+    return VELORA_DEFAULT_PRODUCTS.slice(); // Kopya döndür (orijinal diziyi korumak için)
   };
 
+  // Kupon kodunu doğrulayan ve indirim bilgisini döndüren global fonksiyon.
+  // Geçerli ve aktif bir kuponu bulduktan sonra kullanım sayacını (uses) artırır.
   window.vValidateCoupon = function (code) {
+    // Boş veya sadece boşluk içeren kod gönderilmişse uyarı mesajı döndür
     if (!code || !code.trim()) return { valid:false, discount:0, message:"Lütfen kupon kodu girin." };
+
+    // Kodu büyük harfe çevir ve baş-son boşlukları temizle (büyük/küçük harf duyarsızlığı)
     var norm = code.trim().toUpperCase();
     try {
       var raw = localStorage.getItem("velora_coupons");
+      // Kayıtlı kuponları oku; yoksa varsayılan listeyi kullan
       var coupons = raw ? JSON.parse(raw) : VELORA_DEFAULT_COUPONS.slice();
+
+      // Kupon listesinde eşleşen kodu ara
       var coupon = null;
       for (var i = 0; i < coupons.length; i++) {
         if (coupons[i].code === norm) { coupon = coupons[i]; break; }
       }
-      if (!coupon)                    return { valid:false, discount:0, message:"Geçersiz kupon kodu." };
-      if (coupon.status !== "active") return { valid:false, discount:0, message:"Bu kupon artık aktif değil." };
+
+      if (!coupon) return { valid:false, discount:0, message:"Geçersiz kupon kodu." };       // Kod bulunamadı
+      if (coupon.status !== "active") return { valid:false, discount:0, message:"Bu kupon artık aktif değil." }; // Pasif kupon
+
+      // Kullanım sayacını bir artır ve güncel listeyi localStorage'a kaydet
       coupon.uses = (coupon.uses || 0) + 1;
       localStorage.setItem("velora_coupons", JSON.stringify(coupons));
+
+      // Başarılı: indirim yüzdesi ve kutlama mesajı döndür
       return { valid:true, discount:coupon.discount, message:"%" + coupon.discount + " indirim uygulandı! 🎉" };
     } catch(e) {
+      // JSON parse hatası veya localStorage erişim hatası
       return { valid:false, discount:0, message:"Bir hata oluştu, tekrar deneyin." };
     }
   };
 
+  // localStorage'dan genel site ayarlarını (başlık, mağaza adı vb.) okuyan yardımcı fonksiyon
   window.vGetSettings   = function () { try { return JSON.parse(localStorage.getItem("velora_settings")   || "{}"); } catch(e) { return {}; } };
+
+  // localStorage'dan iletişim bilgilerini (adres, telefon, sosyal medya vb.) okuyan yardımcı fonksiyon
   window.vGetContact    = function () { try { return JSON.parse(localStorage.getItem("velora_contact")    || "{}"); } catch(e) { return {}; } };
+
+  // localStorage'dan görünüm ayarlarını (renkler, logo, font vb.) okuyan yardımcı fonksiyon
   window.vGetAppearance = function () { try { return JSON.parse(localStorage.getItem("velora_appearance") || "{}"); } catch(e) { return {}; } };
+
+  // Ürün önbelleğini sıfırlar; yeni ürün eklendiğinde veya güncellendiğinde
+  // diğer modüllerin önbelleği temizlemesi için çağrılır
   window.vSyncProducts  = function () { window._vProductsCache = null; };
 
 })();
