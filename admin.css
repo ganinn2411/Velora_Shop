@@ -1,36 +1,48 @@
 /* ============================================================
-   VELORA ADMIN — admin.css  (Mobile-First Optimized)
+   VELORA ADMIN — admin.css
+   Tüm admin panelinin görsel tasarımı bu dosyada tanımlanır.
+   Mobile-first yaklaşımla yazılmıştır: önce mobil stiller,
+   sonra @media (min-width: ...) ile büyük ekranlar eklenir.
    ============================================================ */
 
+/* Google Fonts'tan DM Mono (kod fontları) ve Syne (başlıklar)
+   yüklenir. Admin panelinin tipografisi bu iki fontta çalışır. */
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap');
 
-/* ===== CSS DEĞİŞKENLERİ ===== */
+/* ===== CSS DEĞİŞKENLERİ =====
+   Tüm renk, boyut ve boşluk değerleri burada merkezi olarak
+   tanımlanır. var(--accent) gibi kullanılır. Renk değiştirmek
+   gerekirse sadece bu bloğu güncellemek yeterlidir. */
 :root {
-  --bg:         #0c0c0e;
-  --surface:    #111114;
-  --surface2:   #16161a;
-  --border:     rgba(255,255,255,0.06);
-  --border2:    rgba(255,255,255,0.11);
-  --text:       #ede9e0;
-  --muted:      #666660;
-  --muted2:     #888880;
-  --accent:     #c9b97a;
-  --accent2:    #8b6f3a;
-  --accent-dim: rgba(201,185,122,0.08);
-  --danger:     #cc5050;
-  --success:    #4fa86a;
-  --info:       #5080cc;
-  --warning:    #cc8a40;
-  --radius:     10px;
+  --bg:         #0c0c0e;           /* Sayfa arka plan rengi — en koyu ton */
+  --surface:    #111114;           /* Kart ve sidebar arka planı */
+  --surface2:   #16161a;           /* Input ve iç elementlerin arka planı */
+  --border:     rgba(255,255,255,0.06);  /* Hafif görünür kenarlık */
+  --border2:    rgba(255,255,255,0.11);  /* Daha belirgin kenarlık */
+  --text:       #ede9e0;           /* Ana metin rengi — krem beyaz */
+  --muted:      #666660;           /* Soluk/yardımcı metin */
+  --muted2:     #888880;           /* Orta solukluktaki metin */
+  --accent:     #c9b97a;           /* Altın vurgu rengi — marka rengi */
+  --accent2:    #8b6f3a;           /* Daha koyu altın ton */
+  --accent-dim: rgba(201,185,122,0.08); /* Aktif nav arka planı için şeffaf altın */
+  --danger:     #cc5050;           /* Silme / hata rengi — kırmızı */
+  --success:    #4fa86a;           /* Başarı rengi — yeşil */
+  --info:       #5080cc;           /* Bilgi rengi — mavi */
+  --warning:    #cc8a40;           /* Uyarı rengi — turuncu */
+  --radius:     10px;              /* Genel köşe yuvarlaklığı */
 
-  /* Mobil dokunma alanı */
+  /* Mobil dokunma alanı minimum yüksekliği — 48px erişilebilirlik standardı */
   --touch-min:  48px;
-  /* Güvenli alan */
+
+  /* iOS güvenli alanları — çentikli ekranlarda içerik çentiğin arkasına gizlenmez */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top:    env(safe-area-inset-top, 0px);
 }
 
-/* ===== RESET ===== */
+/* ===== RESET =====
+   Tüm tarayıcıların varsayılan margin/padding farklılıklarını sıfırlar.
+   box-sizing: border-box — padding ve border genişlik hesabına dahil edilir.
+   -webkit-tap-highlight-color: transparent — mobilde dokunma mavisi kaldırılır. */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -38,35 +50,42 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* HTML elemanının tüm yüksekliği kaplaması ve iOS'ta momentum scroll
+   (parmak kaldırınca devam eden kaydırma) için ayarlar.
+   text-size-adjust: 100% — iOS'un metni otomatik büyütmesini engeller. */
 html {
   height: 100%;
-  /* iOS momentum scroll */
   -webkit-overflow-scrolling: touch;
-  /* Metin boyutunu otomatik büyütmeyi engelle */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
+/* Sayfanın genel yazı tipi, arka plan ve taşma engeli.
+   padding-bottom: alt navigasyon çubuğunun içeriği kapatmaması için.
+   overflow-x: hidden — yatay kaymayı tamamen engeller. */
 body {
   font-family: 'Syne', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100%;
-  min-height: 100svh;
-  /* Yatay scroll'u engelle */
+  min-height: 100svh;       /* svh: mobil tarayıcı adres çubuğunu hesaba katar */
   overflow-x: hidden;
-  /* Bottom nav için padding */
-  padding-bottom: calc(60px + var(--safe-bottom));
+  padding-bottom: calc(60px + var(--safe-bottom));  /* Alt nav yüksekliği + güvenli alan */
 }
 
-/* ===== LAYOUT SHELL ===== */
+/* ===== LAYOUT SHELL =====
+   Sidebar ve main bölümünü yan yana tutan dış kaplama.
+   Flexbox ile sidebar sola, içerik sağa yerleşir. */
 .shell {
   display: flex;
   min-height: 100svh;
   width: 100%;
 }
 
-/* ===== LOGIN ===== */
+/* ===== LOGIN EKRANI =====
+   Admin girişi yapılmamışsa bu ekran tüm sayfayı kaplar.
+   position: fixed + inset: 0 — her taraftan tam ekran.
+   z-index: 999 — her şeyin üstünde görünür. */
 .login-screen {
   position: fixed;
   inset: 0;
@@ -76,9 +95,11 @@ body {
   background: var(--bg);
   z-index: 999;
   padding: 20px;
-  padding-top: calc(20px + var(--safe-top));
+  padding-top: calc(20px + var(--safe-top));  /* iOS çentik için üst boşluk */
 }
 
+/* Giriş formunu saran kart kutusu.
+   max-width: 360px — çok geniş ekranlarda yayılmasın. */
 .login-card {
   background: var(--surface);
   border: 1px solid var(--border2);
@@ -88,6 +109,7 @@ body {
   max-width: 360px;
 }
 
+/* VELORA yazısı — büyük altın logo */
 .login-logo {
   font-size: 28px;
   font-weight: 700;
@@ -96,6 +118,7 @@ body {
   margin-bottom: 4px;
 }
 
+/* "ADMIN PANEL" alt yazısı — küçük, izlenimli yazı */
 .login-sub {
   font-size: 9px;
   color: var(--muted);
@@ -104,27 +127,35 @@ body {
   margin-bottom: 32px;
 }
 
+/* Giriş yap başlığı */
 .login-title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 22px;
 }
 
-/* ===== SIDEBAR OVERLAY ===== */
+/* ===== SIDEBAR OVERLAY =====
+   Mobilde sidebar açıkken arkasındaki içeriği karartır.
+   Tıklanınca sidebar kapanır (closeSidebar() çağrılır).
+   Başlangıçta gizlidir, .open class eklenince görünür. */
 .sidebar-overlay {
   display: none;
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.65);
   z-index: 98;
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);         /* Arkadaki içeriği bulanıklaştırır */
+  -webkit-backdrop-filter: blur(3px); /* Safari için */
 }
 .sidebar-overlay.open { display: block; }
 
-/* ===== SIDEBAR ===== */
+/* ===== SIDEBAR =====
+   Sol taraftaki navigasyon menüsü.
+   Masaüstünde her zaman görünür, mobilde gizli başlar.
+   transform: translateX(-100%) — tamamen sola gizler.
+   .open class eklenince translateX(0) ile görünür hale gelir. */
 .sidebar {
-  width: min(280px, 85vw);
+  width: min(280px, 85vw);    /* Maksimum 280px ya da ekranın %85'i */
   background: var(--surface);
   border-right: 1px solid var(--border);
   display: flex;
@@ -134,22 +165,24 @@ body {
   left: 0;
   bottom: 0;
   z-index: 99;
-  transform: translateX(-100%);
-  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  transform: translateX(-100%);  /* Başlangıçta gizli */
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);  /* Yumuşak açılma animasyonu */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* Güvenli alan */
-  padding-top: var(--safe-top);
+  padding-top: var(--safe-top);      /* iOS çentik */
   padding-bottom: var(--safe-bottom);
 }
+/* JavaScript closeSidebar/openSidebar fonksiyonları bu class'ı ekler/kaldırır */
 .sidebar.open { transform: translateX(0); }
 
+/* Sidebar üst logo alanı */
 .sidebar-logo {
   padding: 24px 22px 18px;
   border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
+  flex-shrink: 0;  /* Sidebar kaydırılsa bile logo her zaman üstte kalır */
 }
 
+/* VELORA büyük logo yazısı */
 .logo-name {
   font-size: 22px;
   font-weight: 700;
@@ -157,6 +190,7 @@ body {
   color: var(--accent);
 }
 
+/* "ADMIN PANEL" küçük alt yazı */
 .logo-sub {
   font-size: 9px;
   color: var(--muted);
@@ -165,11 +199,13 @@ body {
   margin-top: 3px;
 }
 
+/* Navigasyon menüsünün kaplama alanı — kalan tüm alanı alır (flex: 1) */
 .nav {
   flex: 1;
   padding: 12px 0;
 }
 
+/* Navigasyon grup başlıkları: "Ürünler", "Mağaza", "Ayarlar" */
 .nav-sec {
   padding: 12px 18px 5px;
   font-size: 9px;
@@ -179,6 +215,9 @@ body {
   text-transform: uppercase;
 }
 
+/* Her bir navigasyon linki.
+   border-left: 2px solid transparent — aktifken altın çizgi gösterir.
+   min-height: var(--touch-min) — mobilde yeterli dokunma alanı. */
 .nav-item {
   display: flex;
   align-items: center;
@@ -191,24 +230,26 @@ body {
   border-left: 2px solid transparent;
   transition: all 0.15s;
   letter-spacing: 0.3px;
-  /* Büyük dokunma alanı */
   min-height: var(--touch-min);
   user-select: none;
   -webkit-user-select: none;
 }
 
+/* Hover ve dokunma durumları */
 .nav-item:hover,
 .nav-item:active {
   color: var(--text);
   background: rgba(255,255,255,0.03);
 }
 
+/* Aktif (seçili) navigasyon öğesi — altın sol çizgi ve hafif arka plan */
 .nav-item.active {
   color: var(--accent);
   border-left-color: var(--accent);
   background: var(--accent-dim);
 }
 
+/* Navigasyon ikonu emoji alanı — sabit genişlik ile hizalama sağlar */
 .nav-icon {
   font-size: 18px;
   width: 24px;
@@ -216,12 +257,14 @@ body {
   flex-shrink: 0;
 }
 
+/* Sidebar alt kısmı — admin bilgisi ve çıkış butonu */
 .sidebar-foot {
   padding: 14px 16px;
   border-top: 1px solid var(--border);
-  flex-shrink: 0;
+  flex-shrink: 0;  /* Sidebar kaydırılsa bile alt kısım her zaman altta kalır */
 }
 
+/* Admin adı ve rolünü gösteren yuvarlak köşeli kutu */
 .admin-pill {
   display: flex;
   align-items: center;
@@ -231,11 +274,12 @@ body {
   border-radius: var(--radius);
 }
 
+/* Admin adının baş harflerini gösteren yuvarlak avatar */
 .av {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: rgba(201,185,122,0.18);
+  background: rgba(201,185,122,0.18);  /* Şeffaf altın arka plan */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -245,21 +289,27 @@ body {
   flex-shrink: 0;
 }
 
+/* Admin adı ve rol yazıları */
 .admin-name { font-size: 13px; font-weight: 500; }
 .admin-role { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
 
-/* ===== MAIN ===== */
+/* ===== ANA İÇERİK ALANI =====
+   Sidebar'ın sağındaki tüm içerik buraya gelir.
+   flex: 1 ile kalan tüm genişliği kaplar.
+   overflow-x: hidden — yatay taşmayı engeller. */
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 100svh;
   width: 100%;
-  /* Sidebar açıldığında kaymaması için */
   overflow-x: hidden;
 }
 
-/* ===== TOPBAR ===== */
+/* ===== ÜST ÇUBUK (TOPBAR) =====
+   Sayfa başlığı, hamburger menü ve aksiyon butonlarını içerir.
+   position: sticky + top: 0 — sayfa aşağı kaydırılırken üstte sabit kalır.
+   z-index: 90 — içeriğin üstünde ama modalın altında görünür. */
 .topbar {
   height: 56px;
   background: var(--surface);
@@ -272,11 +322,12 @@ body {
   top: 0;
   z-index: 90;
   gap: 8px;
-  /* iOS safe area */
+  /* iOS cihazlarda güvenli alan padding'leri */
   padding-left: max(14px, env(safe-area-inset-left));
   padding-right: max(14px, env(safe-area-inset-right));
 }
 
+/* Sayfa başlığı metni — taşarsa üç nokta ile kesilir */
 .topbar-title {
   font-size: 15px;
   font-weight: 600;
@@ -284,23 +335,28 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;
+  min-width: 0;  /* Flex içinde text-overflow çalışması için gerekli */
 }
 
+/* Topbar sağ tarafındaki buton grubu */
 .topbar-actions {
   display: flex;
   gap: 8px;
   align-items: center;
-  flex-shrink: 0;
+  flex-shrink: 0;  /* Küçük ekranda sıkışmasın */
 }
 
+/* Tarih yazısı — mobilde yer olmadığı için gizlenir, masaüstünde görünür */
 .topbar-date {
   font-size: 10px;
   color: var(--muted);
   font-family: 'DM Mono', monospace;
-  display: none;
+  display: none;  /* Masaüstünde @media ile açılır */
 }
 
+/* Hamburger (☰) butonu — sadece mobilde görünür.
+   min-width/height: var(--touch-min) — 48px dokunma standardı.
+   margin-left: -12px — sola hizalama için negatif margin. */
 .hamburger-btn {
   background: none;
   border: none;
@@ -313,32 +369,35 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  /* Büyük dokunma alanı */
   min-width: var(--touch-min);
   min-height: var(--touch-min);
   margin-left: -12px;
 }
 
-/* ===== PAGES ===== */
+/* ===== SAYFALAR =====
+   Her bölüm (.page) varsayılan olarak gizlidir.
+   JavaScript navTo() fonksiyonu ilgili sayfaya .active ekler.
+   animation: fadeIn — sayfa geçişlerinde yumuşak belirme efekti. */
 .page {
   display: none;
-  /* Mobil: daha az padding */
   padding: 16px 14px 24px;
   animation: fadeIn 0.22s ease;
-  /* Yatay taşmayı engelle */
   overflow-x: hidden;
-  /* Safe area */
+  /* iOS güvenli alan padding'leri — içerik kenardan taşmaz */
   padding-left: max(14px, env(safe-area-inset-left));
   padding-right: max(14px, env(safe-area-inset-right));
 }
 .page.active { display: block; }
 
+/* Sayfa belirme animasyonu — hafifçe aşağıdan yukarı kayarak görünür */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== SECTION HEADER ===== */
+/* ===== BÖLÜM BAŞLIĞI =====
+   Her sayfanın üstündeki başlık + aksiyon butonu satırı.
+   flex-wrap: wrap — küçük ekranda alt satıra geçer. */
 .section-header {
   display: flex;
   align-items: center;
@@ -347,6 +406,8 @@ body {
   gap: 10px;
   flex-wrap: wrap;
 }
+
+/* Bölüm başlık metni — min-width: 0 ile flex içinde taşma engellenir */
 .section-title {
   font-size: 15px;
   font-weight: 600;
@@ -354,7 +415,11 @@ body {
   min-width: 0;
 }
 
-/* ===== BUTTONS ===== */
+/* ===== BUTONLAR =====
+   Tüm buton varyantlarının temel stili.
+   min-height: var(--touch-min) — mobil dokunma standardı (48px).
+   white-space: nowrap — buton metni satır atlamaz.
+   :active — dokunulunca hafif küçülme efekti verir. */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -370,7 +435,6 @@ body {
   letter-spacing: 0.3px;
   transition: all 0.15s;
   white-space: nowrap;
-  /* Minimum dokunma alanı */
   min-height: var(--touch-min);
   text-decoration: none;
   -webkit-user-select: none;
@@ -378,27 +442,34 @@ body {
 }
 .btn:active { transform: scale(0.96); opacity: 0.85; }
 
+/* Birincil buton — altın arka plan, koyu yazı */
 .btn-primary  { background: var(--accent); color: #111; }
 .btn-primary:hover { background: #d9c98a; }
 
+/* İkincil buton — koyu arka plan, açık kenarlık */
 .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
 .btn-secondary:hover { background: rgba(255,255,255,0.07); }
 
+/* Tehlike butonu — kırmızı ton, silme işlemleri için */
 .btn-danger { background: rgba(204,80,80,0.12); color: var(--danger); border: 1px solid rgba(204,80,80,0.28); }
 .btn-danger:hover { background: rgba(204,80,80,0.22); }
 
-/* Küçük buton: mobilde de yeterli alan */
+/* Küçük buton varyantı — tablo satırlarındaki ✏️ 🗑 butonları için */
 .btn-sm {
   padding: 0 12px;
   font-size: 12px;
   min-height: 40px;
 }
 
+/* Tam genişlik buton — form altlarında kullanılır */
 .btn-full { width: 100%; }
 
-/* ===== SEARCH ===== */
+/* ===== ARAMA ÇUBUĞU =====
+   position: relative — içindeki arama ikonunu konumlandırmak için.
+   İkon absolute konumuyla inputun sol içine yerleştirilir. */
 .search-bar { position: relative; margin-bottom: 12px; }
 
+/* Arama ikonu — input'un sol içine sabitlenir, tıklanamaz */
 .search-icon {
   position: absolute;
   left: 13px;
@@ -406,27 +477,30 @@ body {
   transform: translateY(-50%);
   color: var(--muted);
   font-size: 14px;
-  pointer-events: none;
+  pointer-events: none;  /* İkonun tıklamayı engellemesi önlenir */
 }
 
+/* Arama input'u — font-size: 15px iOS'ta otomatik zoom'u engeller (16px altı zoom yapar) */
 .search-input {
   width: 100%;
-  padding: 0 14px 0 38px;
+  padding: 0 14px 0 38px;  /* Sol taraf ikon için geniş */
   background: var(--surface);
   border: 1px solid var(--border2);
   border-radius: 10px;
   color: var(--text);
-  font-size: 15px; /* 16px altı iOS'ta zoom yapıyor — 15px güvenli */
+  font-size: 15px;
   font-family: 'Syne', sans-serif;
   outline: none;
   min-height: var(--touch-min);
-  /* iOS input görünümü */
-  -webkit-appearance: none;
+  -webkit-appearance: none;  /* iOS'un varsayılan input görünümünü kaldırır */
   appearance: none;
 }
 .search-input:focus { border-color: var(--accent); }
 
-/* ===== FILTER BAR ===== */
+/* ===== FİLTRE ÇUBUĞU =====
+   Yatay kaydırmalı filtre butonları — overflow-x: auto ile kaydırılabilir.
+   scrollbar-width: none ile scrollbar gizlenir, görsel temizlik sağlanır.
+   Negatif margin + padding trick ile sayfa kenarına kadar uzanır. */
 .filter-bar {
   display: flex;
   gap: 7px;
@@ -434,9 +508,7 @@ body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 6px;
-  /* Scrollbar gizle */
   scrollbar-width: none;
-  /* Kenarlardan taşma için negatif margin + padding */
   margin-left: -14px;
   margin-right: -14px;
   padding-left: 14px;
@@ -444,6 +516,7 @@ body {
 }
 .filter-bar::-webkit-scrollbar { display: none; }
 
+/* Tek bir filtre butonu — flex-shrink: 0 ile küçülmez */
 .filter-btn {
   padding: 0 14px;
   border-radius: 24px;
@@ -463,27 +536,30 @@ body {
   user-select: none;
 }
 .filter-btn:active { transform: scale(0.95); }
+
+/* Aktif filtre — altın renk vurgusu */
 .filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
-/* ===== TABLE ===== */
+/* ===== TABLO =====
+   overflow: hidden ile köşe yuvarlaklığı tabloya uygulanır.
+   table-scroll ile yatay kaydırma sağlanır. */
 .table-wrap {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  /* Yatay scroll için negatif margin */
-  margin-left: 0;
-  margin-right: 0;
 }
 
+/* Yatay kaydırmalı tablo kapsayıcısı */
 .table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  /* Momentum scroll */
 }
 
+/* min-width: 460px — küçük ekranlarda tablo sıkışmaz, yatay kaydırılabilir */
 table { width: 100%; border-collapse: collapse; min-width: 460px; }
 
+/* Tablo başlık hücreleri — küçük harfli, izlenimli yazı */
 th {
   padding: 10px 12px;
   text-align: left;
@@ -497,6 +573,7 @@ th {
   white-space: nowrap;
 }
 
+/* Tablo veri hücreleri */
 td {
   padding: 10px 12px;
   font-size: 13px;
@@ -504,9 +581,13 @@ td {
   vertical-align: middle;
 }
 
+/* Son satırın alt kenarlığını kaldırır — çift çizgi görünümünü önler */
 tr:last-child td { border-bottom: none; }
+
+/* Satıra dokunulunca hafif arka plan değişimi */
 tr:active td { background: rgba(255,255,255,0.02); }
 
+/* Tablodaki ürün görseli — kare, yuvarlak köşe */
 .td-img {
   width: 44px;
   height: 44px;
@@ -515,7 +596,9 @@ tr:active td { background: rgba(255,255,255,0.02); }
   display: block;
 }
 
-/* ===== BADGES ===== */
+/* ===== ROZET (BADGE) =====
+   Kategori ve tip etiketleri için renkli yuvarlak rozetler.
+   Her kategori kendi renk şemasına sahiptir. */
 .badge {
   display: inline-block;
   padding: 4px 9px;
@@ -527,29 +610,35 @@ tr:active td { background: rgba(255,255,255,0.02); }
   white-space: nowrap;
 }
 
-.badge-erkek   { background: rgba(80,128,204,0.15); color: #7aacf0; }
-.badge-kadin   { background: rgba(204,80,128,0.15); color: #f07aac; }
-.badge-cocuk   { background: rgba(79,168,106,0.15); color: var(--success); }
-.badge-tisort  { background: rgba(201,185,122,0.1); color: var(--accent); }
-.badge-pantalon { background: rgba(160,120,80,0.12); color: #d4a06a; }
-.badge-ceket   { background: rgba(140,90,200,0.12); color: #c07af0; }
-.badge-sapka   { background: rgba(90,180,200,0.12); color: #7ad0f0; }
+/* Kategori rozetleri — her biri farklı renk tonu */
+.badge-erkek   { background: rgba(80,128,204,0.15); color: #7aacf0; }   /* Mavi ton */
+.badge-kadin   { background: rgba(204,80,128,0.15); color: #f07aac; }   /* Pembe ton */
+.badge-cocuk   { background: rgba(79,168,106,0.15); color: var(--success); }  /* Yeşil ton */
+.badge-tisort  { background: rgba(201,185,122,0.1); color: var(--accent); }   /* Altın ton */
+.badge-pantalon { background: rgba(160,120,80,0.12); color: #d4a06a; }  /* Kahve ton */
+.badge-ceket   { background: rgba(140,90,200,0.12); color: #c07af0; }   /* Mor ton */
+.badge-sapka   { background: rgba(90,180,200,0.12); color: #7ad0f0; }   /* Turkuaz ton */
 
-/* ===== FORMS ===== */
+/* ===== FORM ELEMANLARI =====
+   Varsayılan olarak tek sütun (mobil için).
+   @media (min-width: 480px) ile iki sütuna geçer. */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;
 }
 
+/* Form alanı — label ve input'u dikey sıralar */
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 7px;
 }
 
+/* İki sütunlu grid'de tam genişlik alan — URL input'ları gibi uzun alanlar için */
 .form-group.full { grid-column: 1 / -1; }
 
+/* Form etiketleri — küçük, izlenimli, mono font */
 .form-label {
   font-size: 9px;
   color: var(--muted);
@@ -558,6 +647,9 @@ tr:active td { background: rgba(255,255,255,0.02); }
   text-transform: uppercase;
 }
 
+/* Input ve Select ortak stilleri.
+   font-size: 16px — iOS'ta otomatik yakınlaştırmayı engeller.
+   -webkit-appearance: none — iOS'un varsayılan stilini kaldırır. */
 .form-input,
 .form-select {
   background: var(--surface2);
@@ -565,40 +657,40 @@ tr:active td { background: rgba(255,255,255,0.02); }
   border-radius: 10px;
   padding: 0 14px;
   color: var(--text);
-  /* 16px: iOS zoom yapmasın */
   font-size: 16px;
   font-family: 'Syne', sans-serif;
   outline: none;
   transition: border-color 0.15s;
   width: 100%;
   min-height: var(--touch-min);
-  /* iOS */
   -webkit-appearance: none;
   appearance: none;
 }
-
 .form-input:focus,
 .form-select:focus { border-color: var(--accent); }
 
+/* Select için özel ok işareti ikonu — SVG data URI ile çizilir */
 .form-select {
-  /* Ok işareti */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666660' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   padding-right: 38px;
 }
 
+/* Select seçeneklerinin koyu arka planı — açılır listede görünür */
 .form-select option { background: #1a1a1e; }
 
+/* Textarea — çok satırlı metin girişi için özel yükseklik ve padding */
 textarea.form-input {
   min-height: 90px;
-  resize: vertical;
+  resize: vertical;   /* Sadece dikey boyutlandırılabilir */
   padding: 12px 14px;
   font-size: 15px;
   line-height: 1.6;
 }
 
-/* ===== SETTINGS ===== */
+/* ===== AYARLAR KARTI =====
+   Site ayarları, WhatsApp ve görünüm bölümlerindeki beyaz kartlar. */
 .settings-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -607,6 +699,7 @@ textarea.form-input {
   margin-bottom: 14px;
 }
 
+/* Kart başlığı — altın renk, küçük izlenimli yazı */
 .settings-card-title {
   font-size: 9px;
   font-weight: 600;
@@ -619,9 +712,13 @@ textarea.form-input {
   text-transform: uppercase;
 }
 
+/* İki sütunlu ayarlar düzeni — mobilde tek sütun, masaüstünde iki sütun */
 .settings-two-col { display: flex; flex-direction: column; gap: 0; }
 
-/* ===== TOGGLES ===== */
+/* ===== TOGGLE (AÇMA/KAPAMA) =====
+   Özellik açma/kapama anahtarları.
+   .toggle-row — label + anahtar yan yana hizalar.
+   min-height: var(--touch-min) — mobil dokunma alanı yeterli. */
 .toggle-row {
   display: flex;
   align-items: center;
@@ -636,7 +733,7 @@ textarea.form-input {
 .toggle-label { font-size: 14px; }
 .toggle-desc  { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-/* Büyük toggle dokunma alanı */
+/* Toggle anahtarının dış kapsayıcısı — 46x26px boyutlarında */
 .toggle {
   position: relative;
   width: 46px;
@@ -644,8 +741,11 @@ textarea.form-input {
   flex-shrink: 0;
   cursor: pointer;
 }
+
+/* Gerçek checkbox gizlenir, yerine .slider-toggle gösterilir */
 .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
 
+/* Toggle'ın görünür arka plan şeridi */
 .slider-toggle {
   position: absolute;
   inset: 0;
@@ -655,6 +755,7 @@ textarea.form-input {
   border: 1px solid var(--border2);
 }
 
+/* Toggle'ın hareketli yuvarlak topu — ::before ile oluşturulur */
 .slider-toggle::before {
   content: '';
   position: absolute;
@@ -667,17 +768,21 @@ textarea.form-input {
   transition: all 0.2s cubic-bezier(.4,0,.2,1);
 }
 
+/* Checkbox işaretlenince toggle altın rengine döner */
 .toggle input:checked + .slider-toggle {
   background: rgba(201,185,122,0.22);
   border-color: var(--accent);
 }
 
+/* İşaretlenince top sağa kayar (translateX(20px)) ve altın olur */
 .toggle input:checked + .slider-toggle::before {
   transform: translateX(20px);
   background: var(--accent);
 }
 
-/* ===== COLOR INPUT ===== */
+/* ===== RENK SEÇİCİ SATIRI =====
+   Görünüm sayfasındaki renk input'ları için düzen.
+   min-height: var(--touch-min) — dokunma alanı standardı. */
 .color-row {
   display: flex;
   align-items: center;
@@ -689,6 +794,7 @@ textarea.form-input {
 }
 .color-row:last-child { border-bottom: none; }
 
+/* Renk seçici input — tarayıcı varsayılan görünümü sıfırlanır */
 .color-input {
   width: 48px;
   height: 36px;
@@ -700,37 +806,37 @@ textarea.form-input {
   padding: 0;
 }
 
-/* ===== MODAL ===== */
+/* ===== MODAL =====
+   Kupon ekleme ve ürün düzenleme için açılır pencere.
+   Mobilde alttan yukarı çıkar (align-items: flex-end).
+   overscroll-behavior: contain — modal kaydırılırken sayfanın kaymasını engeller. */
 .modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.75);
   z-index: 200;
   display: none;
-  align-items: flex-end;
+  align-items: flex-end;  /* Mobilde alttan çıkar */
   justify-content: center;
   padding: 0;
-  /* Overscroll engelle */
   overscroll-behavior: contain;
 }
 .modal-overlay.open { display: flex; }
 
+/* Modal kutusu — tam genişlik, üst köşeler yuvarlatılmış (mobil sheet stili) */
 .modal {
   background: var(--surface);
   border: 1px solid var(--border2);
-  /* Tam genişlik, yuvarlatılmış üst köşeler */
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-height: 94svh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* Alt safe area */
   padding-bottom: var(--safe-bottom);
-  /* Pull indicator */
   position: relative;
 }
 
-/* Modal çekme çubuğu */
+/* Modal üstündeki çekme çubuğu — kullanıcıya kaydırılabilir olduğunu gösterir */
 .modal::before {
   content: '';
   display: block;
@@ -741,6 +847,7 @@ textarea.form-input {
   margin: 12px auto 0;
 }
 
+/* Modal başlık alanı — sayfa kaydırılırken sabit kalır (sticky) */
 .modal-header {
   padding: 16px 20px 14px;
   border-bottom: 1px solid var(--border);
@@ -755,6 +862,7 @@ textarea.form-input {
 
 .modal-title { font-size: 15px; font-weight: 600; }
 
+/* Modal kapatma butonu — yuvarlak, gri renk */
 .modal-close {
   background: var(--surface2);
   border: 1px solid var(--border2);
@@ -772,10 +880,12 @@ textarea.form-input {
 }
 .modal-close:active { background: rgba(255,255,255,0.1); }
 
+/* Modal içerik alanı */
 .modal-body {
   padding: 20px 18px;
 }
 
+/* Modal alt buton alanı — sayfa kaydırılırken altta sabit kalır (sticky) */
 .modal-footer {
   padding: 14px 18px;
   border-top: 1px solid var(--border);
@@ -787,13 +897,16 @@ textarea.form-input {
   background: var(--surface);
 }
 
-/* ===== PRODUCT PREVIEW ===== */
+/* ===== ÜRÜN ÖNİZLEME =====
+   Yeni ürün ekleme sayfasındaki önizleme bölümü.
+   Mobilde tek sütun, masaüstünde iki sütun (grid ile). */
 .add-product-grid {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
+/* Önizleme görseli — URL girilince buraya yansır */
 .product-preview-img {
   width: 100%;
   height: 200px;
@@ -805,6 +918,8 @@ textarea.form-input {
   display: block;
 }
 
+/* URL girilmeden önce gösterilen yer tutucu alan.
+   ::before ile görsel ikonu eklenir. */
 .preview-placeholder {
   width: 100%;
   height: 160px;
@@ -824,7 +939,9 @@ textarea.form-input {
   font-size: 20px;
 }
 
-/* ===== COUPON CODE ===== */
+/* ===== KUPON KODU ETİKETİ =====
+   Kupon tablosunda kodun görsel olarak öne çıkması için
+   mono font ve altın renk arka plan kullanılır. */
 .coupon-code {
   font-family: 'DM Mono', monospace;
   font-size: 12px;
@@ -835,7 +952,8 @@ textarea.form-input {
   letter-spacing: 0.5px;
 }
 
-/* ===== LOG ===== */
+/* ===== AKTİVİTE LOGU =====
+   Her log kaydı — ikon noktası ve mesaj yan yana gösterilir. */
 .log-item {
   display: flex;
   gap: 12px;
@@ -845,6 +963,7 @@ textarea.form-input {
 }
 .log-item:last-child { border-bottom: none; }
 
+/* Log tipi renk noktası — ekleme yeşil, düzenleme mavi, silme kırmızı */
 .log-dot {
   width: 8px;
   height: 8px;
@@ -857,6 +976,7 @@ textarea.form-input {
 .log-dot.del      { background: var(--danger); }
 .log-dot.settings { background: var(--warning); }
 
+/* Log zaman damgası — küçük, soluk, mono font */
 .log-time {
   color: var(--muted);
   font-family: 'DM Mono', monospace;
@@ -864,7 +984,9 @@ textarea.form-input {
   margin-top: 3px;
 }
 
-/* ===== PAGINATION ===== */
+/* ===== SAYFALAMA =====
+   Ürün listesinin alt kısmındaki sayfa numarası butonları.
+   flex-wrap: wrap — çok sayfa olunca alt satıra geçer. */
 .pagination {
   display: flex;
   gap: 5px;
@@ -873,6 +995,7 @@ textarea.form-input {
   flex-wrap: wrap;
 }
 
+/* Sayfa numarası butonu — aktif olanı altın rengi alır */
 .page-btn {
   width: 38px;
   height: 38px;
@@ -894,11 +1017,13 @@ textarea.form-input {
 .page-btn:active { transform: scale(0.93); }
 .page-btn.active { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 700; }
 
-/* ===== TOAST ===== */
+/* ===== BİLDİRİM (TOAST) =====
+   İşlem sonrası çıkan geçici bildirim mesajı.
+   Alt navigasyonun üstünde konumlanır.
+   opacity: 0 → 1 ve translateY ile yukarıdan çıkma efekti. */
 .toast {
   position: fixed;
-  /* Bottom nav'ın üstünde */
-  bottom: calc(68px + var(--safe-bottom));
+  bottom: calc(68px + var(--safe-bottom));  /* Alt nav + güvenli alan üstünde */
   left: 50%;
   transform: translateX(-50%) translateY(16px);
   background: rgba(17,17,20,0.95);
@@ -911,20 +1036,24 @@ textarea.form-input {
   opacity: 0;
   transition: all 0.28s cubic-bezier(.4,0,.2,1);
   white-space: nowrap;
-  pointer-events: none;
+  pointer-events: none;  /* Toast mesajın buton tıklamalarını engellemesi önlenir */
   max-width: calc(100vw - 32px);
   text-align: center;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+/* JavaScript showToast() fonksiyonu bu class'ı ekler */
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+/* İşlem türüne göre renk varyantları */
 .toast.success { border-color: rgba(79,168,106,0.5); color: var(--success); }
 .toast.error   { border-color: rgba(204,80,80,0.5); color: var(--danger); }
 
-/* ===== EMPTY STATE ===== */
+/* ===== BOŞ DURUM =====
+   Tabloda veri yokken gösterilen merkezi mesaj.
+   emoji + açıklama yazısından oluşur. */
 .empty-state {
   text-align: center;
   padding: 44px 20px;
@@ -933,7 +1062,10 @@ textarea.form-input {
 }
 .empty-icon { font-size: 32px; margin-bottom: 12px; }
 
-/* ===== BOTTOM NAV ===== */
+/* ===== ALT NAVİGASYON =====
+   Mobilde sayfanın altına sabit çakılı navigasyon.
+   backdrop-filter: blur — arkasındaki içeriği bulanıklaştırır, şeffaflık etkisi.
+   padding-bottom: var(--safe-bottom) — iPhone ana çubuğunun üstünde durur. */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -944,12 +1076,12 @@ textarea.form-input {
   display: flex;
   z-index: 80;
   padding-bottom: var(--safe-bottom);
-  /* Blur efekti */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  background: rgba(17,17,20,0.92);
+  background: rgba(17,17,20,0.92);  /* Şeffaf arka plan — blur efektiyle birlikte güzel görünür */
 }
 
+/* Alt nav her bir öğesi — eşit genişlik (flex: 1), ikon + metin dikey */
 .bottom-nav-item {
   flex: 1;
   display: flex;
@@ -971,20 +1103,29 @@ textarea.form-input {
   -webkit-user-select: none;
   user-select: none;
 }
+
+/* İkon boyutu — metin kısmından büyük */
 .bottom-nav-item > span:first-child {
   font-size: 22px;
   line-height: 1;
   transition: transform 0.15s;
 }
+
+/* Dokunulunca ikon hafifçe küçülür */
 .bottom-nav-item:active > span:first-child {
   transform: scale(0.85);
 }
+
+/* Aktif sekme — altın renk */
 .bottom-nav-item.active { color: var(--accent); }
+
+/* Aktif ikon etrafında hafif altın parıltı */
 .bottom-nav-item.active > span:first-child {
   filter: drop-shadow(0 0 6px rgba(201,185,122,0.35));
 }
 
-/* ===== ORTA EKRAN (480px) ===== */
+/* ===== ORTA EKRAN (480px ve üzeri) =====
+   Form grid'i iki sütuna geçer — tablet boyutu için. */
 @media (min-width: 480px) {
   .form-grid {
     grid-template-columns: 1fr 1fr;
@@ -992,33 +1133,50 @@ textarea.form-input {
   .form-group.full { grid-column: 1 / -1; }
 }
 
-/* ===== DESKTOP (768px+) ===== */
+/* ===== MASAÜSTÜ (768px ve üzeri) =====
+   Sidebar her zaman görünür olur, alt navigasyon gizlenir.
+   Sayfa padding'leri artar, modal ortalanır. */
 @media (min-width: 768px) {
+
+  /* Alt navigasyon artık gerekmez — sidebar menü olarak kullanılır */
   body {
     padding-bottom: 0;
   }
 
+  /* Sidebar sabit görünür — artık mobil gibi gizlenip açılmaz */
   .sidebar {
     transform: translateX(0);
     position: fixed;
     width: 240px;
   }
+
+  /* Masaüstünde overlay hiç gösterilmez */
   .sidebar-overlay { display: none !important; }
+
+  /* Ana içerik sidebar genişliği kadar sağa kayar */
   .main { margin-left: 240px; }
 
+  /* Topbar biraz daha yüksek ve geniş padding */
   .topbar {
     height: 60px;
     padding: 0 32px;
   }
+
+  /* Hamburger butonu masaüstünde gizlenir — sidebar zaten görünür */
   .hamburger-btn { display: none; }
+
+  /* Tarih yazısı masaüstünde görünür hale gelir */
   .topbar-date { display: block; }
 
+  /* Sayfa padding'i masaüstünde daha geniş */
   .page {
     padding: 32px 36px 40px;
   }
 
+  /* Form iki sütunlu */
   .form-grid { grid-template-columns: 1fr 1fr; }
 
+  /* Modal masaüstünde ortalanır, alttan çıkmaz */
   .modal-overlay {
     align-items: center;
     padding: 24px;
@@ -1028,24 +1186,31 @@ textarea.form-input {
     max-height: 88vh;
     max-width: 560px;
   }
+
+  /* Masaüstünde çekme çubuğu gereksiz — gizlenir */
   .modal::before { display: none; }
 
+  /* Ayarlar iki sütunlu grid */
   .settings-two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
 
+  /* Ürün ekleme sayfası — form sol, önizleme sağ */
   .add-product-grid {
     display: grid;
     grid-template-columns: 1fr 320px;
     gap: 24px;
   }
 
+  /* Alt navigasyon masaüstünde gizlenir */
   .bottom-nav { display: none; }
 
+  /* Masaüstünde min-width kaldırılır — tablo genişliği otomatik */
   table { min-width: auto; }
 
+  /* Toast masaüstünde sağ alt köşede çıkar */
   .toast {
     bottom: 24px;
     right: 24px;
@@ -1054,7 +1219,7 @@ textarea.form-input {
   }
   .toast.show { transform: translateY(0); }
 
-  /* Desktop buton boyutları */
+  /* Masaüstünde buton dokunma alanı daha küçük olabilir */
   .btn {
     min-height: 38px;
   }
@@ -1062,7 +1227,7 @@ textarea.form-input {
     min-height: 34px;
   }
 
-  /* Desktop form input boyutları */
+  /* Masaüstünde input font boyutu küçültülür — zoom gerekmez */
   .form-input,
   .form-select {
     font-size: 13px;
@@ -1074,22 +1239,21 @@ textarea.form-input {
   }
 }
 
-/* ===== TABLET (768-1100) ===== */
+/* ===== TABLET (768-1100px arası) =====
+   Ayarlar sayfası dar tablet ekranda tek sütuna döner. */
 @media (min-width: 768px) and (max-width: 1100px) {
   .settings-two-col { grid-template-columns: 1fr; }
 }
 
-/* ===== YÜKSEK DPI (Retina) ===== */
+/* ===== YÜKSEK DPI (Retina ekranlar) =====
+   Retina ekranlarda tablo görselleri daha keskin görünür. */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
   .td-img { image-rendering: -webkit-optimize-contrast; }
 }
 
-/* ===== KARANLIK MOD MEDYA SORGUSU ===== */
-@media (prefers-color-scheme: dark) {
-  /* Zaten karanlık tema, ekstra bir şey gerekmez */
-}
-
-/* ===== REDUCED MOTION ===== */
+/* ===== AZALTILMIŞ ANİMASYON =====
+   İşletim sistemi "animasyonları azalt" ayarı açık olan kullanıcılar için
+   tüm animasyon ve geçişler neredeyse anlık hale getirilir. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
