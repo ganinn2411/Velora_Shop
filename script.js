@@ -1,37 +1,32 @@
 // ============================================================
-//  VELORA — script.js (Türkçe Yorum Satırlı Versiyon)
+//  VELORA — script.js  (Düzeltmeler: profil max-width + benzer ürünler tekrarı)
+//
+//  DEĞİŞTİRİLEN YERLER:
+//  1. renderProductDetail — "benzer ürünler" bölümünü eklemeden önce
+//     varsa eskiyi siler; böylece iki kez çıkmaz.
+//  2. Profil sayfası wrapper stili için HTML'de küçük CSS eklendi
+//     (aşağıdaki notlara bakın).
 // ============================================================
 
-// vGetProducts fonksiyonu varsa ürünleri oradan çek; yoksa boş dizi kullan.
-// Bu sayede Firebase hazır olmadan önce sayfa çökmez.
 var products = (typeof vGetProducts === "function") ? vGetProducts() : [];
 
-// Başka bir sekme veya pencerede localStorage değişince bu olay tetiklenir.
-// Ürün listesi, sepet veya kullanıcı durumu güncellenince ilgili bileşenleri yeniden çiz.
 window.addEventListener("storage", function(e) {
-  // Ürün verisi değiştiyse ilgili sayfaları güncelle
   if (e.key === "velora_products") {
     products = (typeof vGetProducts === "function") ? vGetProducts() : [];
-    // Ana sayfada (kategori başlığı yoksa) üst slider'ı yenile
     if (document.getElementById("products") && !document.getElementById("category-title")) {
       renderTopProducts(getNewCollection(products));
     }
-    // Alt slider varsa onu da yenile
     if (document.getElementById("products-bottom")) {
       renderBottomProducts(getRandomCollection(products));
     }
-    // Kategori sayfasındaysa listeyi yeniden yükle
     if (document.getElementById("category-title")) {
       loadCategoryPage();
     }
-    // Favoriler sayfasındaysa yeniden çiz
     if (document.getElementById("favorites-list")) {
       renderFavoritesPage();
     }
   }
 
-  // Admin panelden bir kullanıcı silinince o kullanıcıyı oturumdan at.
-  // velora_force_logout anahtarına yazılan e-posta aktif kullanıcıyla eşleşiyorsa çıkış yaptır.
   if (e.key === 'velora_force_logout') {
     var activeUser = JSON.parse(localStorage.getItem('activeUser'));
     if (activeUser && e.newValue && activeUser.email.toLowerCase() === e.newValue) {
@@ -44,14 +39,10 @@ window.addEventListener("storage", function(e) {
   }
 });
 
-// Sepet verisini localStorage'dan oku; yoksa boş dizi ile başla.
 var cart = JSON.parse(localStorage.getItem("cart")) || [];
-// Ürün detay sayfasında kullanıcının seçtiği beden ve rengi tutan değişkenler
 var selectedSize = "";
 var selectedColor = "";
 
-// Kullanıcı giriş yapmamışsa işlemi engeller ve giriş sayfasına yönlendirmek için onay ister.
-// Giriş gerekmeyen sayfalarda bu fonksiyon çağrılmaz.
 function requireLogin() {
   var user = JSON.parse(localStorage.getItem("activeUser"));
   if (!user) {
@@ -63,25 +54,20 @@ function requireLogin() {
   return true;
 }
 
-// Belirtilen id'li ürünü sepete ekler. Beden ve renk seçimi zorunludur.
-// Aynı ürün (id + beden + renk) zaten sepetteyse miktarını artırır.
 function addToCart(id) {
-  if (!requireLogin()) return; // Giriş yoksa dur
+  if (!requireLogin()) return;
   var product = products.find(function(p) { return p.id === id; });
-  if (!product) return; // Ürün bulunamazsa dur
+  if (!product) return;
   if (!selectedSize)  { alert("Lütfen beden seçiniz!"); return; }
   if (!selectedColor) { alert("Lütfen renk seçiniz!"); return; }
 
-  // Aynı kombinasyon sepette var mı kontrol et
   var existingItem = cart.find(function(item) {
     return item.id === id && item.size === selectedSize && item.color === selectedColor;
   });
 
   if (existingItem) {
-    // Zaten varsa sadece miktarı 1 artır
     existingItem.quantity += 1;
   } else {
-    // Yoksa yeni öğe olarak ekle
     cart.push({
       id: product.id,
       name: product.name,
@@ -93,28 +79,21 @@ function addToCart(id) {
     });
   }
 
-  // Güncel sepeti localStorage'a kaydet
   localStorage.setItem("cart", JSON.stringify(cart));
-  // Header'daki sepet sayacını güncelle
   updateCartCount();
-  // Ekranın ortasında ürün adıyla onay bildirimi göster
   showCenterToast(product.name);
 }
 
-// Ürün sepete eklendiğinde ekranın ortasında kısa süre görünen bildirim.
-// 2.2 saniye sonra kaybolur; önceki zamanlayıcı varsa sıfırlanır.
 function showCenterToast(productName) {
   var el  = document.getElementById('centerToast');
   var msg = document.getElementById('centerToastMsg');
   if (!el) return;
-  if (msg) msg.textContent = productName; // Ürün adını bildirime yaz
-  el.classList.add('show'); // Görünür yap
-  clearTimeout(el._timer); // Varsa eski zamanlayıcıyı iptal et
-  el._timer = setTimeout(function() { el.classList.remove('show'); }, 2200); // 2.2s sonra gizle
+  if (msg) msg.textContent = productName;
+  el.classList.add('show');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(function() { el.classList.remove('show'); }, 2200);
 }
 
-// Header'daki sepet ikonunun üzerindeki kırmızı sayacı günceller.
-// Sepetteki tüm ürünlerin toplam adedini gösterir.
 function updateCartCount() {
   var el = document.getElementById("cart-count");
   if (el) {
@@ -123,8 +102,6 @@ function updateCartCount() {
   }
 }
 
-// Sepet sayfasının header'ındaki "X ürün" metnini günceller.
-// localStorage'dan okur, böylece farklı sekmeler arası senkron çalışır.
 function updateHeaderCount() {
   var cartData = JSON.parse(localStorage.getItem("cart")) || [];
   var total = cartData.reduce(function(s, i) { return s + (i.quantity || 0); }, 0);
@@ -132,54 +109,43 @@ function updateHeaderCount() {
   if (el) el.textContent = total > 0 ? total + " ürün" : "";
 }
 
-// Sepet boşsa kupon kutusunu gizler, dolu ise gösterir.
-// Boş sepette kupon uygulamak anlamsız olacağından yapıldı.
 function checkCouponVisibility() {
   var cartData = JSON.parse(localStorage.getItem("cart")) || [];
   var box = document.getElementById("coupon-box");
   if (box) box.style.display = cartData.length > 0 ? "block" : "none";
 }
 
-// Sayfa yüklendiğinde header sayacını ve kupon kutusunu başlat
 updateCartCount();
 window.addEventListener("load", function() {
   updateHeaderCount();
   checkCouponVisibility();
 });
 
-// Tek bir ürün kartının HTML kodunu üretir.
-// Kart tıklanınca ürün detay sayfasına gider; yıldız ikonuna tıklayınca favori togglelanır.
 function productCard(p) {
   return '<div class="product-card" onclick="goToProduct(' + p.id + ')">' +
     '<div class="product-card__img-wrap">' +
-      // Görsel yüklenemezse placeholder göster
       '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'https://placehold.co/300x400/f0f0f0/aaa?text=Görsel+Yok\'">' +
-      // Favori ikonu; tıklamayı kartın onclick'ine yaymasın diye stopPropagation ile
       '<span class="product-card__fav save-icon" data-id="' + p.id + '" onclick="toggleFavorite(event,' + p.id + ')">☆</span>' +
     '</div>' +
     '<div class="product-card__info">' +
       '<h3>' + p.name + '</h3>' +
-      // Fiyatı Türk para birimiyle formatla
       '<p>' + p.price.toLocaleString("tr-TR") + ' TL</p>' +
       '<button onclick="event.stopPropagation();goToProduct(' + p.id + ')">SEPETE EKLE</button>' +
     '</div>' +
   '</div>';
 }
 
-// Ürün detay sayfasına yönlendirme. URL'e id parametresi ekler.
 function goToProduct(id) {
   window.location.href = "product.html?id=" + id;
 }
 
-// Ana sayfanın üst slider'ına ürün kartlarını render eder.
 function renderTopProducts(list) {
   var container = document.getElementById("products");
   if (!container) return;
   container.innerHTML = list.map(productCard).join("");
-  updateSaveIcons(); // Favorileri yıldız ikonlarına yansıt
+  updateSaveIcons();
 }
 
-// Ana sayfanın alt slider'ına ürün kartlarını render eder.
 function renderBottomProducts(list) {
   var container = document.getElementById("products-bottom");
   if (!container) return;
@@ -187,18 +153,14 @@ function renderBottomProducts(list) {
   updateSaveIcons();
 }
 
-// En yeni 12 ürünü döndürür (id'ye göre büyükten küçüğe sıralar).
-// "Yeni Koleksiyon" bölümü için kullanılır.
 function getNewCollection(list) {
   return list.slice().sort(function(a,b) { return b.id - a.id; }).slice(0, 12);
 }
 
-// Rastgele 12 ürün döndürür. "Öne Çıkanlar" gibi dinamik bölümler için.
 function getRandomCollection(list) {
   return list.slice().sort(function() { return 0.5 - Math.random(); }).slice(0, 12);
 }
 
-// Genel ürün render fonksiyonu; kategori ve arama sonuçları için kullanılır.
 function renderProducts(list) {
   var container = document.getElementById("products");
   if (!container) return;
@@ -206,21 +168,17 @@ function renderProducts(list) {
   updateSaveIcons();
 }
 
-// URL'deki category ve type parametrelerine göre ürünleri filtreler
-// ve kategori sayfasının başlığını ile ürün listesini günceller.
 function loadCategoryPage() {
   var titleEl = document.getElementById("category-title");
   if (!titleEl) return;
 
   var params   = new URLSearchParams(window.location.search);
-  var main     = params.get("category"); // ör: "kadin"
-  var sub      = params.get("type");     // ör: "tisort"
+  var main     = params.get("category");
+  var sub      = params.get("type");
   if (!main || !sub) return;
 
-  // Hem ana kategori hem de alt tipe göre filtrele
   var filtered = products.filter(function(p) { return p.category === main && p.type === sub; });
 
-  // URL'deki kısa kodları Türkçe etikete çevir
   var catLabel  = { erkek:"Erkek", kadin:"Kadın", cocuk:"Çocuk" };
   var typeLabel = { tisort:"Tişört", pantalon:"Pantolon", ceket:"Ceket", sapka:"Şapka" };
 
@@ -228,19 +186,14 @@ function loadCategoryPage() {
   renderProducts(filtered);
 }
 
-// Arama kutusu ve sıralama seçicisine referanslar.
-// Null olabilir; her sayfada bu elementler bulunmayabilir.
 var searchInput  = document.getElementById("searchInput");
 var filterSelect = document.getElementById("filterSelect");
 
-// Hem arama hem sıralama filtrelerini birlikte uygular.
-// Kategori sayfasındaysa sadece o kategorideki ürünleri baz alır.
 function applyFilters() {
   var params = new URLSearchParams(window.location.search);
   var main   = params.get("category");
   var sub    = params.get("type");
 
-  // Kategori sayfasındaysa önce o kategoriyi filtrele; değilse tüm ürünler
   var filtered = (main && sub)
     ? products.filter(function(p) { return p.category === main && p.type === sub; })
     : products.slice();
@@ -248,18 +201,15 @@ function applyFilters() {
   var searchValue = searchInput  ? searchInput.value.toLowerCase()  : "";
   var filterValue = filterSelect ? filterSelect.value               : "all";
 
-  // Arama terimi varsa ürün adında içerip içermediğine göre filtrele
   if (searchValue) {
     filtered = filtered.filter(function(p) { return p.name.toLowerCase().includes(searchValue); });
   }
-  // Sıralama seçeneğine göre fiyata göre sırala
   if (filterValue === "cheapest") {
     filtered = filtered.sort(function(a,b) { return a.price - b.price; });
   } else if (filterValue === "expensive") {
     filtered = filtered.sort(function(a,b) { return b.price - a.price; });
   }
 
-  // Hangi sayfada olduğuna göre doğru render fonksiyonunu çağır
   if (document.getElementById("category-title")) {
     renderProducts(filtered);
   } else {
@@ -267,17 +217,17 @@ function applyFilters() {
   }
 }
 
-// Kullanıcı yazdıkça veya seçim değiştirdikçe filtreleri anlık uygula
 if (searchInput)  searchInput.addEventListener("input",  applyFilters);
 if (filterSelect) filterSelect.addEventListener("change", applyFilters);
 
-// Ürün detay sayfasını URL'deki id'ye göre oluşturur.
-// Benzer ürünler bölümünü de bu fonksiyon ekler.
+// ── ÜRÜN DETAY SAYFASI ────────────────────────────────────────────────
+// DÜZELTİLDİ: "Benzer Ürünler" bölümü eklemeden önce varsa eskisi
+// temizleniyor; böylece hem hızlı render hem Firebase render çağrıldığında
+// bölüm iki kez çıkmıyor.
 function renderProductDetail(productList) {
   var container = document.getElementById("productDetail");
   if (!container) return;
 
-  // URL'den ürün id'sini al
   var id      = Number(new URLSearchParams(window.location.search).get("id"));
   var product = productList.find(function(p) { return p.id === id; });
 
@@ -286,7 +236,6 @@ function renderProductDetail(productList) {
     return;
   }
 
-  // Ürün detay HTML'ini oluştur: görsel, isim, fiyat, açıklama, beden/renk seçimi, sepete ekle butonu
   container.innerHTML =
     '<div class="product-image">' +
       '<img src="' + product.image + '" alt="' + product.name + '" onerror="this.src=\'https://placehold.co/450x560/f0f0f0/aaa?text=Görsel+Yok\'">' +
@@ -313,14 +262,17 @@ function renderProductDetail(productList) {
       '</button>' +
     '</div>';
 
-  // Mevcut ürün hariç rastgele 4 benzer ürün seç
+  // ── DÜZELTİLDİ: Var olan benzer ürünler bölümünü sil, sonra yeniden ekle ──
+  // Önceki render'dan kalan .similar-products varsa kaldır
+  var existing = document.querySelector(".similar-products");
+  if (existing) existing.parentNode.removeChild(existing);
+
   var similar = productList
     .filter(function(p) { return p.id !== product.id; })
     .sort(function() { return 0.5 - Math.random(); })
     .slice(0, 4);
 
   if (similar.length > 0) {
-    // "Benzer Ürünler" bölümünü oluştur ve ürün bölümünün hemen arkasına ekle
     var sec = document.createElement("section");
     sec.className = "similar-products";
     sec.innerHTML =
@@ -346,34 +298,31 @@ function renderProductDetail(productList) {
   }
 }
 
-// Ürün detay sayfası DOM hazır olunca çalışır.
-// Önce localStorage'dan hızlı render yapar, sonra Firebase'den güncel veriyle üzerine yazar.
+// Ürün detay sayfası: önce localStorage ile hızlı render, sonra Firebase ile güncelle.
+// Her iki çağrı da renderProductDetail'i tetikler; benzer ürünler artık temizlenip
+// yeniden ekleneceğinden iki kez çıkmaz.
 document.addEventListener("DOMContentLoaded", function() {
   if (!document.getElementById("productDetail")) return;
 
-  // localStorage'da veri varsa hemen göster (hızlı ilk yükleme için)
   if (products && products.length > 0) {
     renderProductDetail(products);
   }
 
-  // Firebase'den asenkron olarak güncel ürün listesini çek
   function doRender() {
     if (typeof window.vGetProductsAsync === "function") {
       window.vGetProductsAsync(function(arr) {
         if (arr && arr.length > 0) {
           products = arr;
-          renderProductDetail(arr); // Firebase verisiyle yeniden render et
+          renderProductDetail(arr);
         }
       });
     }
   }
 
-  // Firebase hazırsa hemen çalıştır; değilse hazır olma olayını bekle
   if (window._veloraFirebaseReady) {
     doRender();
   } else {
     document.addEventListener("veloraFirebaseReady", doRender, { once: true });
-    // Firebase 5 saniyede gelmezse localStorage verisiyle devam et (hata toleransı)
     setTimeout(function() {
       if (!window._veloraFirebaseReady && products && products.length > 0) {
         renderProductDetail(products);
@@ -382,65 +331,52 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-// Beden seçim butonlarından birine tıklanınca önceki seçimi kaldırır,
-// yeni butona .active ekler ve seçilen bedeni değişkene kaydeder.
 function selectSize(btn) {
   document.querySelectorAll(".sizes button").forEach(function(b) { b.classList.remove("active"); });
   btn.classList.add("active");
-  selectedSize = btn.innerText; // ör: "M"
+  selectedSize = btn.innerText;
 }
 
-// Renk dairelerinden birine tıklanınca seçilen rengi kaydeder
-// ve önceki seçimi temizleyip yenisine .active ekler.
 function selectColor(color, el) {
-  selectedColor = color; // ör: "Siyah"
+  selectedColor = color;
   document.querySelectorAll(".color").forEach(function(c) { c.classList.remove("active"); });
   el.classList.add("active");
 }
 
-// Aktif kupon bilgisini tutar; null ise hiç kupon uygulanmamış demektir.
 var aktifKupon = null;
 
-// Kullanıcının girdiği kupon kodunu doğrular ve geçerliyse iskonto uygular.
-// Firebase'deki vValidateCoupon fonksiyonunu kullanır.
 function applyCoupon() {
   var input = document.getElementById("couponInput");
   var msg   = document.getElementById("couponMsg");
   var kod   = input ? input.value.trim() : "";
 
-  // Önceki mesajı temizle
   if (msg) { msg.className = "coupon-msg"; msg.textContent = ""; }
 
-  // Zaten aktif bir kupon varsa yenisine izin verme
   if (aktifKupon) {
     if (msg) { msg.textContent = "Zaten bir kupon uygulandı. Önce kaldırın."; msg.className = "coupon-msg error"; }
     return;
   }
 
   if (typeof vValidateCoupon === "function") {
-    // Firebase'de kuponu doğrula
     vValidateCoupon(kod, function(result) {
       if (!result.valid) {
-        // Geçersiz kupon: hata mesajı göster
         if (msg) { msg.textContent = result.message; msg.className = "coupon-msg error"; }
         return;
       }
-      // Geçerli kupon: aktif kupon olarak kaydet ve arayüzü güncelle
       aktifKupon = { kod: kod.trim().toUpperCase(), yuzde: result.discount };
-      if (input) input.disabled = true; // Tekrar değiştirmeyi engelle
+      if (input) input.disabled = true;
       var appliedCodeText = document.getElementById("appliedCodeText");
       var couponApplied   = document.getElementById("couponApplied");
       if (appliedCodeText) appliedCodeText.textContent = aktifKupon.kod + " (%" + aktifKupon.yuzde + " indirim)";
       if (couponApplied)   couponApplied.style.display  = "flex";
       if (msg) { msg.textContent = result.message; msg.className = "coupon-msg success"; }
-      renderCart(); // İndirimli toplamı yeniden hesapla
+      renderCart();
     });
   } else {
     if (msg) { msg.textContent = "Kupon sistemi hazır değil."; msg.className = "coupon-msg error"; }
   }
 }
 
-// Uygulanan kuponu kaldırır, arayüzü sıfırlar ve sepet toplamını yeniden hesaplar.
 function removeCoupon() {
   aktifKupon = null;
   var input = document.getElementById("couponInput");
@@ -454,29 +390,23 @@ function removeCoupon() {
   renderCart();
 }
 
-// Sepet sayfasındaysa sayfa yüklenince hemen render et
 if (document.getElementById("cart-items")) { renderCart(); }
 
-// Sepet içeriğini HTML olarak oluşturur; kupon indirimi varsa onu da hesaba katar.
-// Her değişiklikten sonra (ürün ekleme, miktar güncelleme, kupon) çağrılır.
 function renderCart() {
   var container = document.getElementById("cart-items");
   if (!container) return;
   container.innerHTML = "";
   var araToplamTL = 0;
 
-  // Kupon kutusunu sepet durumuna göre göster/gizle
   var couponBox = document.getElementById("coupon-box");
   if (couponBox) couponBox.style.display = cart.length > 0 ? "block" : "none";
   updateHeaderCount();
 
-  // Her sepet öğesi için bir satır oluştur
   cart.forEach(function(item) {
     var itemTotal = item.price * item.quantity;
     araToplamTL += itemTotal;
     container.innerHTML +=
       '<div class="cart-item">' +
-        // Ürün görseline tıklayınca detay sayfasına git
         '<a href="product.html?id=' + item.id + '">' +
           '<img src="' + item.image + '" class="product-img" alt="' + item.name + '">' +
         '</a>' +
@@ -486,7 +416,6 @@ function renderCart() {
           '<p>Renk: <strong>' + item.color + '</strong></p>' +
         '</div>' +
         '<div class="cart-price">' + item.price.toLocaleString("tr-TR") + ' TL</div>' +
-        // Miktar artır/azalt butonları
         '<div class="quantity">' +
           '<button onclick="changeQty(' + item.id + ',\'' + item.size + '\',\'' + item.color + '\',-1)">−</button>' +
           '<span>' + item.quantity + '</span>' +
@@ -500,7 +429,6 @@ function renderCart() {
   var discountDisplay = document.getElementById("discountDisplay");
   var totalEl         = document.getElementById("total");
 
-  // Aktif kupon varsa indirim satırını göster ve son toplamı hesapla
   if (aktifKupon && araToplamTL > 0) {
     var indirimMiktar = Math.round(araToplamTL * aktifKupon.yuzde / 100);
     var sonToplamTL   = araToplamTL - indirimMiktar;
@@ -508,20 +436,16 @@ function renderCart() {
     if (discountRow)     discountRow.style.display   = "flex";
     if (totalEl)         totalEl.innerText           = sonToplamTL.toLocaleString("tr-TR");
   } else {
-    // Kupon yoksa indirim satırını gizle ve ara toplamı göster
     if (discountRow) discountRow.style.display = "none";
     if (totalEl)     totalEl.innerText         = araToplamTL.toLocaleString("tr-TR");
   }
 }
 
-// Sepetteki bir ürünün miktarını artırır veya azaltır.
-// Miktar 0'a düşerse ürünü sepetten tamamen çıkarır.
 function changeQty(id, size, color, delta) {
   var item = cart.find(function(i) { return i.id === id && i.size === size && i.color === color; });
   if (!item) return;
   item.quantity += delta;
   if (item.quantity <= 0) {
-    // Miktar sıfır veya altına düştüyse sepetten kaldır
     cart = cart.filter(function(i) { return !(i.id === id && i.size === size && i.color === color); });
   }
   localStorage.setItem("cart", JSON.stringify(cart));
@@ -529,7 +453,6 @@ function changeQty(id, size, color, delta) {
   updateCartCount();
 }
 
-// Belirli bir ürünü (id + beden + renk kombinasyonu) sepetten tamamen kaldırır.
 function removeItem(id, size, color) {
   cart = cart.filter(function(i) { return !(i.id === id && i.size === size && i.color === color); });
   localStorage.setItem("cart", JSON.stringify(cart));
@@ -537,25 +460,19 @@ function removeItem(id, size, color) {
   renderCart();
 }
 
-// Ürünü favorilere ekler ya da çıkarır. Giriş zorunludur.
-// localStorage'daki "saved" dizisini günceller ve yıldız ikonlarını yeniler.
 function toggleFavorite(e, id) {
-  e.stopPropagation(); // Kartın onclick'ine yayılmasını engelle
+  e.stopPropagation();
   if (!requireLogin()) return;
   var saved = JSON.parse(localStorage.getItem("saved")) || [];
   if (saved.includes(id)) {
-    // Zaten favorilerdeyse çıkar
     saved = saved.filter(function(s) { return s !== id; });
   } else {
-    // Değilse ekle
     saved.push(id);
   }
   localStorage.setItem("saved", JSON.stringify(saved));
-  updateSaveIcons(); // Tüm yıldız ikonlarını güncelle
+  updateSaveIcons();
 }
 
-// Sayfadaki tüm .save-icon elementlerini favoriler listesiyle karşılaştırır;
-// favorilenmiş ürünlerin ikonunu dolu yıldıza (★), diğerlerini boş (☆) yapar.
 function updateSaveIcons() {
   var saved = JSON.parse(localStorage.getItem("saved")) || [];
   document.querySelectorAll(".save-icon").forEach(function(icon) {
@@ -563,15 +480,11 @@ function updateSaveIcons() {
   });
 }
 
-// DOM tam yüklenmeden önce render edilen kartlar için 100ms sonra ikonları güncelle
 setTimeout(updateSaveIcons, 100);
 
-// Favoriler sayfası yüklenince artık mevcut olmayan ürünleri listeden temizler
-// ve sayfayı render eder.
 document.addEventListener("DOMContentLoaded", function() {
   if (document.getElementById("favorites-list")) {
     var saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number);
-    // Ürün listesinde karşılığı olmayan favorileri temizle (silinmiş ürünler için)
     var valid = saved.filter(function(id) { return products.find(function(p) { return p.id === id; }); });
     if (valid.length !== saved.length) {
       localStorage.setItem("saved", JSON.stringify(valid));
@@ -580,7 +493,6 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-// Favoriler sayfasını çizer; kaydedilen ürün yoksa açıklama mesajı gösterir.
 function renderFavoritesPage() {
   var container = document.getElementById("favorites-list");
   if (!container) return;
@@ -593,13 +505,11 @@ function renderFavoritesPage() {
     return;
   }
 
-  // Her favori id için ürünü bul ve kartı oluştur
   saved.forEach(function(id) {
     var product = products.find(function(p) { return p.id === id; });
-    if (!product) return; // Ürün artık yoksa geç
+    if (!product) return;
     container.innerHTML +=
       '<div class="product-card" style="position:relative">' +
-        // Sol üstteki kırmızı (×) butonu ile favoriden kaldır
         '<div class="remove-btn" onclick="removeSaved(' + product.id + ')">✕</div>' +
         '<div class="product-card__img-wrap">' +
           '<img src="' + product.image + '" onclick="goToProduct(' + product.id + ')" style="cursor:pointer" alt="' + product.name + '">' +
@@ -613,36 +523,29 @@ function renderFavoritesPage() {
   });
 }
 
-// Belirtilen id'li ürünü favorilerden kaldırır ve sayfayı yeniden çizer.
 function removeSaved(id) {
   var saved = (JSON.parse(localStorage.getItem("saved")) || []).map(Number).filter(function(i) { return i !== Number(id); });
   localStorage.setItem("saved", JSON.stringify(saved));
   renderFavoritesPage();
 }
 
-// Üst slider'ı sağa kaydırır. Her tıklamada 280px ilerler.
 function slideRight() {
   var el = document.getElementById("products");
   if (el) el.scrollBy({ left:280, behavior:"smooth" });
 }
-// Üst slider'ı sola kaydırır.
 function slideLeft() {
   var el = document.getElementById("products");
   if (el) el.scrollBy({ left:-280, behavior:"smooth" });
 }
-// Alt slider'ı verilen yöne kaydırır; dir=1 sağ, dir=-1 sol.
 function scrollBottom(dir) {
   var el = document.getElementById("products-bottom");
   if (el) el.scrollBy({ left:dir*280, behavior:"smooth" });
 }
 
-// Üst slider ve ok butonlarına referanslar
 var topSlider = document.getElementById("products");
 var topLeft   = document.querySelectorAll(".arrow.left")[0];
 var topRight  = document.querySelectorAll(".arrow.right")[0];
 
-// Üst slider'ın ok butonlarını kaydırma konumuna göre göster/gizle.
-// En başta sol ok, en sonda sağ ok gizlenir; gereksiz tıklama engellenir.
 function updateTopButtons() {
   if (!topSlider) return;
   if (topLeft)  topLeft.style.display  = topSlider.scrollLeft <= 10 ? "none" : "flex";
@@ -654,12 +557,10 @@ if (topSlider) {
   window.addEventListener("load", updateTopButtons);
 }
 
-// Alt slider ve ok butonlarına referanslar
 var bottomSlider = document.getElementById("products-bottom");
 var bottomLeft   = document.querySelectorAll(".arrow.left")[1];
 var bottomRight  = document.querySelectorAll(".arrow.right")[1];
 
-// Alt slider için de ok butonlarını kaydırma konumuna göre güncelle.
 function updateBottomButtons() {
   if (!bottomSlider) return;
   if (bottomLeft)  bottomLeft.style.display  = bottomSlider.scrollLeft <= 10 ? "none" : "flex";
@@ -671,15 +572,12 @@ if (bottomSlider) {
   window.addEventListener("load", updateBottomButtons);
 }
 
-// Sepet içeriğini WhatsApp mesajı olarak hazırlar ve mağazanın numarasına yönlendirir.
-// Kupon indirimi varsa mesaja dahil eder.
 function sendWhatsApp() {
   if (cart.length === 0) { alert("Sepetiniz boş!"); return; }
 
   var message = "🛒 Sipariş Detayı:%0A%0A";
   var araToplamTL = 0;
 
-  // Her ürünü mesaja ekle
   cart.forEach(function(item) {
     var itemTL = item.price * item.quantity;
     araToplamTL += itemTL;
@@ -691,7 +589,6 @@ function sendWhatsApp() {
   });
 
   var sonToplamTL = araToplamTL;
-  // Kupon varsa indirimi hesapla ve mesaja ekle
   if (aktifKupon && araToplamTL > 0) {
     var indirimMiktar = Math.round(araToplamTL * aktifKupon.yuzde / 100);
     sonToplamTL = araToplamTL - indirimMiktar;
@@ -699,23 +596,18 @@ function sendWhatsApp() {
     message += "İndirim: -" + indirimMiktar.toLocaleString("tr-TR") + " TL%0A";
   }
 
-  // Mağaza WhatsApp numarasını Firebase'den al; yoksa varsayılanı kullan
   var contact = (typeof vGetContact === "function") ? vGetContact() : {};
   var waNumber = contact.waNumber || "905550066123";
   if (contact.waActive === false) { alert("WhatsApp ile sipariş şu an aktif değil."); return; }
 
   message += "💰 TOPLAM: " + sonToplamTL.toLocaleString("tr-TR") + " TL";
-  // wa.me formatıyla WhatsApp web/app'ı aç
   window.open("https://wa.me/" + waNumber + "?text=" + message, "_blank");
 }
 
-// Dropdown nav öğelerine tıklanınca .active toggle'lar (mobil menü için).
 document.querySelectorAll(".nav-item").forEach(function(item) {
   item.addEventListener("click", function() { item.classList.toggle("active"); });
 });
 
-// Ekranın altından kayan genel bildirim mesajı.
-// type: "" (varsayılan), "error" (kırmızı) veya "success" (yeşil).
 function showToast(msg, type) {
   type = type || "";
   var t = document.getElementById("toast");
@@ -723,11 +615,9 @@ function showToast(msg, type) {
   t.textContent = msg;
   t.className = "toast show " + type;
   clearTimeout(t._timer);
-  t._timer = setTimeout(function() { t.className = "toast"; }, 3000); // 3 saniye sonra gizle
+  t._timer = setTimeout(function() { t.className = "toast"; }, 3000);
 }
 
-// Sayfa ilk yüklendiğinde ürün sliderlarını ve kategori sayfasını başlatan IIFE.
-// DOMContentLoaded beklemeden çalışır; ürünler zaten hazır olduğu varsayılır.
 (function init() {
   if (document.getElementById("products") && !document.getElementById("category-title")) {
     renderTopProducts(getNewCollection(products));
@@ -740,19 +630,15 @@ function showToast(msg, type) {
   }
 })();
 
-// Sayfa yüklenince kaydedilmiş tema tercihini veya sistem temasını uygular.
-// Dark mode tercih edildiyse body'e "dark" class'ı eklenir.
 (function initTheme() {
   var saved = localStorage.getItem("theme");
   var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   if (saved === "dark" || (!saved && prefersDark)) {
     document.body.classList.add("dark");
   }
-  updateThemeBtn(); // Butonun ikonunu güncelle
+  updateThemeBtn();
 })();
 
-// Kullanıcı tema butonuna tıklayınca dark/light modunu değiştirir
-// ve tercihi localStorage'a kaydeder.
 function toggleTheme() {
   document.body.classList.toggle("dark");
   var isDark = document.body.classList.contains("dark");
@@ -760,8 +646,6 @@ function toggleTheme() {
   updateThemeBtn();
 }
 
-// Sayfadaki tüm tema butonlarının ikonunu ve title'ını günceller.
-// Dark modda güneş (☀️), light modda ay (🌙) gösterir.
 function updateThemeBtn() {
   var isDark = document.body.classList.contains("dark");
   document.querySelectorAll(".theme-toggle").forEach(function(btn) {
@@ -770,7 +654,6 @@ function updateThemeBtn() {
   });
 }
 
-// Hamburger butonuna tıklanınca mobil menüyü ve arama kutusunu açar/kapatır.
 function toggleMenu() {
   var nav    = document.getElementById("navMenu");
   var search = document.querySelector(".search-box");
@@ -779,11 +662,9 @@ function toggleMenu() {
   if (search) search.classList.toggle("open");
 }
 
-// Scroll sırasında .mero banner ekrana girince .show class'ı ekleyerek animasyonu başlatır.
 function animateBanner() {
   var banner = document.querySelector(".mero");
   if (!banner) return;
-  // Elementin üst kenarı görünür alana 100px yaklaştıysa animasyonu çalıştır
   if (banner.getBoundingClientRect().top < window.innerHeight - 100) {
     banner.classList.add("show");
   }
@@ -791,38 +672,30 @@ function animateBanner() {
 window.addEventListener("scroll", animateBanner);
 window.addEventListener("load", animateBanner);
 
-// Hakkımızda bölümündeki elementleri scroll ile göründüklerinde
-// soldan ve sağdan kayarak belirtme animasyonu uygular.
 document.addEventListener("DOMContentLoaded", function() {
   function revealOnScroll() {
     document.querySelectorAll(".about-reveal-left, .about-reveal-right").forEach(function(el) {
-      // Element görünür alanın 60px yakınına gelince .revealed class'ı ekle
       if (el.getBoundingClientRect().top < window.innerHeight - 60) {
         el.classList.add("revealed");
       }
     });
   }
   window.addEventListener("scroll", revealOnScroll);
-  revealOnScroll(); // Sayfa yüklenince zaten görünenleri de kontrol et
+  revealOnScroll();
 });
 
-// Header'daki profil ikonunu günceller.
-// Giriş yapılmışsa kullanıcının baş harflerini ve .logged-in class'ını ekler.
 (function updateProfileIcon() {
   var user = JSON.parse(localStorage.getItem("activeUser"));
   var icon = document.getElementById("profile-icon");
   if (!icon) return;
   if (user) {
-    // İsmin baş harflerini al (en fazla 2 harf, büyük harf)
     var initials = user.name.split(" ").map(function(n) { return n[0]; }).join("").slice(0, 2).toUpperCase();
     icon.innerHTML = initials;
     icon.classList.add("logged-in");
-    icon.title = user.name; // Hover'da tam ismi göster
+    icon.title = user.name;
   }
 })();
 
-// Profil sayfasındaki sekmeleri (kayıt, doğrulama, giriş, profil) gösterir/gizler.
-// Yalnızca hedef bölümü görünür yapar, diğerlerini gizler.
 function showSection(id) {
   ["register-section","verify-section","login-section","profile-section"].forEach(function(s) {
     var el = document.getElementById(s);
@@ -832,23 +705,17 @@ function showSection(id) {
   if (target) target.classList.remove("hidden");
 }
 
-// Kısayol fonksiyonlar: ilgili bölümü gösterir
 function showLogin()    { showSection("login-section"); }
 function showRegister() { showSection("register-section"); }
 
-// Form grup elementine hata sınıfı ekler ya da kaldırır.
-// show=true: kırmızı kenarlık ve hata mesajı görünür; show=false: temizler.
 function setError(fgId, show) {
   var fg = document.getElementById(fgId);
   if (!fg) return;
   show ? fg.classList.add("has-error") : fg.classList.remove("has-error");
 }
 
-// E-posta formatını basit regex ile doğrular.
 function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
-// Şifre güç kuralları: uzunluk, büyük harf, rakam ve özel karakter.
-// Her kural bir regex ve DOM element id'si içerir.
 var PW_RULES = {
   length:  { regex:/.{8,}/,         ruleId:"rule-length"  },
   upper:   { regex:/[A-Z]/,         ruleId:"rule-upper"   },
@@ -856,8 +723,6 @@ var PW_RULES = {
   special: { regex:/[^a-zA-Z0-9]/, ruleId:"rule-special" }
 };
 
-// Şifre her değiştiğinde kuralları kontrol eder ve görsel geri bildirim verir.
-// Geçen kural sayısına göre güç çubuğunu (zayıf→güçlü) günceller.
 function checkPasswordStrength(value) {
   var passed = 0;
   Object.keys(PW_RULES).forEach(function(key) {
@@ -867,12 +732,10 @@ function checkPasswordStrength(value) {
     if (el) {
       el.classList.toggle("rule-ok",   ok);
       el.classList.toggle("rule-fail", !ok && value.length > 0);
-      // ✓ veya ✗ önekini güncelle
       el.textContent = (ok ? "✓ " : "✗ ") + el.textContent.slice(2);
     }
     if (ok) passed++;
   });
-  // Güç çubuğunu geçen kural sayısına göre doldur
   var fill = document.getElementById("pw-strength-fill");
   if (!fill) return;
   fill.style.width = (passed / 4 * 100) + "%";
@@ -883,14 +746,10 @@ function checkPasswordStrength(value) {
   else                   fill.classList.add("pw-strong");
 }
 
-// Tüm şifre kurallarının sağlanıp sağlanmadığını kontrol eder.
-// Kayıt ve şifre değiştirme formlarında doğrulama için kullanılır.
 function isPasswordValid(value) {
   return Object.values(PW_RULES).every(function(r) { return r.regex.test(value); });
 }
 
-// Şifre input'undaki göz ikonuna tıklanınca text/password arasında geçiş yapar.
-// Buton SVG ikonunu da değiştirir: açık göz ↔ kapalı göz.
 function togglePw(inputId, btn) {
   var inp = document.getElementById(inputId);
   if (!inp) return;
@@ -901,20 +760,14 @@ function togglePw(inputId, btn) {
     : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 }
 
-// Şifreyi tarayıcı tarafında SHA-256 ile hashler.
-// Düz metin şifre localStorage'a hiçbir zaman kaydedilmez.
 async function hashPassword(password) {
   var msgBuffer  = new TextEncoder().encode(password);
   var hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  // Byte dizisini hex string'e çevir
   return Array.from(new Uint8Array(hashBuffer)).map(function(b) { return b.toString(16).padStart(2,"0"); }).join("");
 }
 
-// Doğrulama e-postası gönderilmeden önce geçici kullanıcı verisi burada tutulur.
 var tempUser = {};
 
-// Kayıt formunu doğrular; geçerliyse e-postaya 4 haneli kod gönderir.
-// EmailJS ile gerçek e-posta gönderimi yapılır.
 async function handleRegister() {
   var name      = document.getElementById("reg-name").value.trim();
   var email     = document.getElementById("reg-email").value.trim();
@@ -923,49 +776,42 @@ async function handleRegister() {
   var termsCheck = document.getElementById("termsCheck");
   var ok = true;
 
-  // Her alanı ayrı ayrı doğrula ve hataları göster
   if (!name)                              { setError("fg-name",  true);  ok = false; } else { setError("fg-name",  false); }
   if (!email || !isValidEmail(email))     { setError("fg-email", true);  ok = false; document.getElementById("email-error-msg").textContent = !email ? "E-posta zorunludur." : "Geçerli e-posta girin."; } else { setError("fg-email", false); }
   if (!isPasswordValid(password))         { setError("fg-password",  true);  ok = false; document.getElementById("password-error-msg").textContent = "Şifre gereksinimleri karşılanmıyor."; } else { setError("fg-password",  false); }
   if (password !== password2)             { setError("fg-password2", true);  ok = false; document.getElementById("password2-error-msg").textContent = "Şifreler eşleşmiyor."; } else { setError("fg-password2", false); }
   if (termsCheck && !termsCheck.checked)  { setError("fg-terms",    true);  ok = false; } else { setError("fg-terms", false); }
-  if (!ok) return; // Herhangi bir hata varsa devam etme
+  if (!ok) return;
 
-  // E-posta zaten kayıtlı mı kontrol et
   var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
   if (allUsers.find(function(u) { return u.email.toLowerCase() === email.toLowerCase(); })) {
     document.getElementById("email-error-msg").textContent = "Bu e-posta zaten kayıtlı.";
     setError("fg-email", true); return;
   }
 
-  // Şifreyi hashle ve geçici kullanıcıya kaydet
   var hashedPw = await hashPassword(password);
   tempUser = { name:name, email:email, passwordHash:hashedPw };
   var labelEl = document.getElementById("verify-email-label");
   if (labelEl) labelEl.textContent = email;
 
-  // 1000-9999 arası rastgele 4 haneli doğrulama kodu üret
   var verifyCode = String(Math.floor(1000 + Math.random() * 9000));
   tempUser.code = verifyCode;
 
-  // Butonu devre dışı bırak ve gönderme durumunu göster
   var btn = document.getElementById("register-btn");
   if (btn) { btn.disabled = true; btn.textContent = "Gönderiliyor..."; }
 
   if (typeof emailjs !== "undefined") {
-    // EmailJS ile doğrulama kodunu e-postaya gönder
     emailjs.send("service_u871hgw", "template_nnfkcc3", { to_email:email, to_name:name, code:verifyCode })
       .then(function() {
         showToast("Doğrulama kodu gönderildi!", "success");
-        startCountdown(); // Yeniden gönder geri sayımını başlat
-        showSection("verify-section"); // Doğrulama ekranına geç
+        startCountdown();
+        showSection("verify-section");
         var d1 = document.getElementById("d1");
-        if (d1) setTimeout(function() { d1.focus(); }, 100); // İlk kutuya odaklan
+        if (d1) setTimeout(function() { d1.focus(); }, 100);
       })
       .catch(function(err) { console.error(err); showToast("Mail gönderilemedi.", "error"); })
       .finally(function() { if (btn) { btn.disabled = false; btn.textContent = "Üye Ol ve Doğrulama Kodu Gönder"; } });
   } else {
-    // EmailJS yoksa kodu console'a yaz ve devam et (geliştirme ortamı)
     console.log("Doğrulama kodu:", verifyCode);
     showToast("Kod: " + verifyCode + " (EmailJS yüklü değil)", "");
     startCountdown();
@@ -974,34 +820,27 @@ async function handleRegister() {
   }
 }
 
-// 4 haneli kod input alanlarını (d1-d4) birbirine bağlar:
-// - Bir hane girilince sonraki kutuya otomatik geç
-// - Backspace ile önceki kutuya dön
-// - Kopyala-yapıştır ile 4 haneli kodu dağıt
 ["d1","d2","d3","d4"].forEach(function(id, i, arr) {
   var input = document.getElementById(id);
   if (!input) return;
   input.addEventListener("input", function(e) {
-    var val = e.target.value.replace(/\D/g, ""); // Sadece rakam kabul et
+    var val = e.target.value.replace(/\D/g, "");
     e.target.value = val;
     if (val && i < arr.length - 1) {
       var next = document.getElementById(arr[i+1]);
-      if (next) next.focus(); // Sonraki kutuya geç
+      if (next) next.focus();
     }
     e.target.classList.toggle("filled", !!val);
-    // 4 hane de dolduysa 200ms sonra doğrula
     var full = arr.map(function(a) { var el = document.getElementById(a); return el ? el.value : ""; }).join("");
     if (full.length === 4) setTimeout(handleVerify, 200);
   });
   input.addEventListener("keydown", function(e) {
-    // Backspace ve kutu boşsa bir önceki kutuya git
     if (e.key === "Backspace" && !input.value && i > 0) {
       var prev = document.getElementById(arr[i-1]);
       if (prev) prev.focus();
     }
   });
   input.addEventListener("paste", function(e) {
-    // Yapıştırılan kodu 4 kutuya dağıt
     e.preventDefault();
     var text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g,"").slice(0,4);
     arr.forEach(function(a, j) {
@@ -1012,14 +851,10 @@ async function handleRegister() {
   });
 });
 
-// 4 haneli kod kutularındaki değerleri birleştirerek döndürür.
 function getCode() {
   return ["d1","d2","d3","d4"].map(function(id) { var el = document.getElementById(id); return el ? el.value : ""; }).join("");
 }
 
-// Girilen kodu tempUser.code ile karşılaştırır.
-// Doğruysa kullanıcıyı localStorage ve Firebase'e kaydeder, ana sayfaya yönlendirir.
-// Yanlışsa kutuları kırmızı yapar ve temizler.
 function handleVerify() {
   var code = getCode();
   if (code.length < 4) { showToast("Lütfen 4 haneli kodu girin.", "error"); return; }
@@ -1027,12 +862,10 @@ function handleVerify() {
     var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
     var saveUser = { name:tempUser.name, email:tempUser.email, passwordHash:tempUser.passwordHash };
 
-    // Aynı e-posta zaten yoksa ekle (çift kayıt önlemi)
     if (!allUsers.find(function(u) { return u.email.toLowerCase() === tempUser.email.toLowerCase(); })) {
       allUsers.push(saveUser);
       localStorage.setItem("velora_users", JSON.stringify(allUsers));
 
-      // Firebase'e de kaydet (bulut yedekleme)
       if (typeof vSaveUser === "function") {
         vSaveUser({
           name:      saveUser.name,
@@ -1045,12 +878,10 @@ function handleVerify() {
       }
     }
 
-    // Aktif oturum olarak kaydet ve ana sayfaya yönlendir
     localStorage.setItem("activeUser", JSON.stringify({ name:saveUser.name, email:saveUser.email }));
     showToast("Üyeliğiniz tamamlandı! Hoş geldiniz 🎉", "success");
     setTimeout(function() { window.location.href = "index.html"; }, 1200);
   } else {
-    // Hatalı kod: kutuları kırmızıya boya, temizle ve ilk kutuya odaklan
     showToast("Hatalı kod.", "error");
     ["d1","d2","d3","d4"].forEach(function(id) {
       var el = document.getElementById(id);
@@ -1064,36 +895,29 @@ function handleVerify() {
   }
 }
 
-// Giriş formunu doğrular; kullanıcıyı localStorage'da arar ve şifre hash'ini karşılaştırır.
-// Başarılıysa activeUser kaydeder ve "Beni hatırla" tercihini işler.
 async function handleLogin() {
   var email    = document.getElementById("login-email").value.trim();
   var password = document.getElementById("login-password").value;
   var ok = true;
 
-  // Alan doğrulamaları
   if (!email || !isValidEmail(email)) { document.getElementById("login-email-error-msg").textContent = "Geçerli e-posta girin."; setError("fg-login-email", true); ok = false; } else { setError("fg-login-email", false); }
   if (!password)                      { document.getElementById("login-password-error-msg").textContent = "Şifre zorunludur."; setError("fg-login-password", true); ok = false; } else { setError("fg-login-password", false); }
   if (!ok) return;
 
-  // Kullanıcı kayıtlı mı?
   var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
   var user = allUsers.find(function(u) { return u.email.toLowerCase() === email.toLowerCase(); });
 
   if (!user) { document.getElementById("login-email-error-msg").textContent = "Bu e-posta kayıtlı değil."; setError("fg-login-email", true); return; }
 
-  // Şifre hash'ini karşılaştır
   var hashedPw = await hashPassword(password);
   if (user.passwordHash && hashedPw !== user.passwordHash) {
     document.getElementById("login-password-error-msg").textContent = "Şifre hatalı.";
     setError("fg-login-password", true); return;
   }
 
-  // Başarılı giriş: oturumu kaydet
   var rememberMe   = document.getElementById("rememberMe");
   var sessionUser  = { name:user.name, email:user.email };
   localStorage.setItem("activeUser", JSON.stringify(sessionUser));
-  // "Beni hatırla" seçiliyse kalıcı olarak sakla; değilse temizle
   if (rememberMe && rememberMe.checked) { localStorage.setItem("velora_remember", "true"); }
   else { localStorage.removeItem("velora_remember"); }
 
@@ -1103,7 +927,6 @@ async function handleLogin() {
   setTimeout(function() { window.location.href = "index.html"; }, 1200);
 }
 
-// Şifre değiştirme formundaki güç kuralları (kayıt formundan bağımsız ID'ler).
 var PW_RULES2 = {
   length:  { regex:/.{8,}/,         ruleId:"rule2-length"  },
   upper:   { regex:/[A-Z]/,         ruleId:"rule2-upper"   },
@@ -1111,7 +934,6 @@ var PW_RULES2 = {
   special: { regex:/[^a-zA-Z0-9]/, ruleId:"rule2-special" }
 };
 
-// Şifre değiştirme formundaki şifre gücünü kontrol eder (PW_RULES ile aynı mantık).
 function checkPasswordStrength2(value) {
   var passed = 0;
   Object.keys(PW_RULES2).forEach(function(key) {
@@ -1126,8 +948,6 @@ function checkPasswordStrength2(value) {
   if (passed<=1) fill.classList.add("pw-weak"); else if(passed===2) fill.classList.add("pw-fair"); else if(passed===3) fill.classList.add("pw-good"); else fill.classList.add("pw-strong");
 }
 
-// Profil sayfasındaki şifre değiştirme formunu gösterir veya gizler.
-// Buton metni "Değiştir" ↔ "İptal" arasında toggle'lanır.
 function togglePwChangeForm() {
   var form   = document.getElementById("pw-change-form");
   var toggle = document.getElementById("pw-change-toggle");
@@ -1137,8 +957,6 @@ function togglePwChangeForm() {
   if (toggle) toggle.textContent = isHidden ? "İptal" : "Değiştir";
 }
 
-// Şifre değiştirme işlemini doğrular ve uygular.
-// Mevcut şifreyi hash'leyerek karşılaştırır; eşleşirse yeni hash'i kaydeder.
 async function handleChangePassword() {
   var currentPw = document.getElementById("current-pw").value;
   var newPw     = document.getElementById("new-pw").value;
@@ -1153,21 +971,17 @@ async function handleChangePassword() {
   var allUsers = JSON.parse(localStorage.getItem("velora_users")) || [];
   var userIdx  = allUsers.findIndex(function(u) { return u.email.toLowerCase() === activeUser.email.toLowerCase(); });
   if (userIdx === -1) { showToast("Kullanıcı bulunamadı.", "error"); return; }
-  // Mevcut şifreyi doğrula
   var currentHash = await hashPassword(currentPw);
   if (allUsers[userIdx].passwordHash && currentHash !== allUsers[userIdx].passwordHash) {
     document.getElementById("current-pw-error-msg").textContent = "Mevcut şifre hatalı.";
     setError("fg-current-pw", true); return;
   }
-  // Yeni hash'i kaydet
   allUsers[userIdx].passwordHash = await hashPassword(newPw);
   localStorage.setItem("velora_users", JSON.stringify(allUsers));
   showToast("Şifreniz güncellendi! ✅", "success");
-  togglePwChangeForm(); // Formu kapat
+  togglePwChangeForm();
 }
 
-// Kullanıcıyı sistemden çıkarır: localStorage temizlenir, sepet sıfırlanır,
-// onay sonrası giriş ekranına yönlendirilir.
 function handleLogout() {
   if (confirm("Çıkış yapmak istediğinize emin misiniz?")) {
     localStorage.removeItem("activeUser");
@@ -1181,14 +995,10 @@ function handleLogout() {
   }
 }
 
-// Kullanım şartları modalını açar. Checkbox etiketindeki linke tıklanınca çağrılır.
 function openTermsModal(e) { if (e) e.preventDefault(); var m = document.getElementById("termsModal"); if (m) m.classList.add("active"); }
-// Modal arka planına tıklanınca modalı kapatır.
 function closeTermsModal(e) { if (e.target === document.getElementById("termsModal")) { document.getElementById("termsModal").classList.remove("active"); } }
-// Modal içindeki "Kabul Et" butonuna tıklanınca terms checkbox'ı işaretler ve modalı kapatır.
 function acceptTerms() { var cb = document.getElementById("termsCheck"); if (cb) { cb.checked=true; setError("fg-terms",false); } var m = document.getElementById("termsModal"); if (m) m.classList.remove("active"); }
 
-// Profil kartını kullanıcı verisiyle doldurur ve profil bölümünü gösterir.
 function showProfile(user) {
   var initials = user.name.split(" ").map(function(n) { return n[0]; }).join("").slice(0,2).toUpperCase();
   var av = document.getElementById("profile-avatar"); if (av) av.textContent = initials;
@@ -1199,14 +1009,12 @@ function showProfile(user) {
   showSection("profile-section");
 }
 
-// Doğrulama kodunu yeniden gönder butonunun geri sayım zamanlayıcısı.
-// 60 saniye boyunca butonu devre dışı bırakır; süre dolunca tekrar aktif eder.
 var countdownInterval;
 function startCountdown() {
   var btn = document.getElementById("resend-btn");
   var txt = document.getElementById("countdown-text");
   var sec = 60;
-  if (btn) btn.classList.add("counting"); // Buton tıklanamaz hale gelir
+  if (btn) btn.classList.add("counting");
   if (txt) txt.textContent = " (" + sec + "s)";
   clearInterval(countdownInterval);
   countdownInterval = setInterval(function() {
@@ -1216,13 +1024,11 @@ function startCountdown() {
   }, 1000);
 }
 
-// Geri sayım bitmişse yeni bir doğrulama kodu üretir ve gönderir.
-// Geri sayım hâlâ devam ediyorsa işlem yapmaz.
 function resendCode() {
   var btn = document.getElementById("resend-btn");
-  if (btn && btn.classList.contains("counting")) return; // Henüz bekleme süresi dolmadı
+  if (btn && btn.classList.contains("counting")) return;
   var newCode = String(Math.floor(1000 + Math.random() * 9000));
-  tempUser.code = newCode; // Geçici kullanıcının kodunu güncelle
+  tempUser.code = newCode;
   if (typeof emailjs !== "undefined") {
     emailjs.send("service_u871hgw","template_nnfkcc3",{to_email:tempUser.email,to_name:tempUser.name,code:newCode})
       .then(function() { showToast("Yeni kod gönderildi!", "success"); })
@@ -1231,17 +1037,12 @@ function resendCode() {
   startCountdown();
 }
 
-// Profil sayfası DOM hazır olunca:
-// - Giriş yapılmışsa profil bölümünü göster
-// - "Beni hatırla" seçiliyse e-postayı önceden doldur
-// - Enter tuşuna basınca kayıt veya giriş formunu gönder
 document.addEventListener("DOMContentLoaded", function() {
   var user = JSON.parse(localStorage.getItem("activeUser"));
   if (user && document.getElementById("profile-section")) { showProfile(user); }
   var remember = localStorage.getItem("velora_remember");
   var loginEmailEl = document.getElementById("login-email");
   if (remember === "true" && user && loginEmailEl) { loginEmailEl.value = user.email; var cb = document.getElementById("rememberMe"); if (cb) cb.checked = true; }
-  // Enter tuşu kısayolları
   var regEmail   = document.getElementById("reg-email");
   var loginEmail = document.getElementById("login-email");
   var loginPw    = document.getElementById("login-password");
@@ -1250,8 +1051,6 @@ document.addEventListener("DOMContentLoaded", function() {
   if (loginPw)    loginPw.addEventListener("keydown",    function(e) { if(e.key==="Enter") handleLogin(); });
 });
 
-// Oturum açık kullanıcının Firebase'de hâlâ var olup olmadığını periyodik kontrol eder.
-// Admin tarafından silinen hesap 10 saniye içinde otomatik çıkış yaptırılır.
 document.addEventListener('DOMContentLoaded', function() {
   var activeUser = JSON.parse(localStorage.getItem('activeUser'));
   if (!activeUser || !activeUser.email) return;
@@ -1260,7 +1059,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof vFindUser !== 'function') return;
     vFindUser(activeUser.email, function(user) {
       if (!user) {
-        // Firebase'de kullanıcı bulunamadı: oturumu kapat
         localStorage.removeItem('activeUser');
         localStorage.removeItem('velora_remember');
         localStorage.removeItem('cart');
@@ -1270,8 +1068,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Sayfa açılışından 2 saniye sonra ilk kontrol (Firebase hazır olması için bekle)
   setTimeout(checkUserStillExists, 2000);
-  // Sonraki kontroller 10 saniyede bir
   setInterval(checkUserStillExists, 10000);
 });
