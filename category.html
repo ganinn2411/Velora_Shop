@@ -2,33 +2,46 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <!-- Mobil cihazlarda sayfanın doğru ölçeklenmesi için viewport ayarı -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tarayıcı sekmesinde görünen sayfa başlığı -->
   <title>VELORA – Kategori</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <!-- Favicon: altın V ikonu -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23111'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23c9b97a'>V</text></svg>">
-<!-- Sekme başlığı -->
-<title>VELORA – Hesabım</title>
+  <!-- Sekme ikonunu SVG veri URI ile gömülü olarak tanımla: siyah zemin üstünde altın V harfi -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23111'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23c9b97a'>V</text></svg>">
+  <!-- Sekme başlığı (bu satır sayfa adını "Hesabım" olarak geçersiz kılar; ileride güncellenecek yer tutucu) -->
+  <title>VELORA – Hesabım</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Montserrat fontunu Google Fonts'tan yükle — sitenin ana gövde fontu -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <!-- Sitenin genel CSS dosyası -->
   <link rel="stylesheet" href="style.css">
 </head>
+<!-- category-page sınıfı; bu sayfaya özgü CSS kurallarını tetiklemek için body'e eklenir -->
 <body class="category-page">
 
+<!-- ── ÜST NAVIGASYON HEADER ── -->
 <header class="header">
+  <!-- Logo: tıklanınca ana sayfaya döner -->
   <a href="index.html" class="logo">VELORA</a>
 
-  <!-- Hamburger (mobilde görünür) -->
+  <!-- Mobilde menüyü açıp kapatan hamburger butonu; JS ile toggleMenu() çağrılır -->
   <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menü">
+    <!-- Üç yatay çizgi: CSS ile hamburger ikonunu oluşturur -->
     <span></span><span></span><span></span>
   </button>
 
+  <!-- Ana navigasyon menüsü — mobilde hamburger butonuyla gösterilip gizlenir -->
   <nav class="nav" id="navMenu">
+
+    <!-- KADIN menü öğesi: hover'da mega menu açılır -->
     <div class="nav-item">
       <a href="#" class="nav-link">KADIN</a>
+      <!-- Mega menu: kategori linklarını içerir -->
       <div class="mega-menu">
         <div class="mega-col">
           <h4>Kategoriler</h4>
+          <!-- Her link URL parametresiyle hangi kategori+tip filtreleneceğini iletir -->
           <a href="category.html?category=kadin&type=pantalon">Pantolon</a>
           <a href="category.html?category=kadin&type=tisort">Tişört</a>
           <a href="category.html?category=kadin&type=sapka">Şapka</a>
@@ -37,6 +50,7 @@
       </div>
     </div>
 
+    <!-- ERKEK menü öğesi: aynı yapı, erkek kategorisi parametreleriyle -->
     <div class="nav-item">
       <a href="#" class="nav-link">ERKEK</a>
       <div class="mega-menu">
@@ -50,6 +64,7 @@
       </div>
     </div>
 
+    <!-- ÇOCUK menü öğesi: aynı yapı, cocuk kategorisi parametreleriyle -->
     <div class="nav-item">
       <a href="#" class="nav-link">ÇOCUK</a>
       <div class="mega-menu">
@@ -63,11 +78,15 @@
       </div>
     </div>
 
+    <!-- Favoriler sayfasına doğrudan link -->
     <a href="wishlist.html" class="fav-link">FAVORİLER</a>
   </nav>
 
+  <!-- Arama kutusu ve fiyat sıralama filtresi -->
   <div class="search-box">
+    <!-- Kullanıcının ürün adı yazarak arama yapmasını sağlar; script.js dinler -->
     <input type="text" id="searchInput" placeholder="Ürün ara...">
+    <!-- Fiyata göre sıralama seçeneği: hepsi / en ucuz / en pahalı -->
     <select id="filterSelect">
       <option value="all">Tüm Ürünler</option>
       <option value="cheapest">En Ucuz</option>
@@ -75,54 +94,73 @@
     </select>
   </div>
 
-  <!-- Sağ ikonlar -->
+  <!-- Sağ taraftaki ikon grubu: profil, tema ve sepet -->
   <div class="header-actions">
+    <!-- Profil/hesap sayfasına giden ikon; kullanıcı giriş yapmışsa ismi gösterilebilir -->
     <a href="profile.html" class="profile-icon" id="profile-icon" title="Hesabım">
+      <!-- Kullanıcı silüeti SVG ikonu -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
            stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
         <circle cx="12" cy="7" r="4"/>
       </svg>
     </a>
+    <!-- Açık/koyu mod geçiş butonu; script.js'deki toggleTheme() fonksiyonunu çağırır -->
     <button class="theme-toggle" onclick="toggleTheme()" title="Karanlık Mod">🌙</button>
+    <!-- Sepet bağlantısı: rozet sepetteki ürün adedini gösterir (JS tarafından güncellenir) -->
     <a href="cart.html" class="cart">
       🛒 <span class="cart-badge" id="cart-count">0</span>
     </a>
   </div>
 </header>
 
+<!-- Sayfa başlığı: JS tarafından URL parametresine göre doldurulur (örn: "Kadın Tişört") -->
 <h2 id="category-title"></h2>
+<!-- Ürün kartlarının JS tarafından dinamik olarak ekleneceği konteyner -->
 <div id="products"></div>
 
+<!-- ── FOOTER ── -->
 <footer class="footer">
+  <!-- Mağaza kategorilerine kısa yol linkleri -->
   <div class="footer-col">
     <h4>MAĞAZA</h4>
     <a href="category.html?category=kadin&type=tisort">Kadın</a>
     <a href="category.html?category=erkek&type=tisort">Erkek</a>
     <a href="category.html?category=cocuk&type=tisort">Çocuk</a>
   </div>
+  <!-- Destek ve iletişim linkleri -->
   <div class="footer-col">
     <h4>YARDIM</h4>
+    <!-- WhatsApp numarasına doğrudan mesaj linki -->
     <a href="https://wa.me/905550066123" target="_blank">İletişim</a>
     <a href="#">Kargo</a>
     <a href="#">İade</a>
   </div>
+  <!-- Kurumsal bilgi linkleri -->
   <div class="footer-col">
     <h4>KURUMSAL</h4>
     <a href="#">Hakkımızda</a>
     <a href="#">Kariyer</a>
   </div>
+  <!-- Telif hakkı notu -->
   <div class="footer-bottom">© 2026 VELORA – Tüm Hakları Saklıdır</div>
 </footer>
-  <div class="center-toast" id="centerToast">
+
+<!-- Ürün sepete eklenince ekranın ortasında beliren bildirim tostu -->
+<div class="center-toast" id="centerToast">
   <div class="center-toast-icon">🛒</div>
   <div class="center-toast-title">Sepete Eklendi</div>
+  <!-- Eklenen ürünün adı bu alana JS tarafından yazılır -->
   <div class="center-toast-msg" id="centerToastMsg"></div>
 </div>
-  
- <script src="velora-appearance.js"></script>  
-  <script src="velora-firebase.js"></script>
+
+<!-- Görünüm ayarlarını (renkler, fontlar, duyuru çubuğu) uygulayan script -->
+<script src="velora-appearance.js"></script>
+<!-- Firebase bağlantısını ve window._db referansını sağlayan script -->
+<script src="velora-firebase.js"></script>
+<!-- Gerçek zamanlı Firestore dinleyicilerini başlatan script -->
 <script src="velora-realtime.js"></script>
-  <script src="script.js"></script>
+<!-- Ana uygulama scripti: ürün listeleme, sepet, arama, tema, URL parametre okuma vb. -->
+<script src="script.js"></script>
 </body>
 </html>
